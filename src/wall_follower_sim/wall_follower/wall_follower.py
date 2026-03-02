@@ -1,10 +1,11 @@
 #!/usr/bin/env python3
+import numpy as np
 import rclpy
 from ackermann_msgs.msg import AckermannDriveStamped
 from rcl_interfaces.msg import ParameterEvent
 from rclpy.node import Node
 from sensor_msgs.msg import LaserScan
-from std_msgs.msg import Float64
+from std_msgs.msg import Float32
 from tf2_ros.buffer import Buffer
 from tf2_ros.transform_listener import TransformListener
 from visualization_msgs.msg import Marker
@@ -58,8 +59,8 @@ class WallFollower(Node):
         self.visualization_tools = VisualizationTools(
             self.marker_publisher, "laser_model", self.tf_buffer
         )
-        self.side_error_publisher = self.create_publisher(Float64, "side_error", 10)
-        self.front_error_publisher = self.create_publisher(Float64, "front_error", 10)
+        self.distance_publisher = self.create_publisher(Float32, "/distance", 10)
+        self.angle_publisher = self.create_publisher(Float32, "/angle", 10)
         # Leave parameters that can be changed at runtime to post_init
         self.post_init()
 
@@ -87,7 +88,7 @@ class WallFollower(Node):
             max_i=3,
             max_d=4,
             side=self.SIDE,
-            side_spread=0.5,
+            side_spread=np.pi / 4,
             side_samples=11,
             front_spread=0.25,
             front_samples=5,
@@ -96,9 +97,9 @@ class WallFollower(Node):
             drive_publisher=self.drive_publisher,
             front_treshold=self.DESIRED_DISTANCE * 3.0,
             front_error_ratio=2 + self.VELOCITY * 0.5,
-            enable_visualization=True,
-            side_error_publisher=self.side_error_publisher,
-            front_error_publisher=self.front_error_publisher,
+            enable_visualization=False,
+            distance_publisher=self.distance_publisher,
+            angle_publisher=self.angle_publisher,
         )
 
     def parameters_callback(self, params):
@@ -120,7 +121,7 @@ class WallFollower(Node):
 
     def scan_callback(self, laser_scan):
         walls = detect_walls(laser_scan, min_points=3, D_t=0.5)
-        self.visualization_tools.plot_walls(walls, laser_scan.header.stamp)
+        # self.visualization_tools.plot_walls(walls, laser_scan.header.stamp)
         self.drive_controller.update(walls, laser_scan)
 
 

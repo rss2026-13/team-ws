@@ -5,7 +5,7 @@ from collections import deque
 import numpy as np
 import rclpy
 from ackermann_msgs.msg import AckermannDriveStamped
-from std_msgs.msg import Float64
+from std_msgs.msg import Float32
 
 
 def closest_point(wall):
@@ -327,8 +327,8 @@ class DriveController:
         drive_publisher,
         front_treshold,
         front_error_ratio,
-        side_error_publisher=None,
-        front_error_publisher=None,
+        distance_publisher=None,
+        angle_publisher=None,
         enable_visualization=True,
     ):
         self.pid_controller = PIDController(kp, ki, kd, max_i, max_d)
@@ -348,6 +348,7 @@ class DriveController:
 
         self.prev_front_error = 0
         self.prev_closest_dist = 0
+        self.prev_angle = 0
         # Visualization
         self.enable_visualization = enable_visualization
         if self.enable_visualization:
@@ -355,8 +356,8 @@ class DriveController:
         else:
             self.visualizer = None
 
-        self.side_error_publisher = side_error_publisher
-        self.front_error_publisher = front_error_publisher
+        self.distance_publisher = distance_publisher
+        self.angle_publisher = angle_publisher
 
     def update(self, walls, laser_scan):
         if len(walls) == 0:
@@ -371,14 +372,20 @@ class DriveController:
             self.side_spread + self.side * np.pi / 2,
             self.side_samples,
         )
+        wall_angle = 0
         for angle in angles:
             for wall in walls:
                 dist = point_dir(wall, (np.cos(angle), np.sin(angle)), 0.1)
                 if dist is not None:
                     closest_dist = min(closest_dist, np.linalg.norm(dist))
+                    wall_angle = np.arctan2(
+                        wall[1][1] - wall[0][1], abs(wall[1][0] - wall[0][0])
+                    )
         if closest_dist == np.inf:
             closest_dist = self.prev_closest_dist
+            wall_angle = self.prev_angle
         self.prev_closest_dist = closest_dist
+        self.prev_angle = wall_angle
         side_error = closest_dist - self.desired_distance
         forward_dist = np.inf
         angles = np.linspace(
@@ -390,9 +397,7 @@ class DriveController:
             for wall in walls:
                 dist = point_dir(wall, (np.cos(angle), np.sin(angle)), 0.3)
                 if dist is not None:
-                    forward_dist = min(
-                        forward_dist / np.cos(angle * 3), np.linalg.norm(dist)
-                    )
+                    forward_dist = min(forward_dist, np.linalg.norm(dist))
         if forward_dist == np.inf:
             front_error = self.prev_front_error
         else:
@@ -400,13 +405,13 @@ class DriveController:
                 max(0, self.front_treshold - forward_dist) / self.front_treshold
             ) ** 2
         self.prev_front_error = front_error
-        msg = Float64()
-        msg.data = side_error
-        if self.side_error_publisher is not None:
-            self.side_error_publisher.publish(msg)
-        msg.data = -front_error * self.front_error_ratio
-        if self.front_error_publisher is not None:
-            self.front_error_publisher.publish(msg)
+        msg = Float32()
+        msg.data = closest_dist
+        if self.distance_publisher is not None:
+            self.distance_publisher.publish(msg)
+        msg.data = wall_angle
+        if self.angle_publisher is not None:
+            self.angle_publisher.publish(msg)
 
         error = side_error - self.front_error_ratio * front_error
         current_time = rclpy.clock.Clock().now()
