@@ -116,12 +116,12 @@ class SimpleSubscriber(Node):
             return
         self.get_logger().info("Test ended, cleared history of angles and distances.")
         self.get_logger().info(
-            f"{self.last_average_distance:.3f}, "
-            f"{self.last_squared_distance:.3f}, "
-            f"{self.last_std_distance:.3f}, "
-            f"{self.last_ste_distance:.3f}, "
-            f"{self.last_average_angle:.3f}, "
-            f"{self.last_squared_angle:.3f}"
+            f"{self.last_average_distance:.6f}, "
+            f"{self.last_squared_distance:.6f}, "
+            f"{self.last_std_distance:.6f}, "
+            f"{self.last_ste_distance:.6f}, "
+            f"{self.last_average_angle:.6f}, "
+            f"{self.last_squared_angle:.6f}"
         )
 
 

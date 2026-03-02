@@ -148,6 +148,7 @@ class WallTest(Node):
             msg = Int32()
             msg.data = 1
             self.test_end_publisher.publish(msg)
+            self.buffer_count += 1
         from_frame_rel = "base_link"
         to_frame_rel = "map"
 
