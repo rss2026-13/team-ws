@@ -13,7 +13,6 @@ from tf2_ros import TransformException
 from tf2_ros.buffer import Buffer
 from tf2_ros.transform_listener import TransformListener
 from visualization_msgs.msg import Marker
-
 from wall_follower.np_encrypt import encode
 
 
@@ -148,6 +147,7 @@ class WallTest(Node):
             msg = Int32()
             msg.data = 1
             self.test_end_publisher.publish(msg)
+            self.buffer_count += 1
         from_frame_rel = "base_link"
         to_frame_rel = "map"
 
