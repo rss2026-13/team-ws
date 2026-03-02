@@ -8,6 +8,7 @@ from geometry_msgs.msg import Pose
 from rclpy.node import Node
 from scipy.spatial.transform import Rotation as R
 from sensor_msgs.msg import LaserScan
+from std_msgs.msg import Int32
 from tf2_ros import TransformException
 from tf2_ros.buffer import Buffer
 from tf2_ros.transform_listener import TransformListener
@@ -85,7 +86,7 @@ class WallTest(Node):
 
         # A subscriber to laser scans
         self.create_subscription(LaserScan, self.SCAN_TOPIC, self.laser_callback, 1)
-
+        self.test_end_publisher = self.create_publisher(Int32, "/test_end", 1)
         self.START_POSE = [self.START_x, self.START_y, self.START_z]
         self.END_POSE = [self.END_x, self.END_y]
 
@@ -143,7 +144,10 @@ class WallTest(Node):
                     f"Placed Car: {self.START_POSE[0]}, {self.START_POSE[1]}"
                 )
             return
-
+        if self.buffer_count == 100:
+            msg = Int32()
+            msg.data = 1
+            self.test_end_publisher.publish(msg)
         from_frame_rel = "base_link"
         to_frame_rel = "map"
 
@@ -221,6 +225,9 @@ class WallTest(Node):
                 "\n\n\n\n\nReached end of the test w/ Avg dist from wall = %f!\n\n\n\n\n"
                 % (dist)
             )
+            msg = Int32()
+            msg.data = 2
+            self.test_end_publisher.publish(msg)
             stop = AckermannDriveStamped()
             stop.drive.speed = 0.0
             stop.drive.steering_angle = 0.0
