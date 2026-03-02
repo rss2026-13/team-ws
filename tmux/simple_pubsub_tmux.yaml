@@ -1,0 +1,18 @@
+session_name: rss_lab1c
+windows:
+  - window_name: simple_pubsub
+    layout: tiled
+    shell_command_before:
+      - ros-install
+    panes:
+      - shell_command:
+          - ros2 run ros_exercises simple_publisher
+
+      - shell_command:
+          - ros2 run ros_exercises simple_subscriber
+
+      - shell_command:
+          - ros2 topic echo /my_random_float
+
+      - shell_command:
+          - ros2 topic hz /my_random_float

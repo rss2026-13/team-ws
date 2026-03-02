@@ -1,0 +1,26 @@
+from launch import LaunchDescription
+from launch_ros.actions import Node
+
+def generate_launch_description():
+    return LaunchDescription([
+        Node(
+            package='ros_exercises',
+            executable='simple_publisher',
+            name='simple_publisher'
+        ),
+        Node(
+            package='ros_exercises',
+            executable='simple_subscriber',
+            name='simple_subscriber'
+        ),
+        Node(
+            package='ros_exercises',
+            executable='fake_scan_publisher',
+            name='fake_scan_publisher'
+        ),
+        Node(
+            package='ros_exercises',
+            executable='open_space_publisher',
+            name='open_space_publisher'
+        )
+    ])

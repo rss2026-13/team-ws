@@ -1,0 +1,16 @@
+from launch import LaunchDescription
+from launch_ros.actions import Node
+
+def generate_launch_description():
+    return LaunchDescription([
+        Node(
+            package='ros_exercises',
+            executable='static_tf_cam_publisher',
+            name='static_tf_cam_publisher'
+        ),
+        Node(
+            package='ros_exercises',
+            executable='base_link_tf_pub',
+            name='base_link_tf_pub'
+        )
+    ])
