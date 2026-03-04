@@ -97,7 +97,7 @@ class WallFollower(Node):
             side=self.SIDE,
             side_spread=np.pi / 4,
             side_samples=11,
-            front_spread=0.12,
+            front_spread=0.25,
             front_samples=5,
             velocity=self.VELOCITY,
             desired_distance=self.DESIRED_DISTANCE,
