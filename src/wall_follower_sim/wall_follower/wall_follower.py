@@ -29,8 +29,8 @@ class WallFollower(Node):
         self.declare_parameter("pid_controller_kp", 0.45)
         self.declare_parameter("pid_controller_ki", 0.125)
         self.declare_parameter("pid_controller_kd", 0.07)
-        self.declare_parameter("pid_controller_maxi", 3)
-        self.declare_parameter("pid_controller_maxd", 4)
+        self.declare_parameter("pid_controller_maxi", 3.0)
+        self.declare_parameter("pid_controller_maxd", 4.0)
         # self.add_on_set_parameters_callback(self.parameters_callback)
         self._param_event_sub = self.create_subscription(
             ParameterEvent,

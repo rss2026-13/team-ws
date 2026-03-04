@@ -9,5 +9,5 @@ wall_follower:
     pid_controller_kp: 0.45
     pid_controller_ki: 0.125
     pid_controller_kd: 0.07
-    pid_controller_maxi: 3
-    pid_controller_maxd: 4
+    pid_controller_maxi: 3.0
+    pid_controller_maxd: 4.0
