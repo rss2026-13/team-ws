@@ -26,255 +26,81 @@ def closest_point(wall):
     return closest_point
 
 
-def point_dir(wall, dir, margin=0.3):
-    p1, p2 = wall
-    line_vec = p2 - p1
-    line_len = np.linalg.norm(line_vec)
-    if line_len == 0:
-        return None
-    line_vec /= line_len
-    dir_vec = np.array(dir)
-    dir_vec /= np.linalg.norm(dir_vec)
-    det = line_vec[0] * dir_vec[1] - line_vec[1] * dir_vec[0]
-    if det == 0:
-        return None
-    t = (dir_vec[0] * (p1[1] - 0) - dir_vec[1] * (p1[0] - 0)) / det
-    u = (line_vec[0] * (p1[1] - 0) - line_vec[1] * (p1[0] - 0)) / det
-    if t < -margin or t > line_len + margin or u < 0:
-        return None
-    return p1 + t * line_vec
+def _min_ray_dist(walls, angles):
+    """Vectorized minimum ray-cast distance across all angles and walls.
 
+    For each ray direction (given by an angle) and each wall segment, compute
+    the intersection point (if any) and return the minimum distance from the
+    origin across all valid intersections.  Returns np.inf when no ray hits
+    any wall.
 
-def _visualizer_process_main(data_queue, max_points):
+    The ray–segment test solves:
+        p1 + t * line_unit = u * dir
+    for scalars t (position along segment) and u (distance along ray).
+    A hit is valid when 0 <= t <= line_len and u >= 0.
     """
-    Entry point for the visualizer subprocess.
-    Runs Qt/pyqtgraph on this process's main thread (required by Qt on Linux).
-    Reads data points from the multiprocessing Queue and updates plots.
-    """
-    import signal
+    if len(walls) == 0 or len(angles) == 0:
+        return np.inf
 
-    signal.signal(signal.SIGINT, signal.SIG_IGN)
+    # --- precompute wall geometry (W walls) ---
+    # p1: (W, 2), p2: (W, 2)
+    p1 = np.array([w[0] for w in walls], dtype=np.float64)  # (W, 2)
+    p2 = np.array([w[1] for w in walls], dtype=np.float64)  # (W, 2)
+    line_vec = p2 - p1  # (W, 2)
+    line_len = np.linalg.norm(line_vec, axis=1)  # (W,)
 
-    try:
-        import pyqtgraph as pg
-        from pyqtgraph.Qt import QtCore, QtWidgets
-    except ImportError as e:
-        print(f"[PIDVisualizer] pyqtgraph not available: {e}")
-        print("[PIDVisualizer] Install with: pip install pyqtgraph PyQt5 PyOpenGL")
-        return
+    # Mask out degenerate (zero-length) walls
+    valid_wall = line_len > 0
+    if not np.any(valid_wall):
+        return np.inf
 
-    # Disable OpenGL — many environments (Docker, software renderers) lack
-    # proper desktop OpenGL support and fail at paint time with
-    # "failed to obtain functions for OpenGL Desktop".
-    # pyqtgraph's QPainter path is already far faster than matplotlib.
-    pg.setConfigOptions(useOpenGL=False, antialias=True)
+    p1 = p1[valid_wall]  # (W', 2)
+    line_vec = line_vec[valid_wall]  # (W', 2)
+    line_len = line_len[valid_wall]  # (W',)
+    line_unit = line_vec / line_len[:, np.newaxis]  # (W', 2)
 
-    # Resolve Qt.DashLine for both PyQt5 and PyQt6
-    try:
-        _DashLine = QtCore.Qt.PenStyle.DashLine
-    except AttributeError:
-        _DashLine = QtCore.Qt.DashLine
+    # --- precompute ray directions (A angles) ---
+    angles = np.asarray(angles, dtype=np.float64)
+    dir_x = np.cos(angles)  # (A,)
+    dir_y = np.sin(angles)  # (A,)
 
-    app = QtWidgets.QApplication.instance()
-    if app is None:
-        app = QtWidgets.QApplication([])
+    # --- broadcast intersection math over (A, W') ---
+    # line_unit components: lx, ly  shape (W',)
+    lx = line_unit[:, 0]  # (W',)
+    ly = line_unit[:, 1]  # (W',)
 
-    # Data buffers local to this process
-    times = deque(maxlen=max_points)
-    side_errors = deque(maxlen=max_points)
-    front_errors = deque(maxlen=max_points)
-    combined_errors = deque(maxlen=max_points)
-    p_terms = deque(maxlen=max_points)
-    i_terms = deque(maxlen=max_points)
-    d_terms = deque(maxlen=max_points)
-    control_outputs = deque(maxlen=max_points)
-    steering_angles = deque(maxlen=max_points)
-
-    # Build the window
-    win = pg.GraphicsLayoutWidget(title="PID Controller Visualization")
-    win.resize(1000, 750)
-    win.setBackground("#f8f8f8")
-
-    # --- Subplot 1: Error Signals ---
-    p0 = win.addPlot(row=0, col=0, title="Error Signals")
-    p0.setLabel("left", "Error", units="m")
-    p0.showGrid(x=True, y=True, alpha=0.3)
-    p0.addLegend(offset=(60, 10))
-    p0.addItem(
-        pg.InfiniteLine(
-            pos=0, angle=0, pen=pg.mkPen("gray", width=0.5, style=_DashLine)
-        )
+    # det = lx * dy - ly * dx   shape (A, W')
+    det = (
+        lx[np.newaxis, :] * dir_y[:, np.newaxis]
+        - ly[np.newaxis, :] * dir_x[:, np.newaxis]
     )
-    c_side = p0.plot(pen=pg.mkPen(color="b", width=1.5), name="Side Error")
-    c_front = p0.plot(pen=pg.mkPen(color="r", width=1.5), name="Front Error")
-    c_combined = p0.plot(pen=pg.mkPen(color="k", width=2.0), name="Combined Error")
 
-    # --- Subplot 2: PID Components ---
-    p1 = win.addPlot(row=1, col=0, title="PID Components")
-    p1.setLabel("left", "Magnitude")
-    p1.showGrid(x=True, y=True, alpha=0.3)
-    p1.addLegend(offset=(60, 10))
-    p1.addItem(
-        pg.InfiniteLine(
-            pos=0, angle=0, pen=pg.mkPen("gray", width=0.5, style=_DashLine)
-        )
-    )
-    c_p = p1.plot(pen=pg.mkPen(color="g", width=1.5), name="P term")
-    c_i = p1.plot(pen=pg.mkPen(color="m", width=1.5), name="I term")
-    c_d = p1.plot(pen=pg.mkPen(color="c", width=1.5), name="D term")
+    # Avoid division by zero; we'll mask these out later
+    safe_det = np.where(det != 0, det, 1.0)
 
-    # --- Subplot 3: Control Output ---
-    p2 = win.addPlot(row=2, col=0, title="Control Output")
-    p2.setLabel("left", "Angle", units="rad")
-    p2.setLabel("bottom", "Time", units="s")
-    p2.showGrid(x=True, y=True, alpha=0.3)
-    p2.addLegend(offset=(60, 10))
-    p2.addItem(
-        pg.InfiniteLine(
-            pos=0, angle=0, pen=pg.mkPen("gray", width=0.5, style=_DashLine)
-        )
-    )
-    c_control = p2.plot(pen=pg.mkPen(color="b", width=1.5), name="PID Output")
-    c_steering = p2.plot(pen=pg.mkPen(color="r", width=2.0), name="Steering Angle")
+    # p1 components
+    p1x = p1[:, 0]  # (W',)
+    p1y = p1[:, 1]  # (W',)
 
-    # Link X axes
-    p1.setXLink(p0)
-    p2.setXLink(p0)
+    # t = (dx * p1y - dy * p1x) / det   -- position along segment
+    t = (
+        dir_x[:, np.newaxis] * p1y[np.newaxis, :]
+        - dir_y[:, np.newaxis] * p1x[np.newaxis, :]
+    ) / safe_det
 
-    curves = {
-        "side_error": c_side,
-        "front_error": c_front,
-        "combined_error": c_combined,
-        "p_term": c_p,
-        "i_term": c_i,
-        "d_term": c_d,
-        "control_output": c_control,
-        "steering_angle": c_steering,
-    }
+    # u = (lx * p1y - ly * p1x) / det   -- distance along ray
+    u = (
+        lx[np.newaxis, :] * p1y[np.newaxis, :] - ly[np.newaxis, :] * p1x[np.newaxis, :]
+    ) / safe_det
 
-    def poll_and_redraw():
-        """Drain the queue and update curves. Called by QTimer on the main thread."""
-        changed = False
-        # Drain all available data points from the queue (non-blocking)
-        while True:
-            try:
-                point = data_queue.get_nowait()
-            except Exception:
-                break
-            times.append(point["t"])
-            side_errors.append(point["side_error"])
-            front_errors.append(point["front_error"])
-            combined_errors.append(point["combined_error"])
-            p_terms.append(point["p_term"])
-            i_terms.append(point["i_term"])
-            d_terms.append(point["d_term"])
-            control_outputs.append(point["control_output"])
-            steering_angles.append(point["steering_angle"])
-            changed = True
+    # Valid hits: det != 0, 0 <= t <= line_len, u >= 0
+    valid = (det != 0) & (t >= 0) & (t <= line_len[np.newaxis, :]) & (u >= 0)
 
-        if not changed or len(times) < 2:
-            return
+    # Compute hit-point distances (u is the distance along a unit direction)
+    # Replace invalid entries with inf so they don't affect the min
+    dists = np.where(valid, u, np.inf)
 
-        t = np.array(times)
-        curves["side_error"].setData(t, np.array(side_errors))
-        curves["front_error"].setData(t, np.array(front_errors))
-        curves["combined_error"].setData(t, np.array(combined_errors))
-        curves["p_term"].setData(t, np.array(p_terms))
-        curves["i_term"].setData(t, np.array(i_terms))
-        curves["d_term"].setData(t, np.array(d_terms))
-        curves["control_output"].setData(t, np.array(control_outputs))
-        curves["steering_angle"].setData(t, np.array(steering_angles))
-
-        x_min, x_max = t[0], t[-1]
-        margin = max(0.5, (x_max - x_min) * 0.02)
-        p0.setXRange(x_min - margin, x_max + margin, padding=0)
-
-    timer = QtCore.QTimer()
-    timer.timeout.connect(poll_and_redraw)
-    timer.start(33)  # ~30 FPS
-
-    win.show()
-
-    # Run the Qt event loop (blocks until the window is closed)
-    app.exec_() if hasattr(app, "exec_") else app.exec()
-
-
-class PIDVisualizer:
-    """GPU-accelerated real-time PID visualization using pyqtgraph + OpenGL in a separate process."""
-
-    def __init__(self, max_points=500, update_interval=5):
-        """
-        Args:
-            max_points: Maximum number of data points to display (sliding window).
-            update_interval: Not used in pyqtgraph version (kept for API compat).
-        """
-        self.max_points = max_points
-        self._t0 = None
-        self._process = None
-        self._queue = None
-        self._started = False
-
-    def _ensure_started(self):
-        """Spawn the visualizer subprocess on first use."""
-        if self._started:
-            return True
-        if self._process is not None:
-            # Already attempted, don't retry
-            return False
-        try:
-            ctx = multiprocessing.get_context("spawn")
-            self._queue = ctx.Queue(maxsize=2000)
-            self._process = ctx.Process(
-                target=_visualizer_process_main,
-                args=(self._queue, self.max_points),
-                daemon=True,
-            )
-            self._process.start()
-            self._started = True
-            return True
-        except Exception as e:
-            print(f"[PIDVisualizer] Could not start visualizer process: {e}")
-            self._process = None
-            return False
-
-    def record(
-        self,
-        timestamp_ns,
-        side_error,
-        front_error,
-        combined_error,
-        p_term,
-        i_term,
-        d_term,
-        control_output,
-        steering_angle,
-    ):
-        """Record a new data point. Safe to call from any thread."""
-        if not self._ensure_started():
-            return
-
-        if self._t0 is None:
-            self._t0 = timestamp_ns
-
-        t = (timestamp_ns - self._t0) / 1e9
-
-        point = {
-            "t": t,
-            "side_error": side_error,
-            "front_error": front_error,
-            "combined_error": combined_error,
-            "p_term": p_term,
-            "i_term": i_term,
-            "d_term": d_term,
-            "control_output": control_output,
-            "steering_angle": steering_angle,
-        }
-
-        try:
-            self._queue.put_nowait(point)
-        except Exception:
-            # Queue full — drop the point rather than blocking the ROS callback
-            pass
+    return float(np.min(dists))
 
 
 class PIDController:
@@ -329,7 +155,6 @@ class DriveController:
         front_error_ratio,
         distance_publisher=None,
         angle_publisher=None,
-        enable_visualization=True,
     ):
         self.pid_controller = PIDController(kp, ki, kd, max_i, max_d)
         self.side = side
@@ -348,56 +173,37 @@ class DriveController:
 
         self.prev_front_error = 0
         self.prev_closest_dist = 0
-        self.prev_angle = 0
-        # Visualization
-        self.enable_visualization = enable_visualization
-        if self.enable_visualization:
-            self.visualizer = PIDVisualizer(max_points=100, update_interval=1)
-        else:
-            self.visualizer = None
-
         self.distance_publisher = distance_publisher
         self.angle_publisher = angle_publisher
 
-    def update(self, walls, laser_scan):
+        # Precompute angle arrays (they never change between calls)
+        self._side_angles = np.linspace(
+            -self.side_spread + self.side * np.pi / 2,
+            self.side_spread + self.side * np.pi / 2,
+            self.side_samples,
+        )
+        self._front_angles = np.linspace(
+            -self.front_spread,
+            self.front_spread,
+            self.front_samples,
+        )
+
+    def update(self, walls):
         if len(walls) == 0:
             drive_msg = AckermannDriveStamped()
             drive_msg.drive.speed = self.velocity
             self.drive_publisher.publish(drive_msg)
             return
 
-        closest_dist = np.inf
-        angles = np.linspace(
-            -self.side_spread + self.side * np.pi / 2,
-            self.side_spread + self.side * np.pi / 2,
-            self.side_samples,
-        )
-        wall_angle = 0
-        for angle in angles:
-            for wall in walls:
-                dist = point_dir(wall, (np.cos(angle), np.sin(angle)), 0.1)
-                if dist is not None:
-                    closest_dist = min(closest_dist, np.linalg.norm(dist))
-                    wall_angle = np.arctan2(
-                        wall[1][1] - wall[0][1], abs(wall[1][0] - wall[0][0])
-                    )
+        # --- side distance (closest point in the side angle range) ---
+        closest_dist = _min_ray_dist(walls, self._side_angles)
         if closest_dist == np.inf:
             closest_dist = self.prev_closest_dist
-            wall_angle = self.prev_angle
         self.prev_closest_dist = closest_dist
-        self.prev_angle = wall_angle
         side_error = closest_dist - self.desired_distance
-        forward_dist = np.inf
-        angles = np.linspace(
-            -self.front_spread,
-            self.front_spread,
-            self.front_samples,
-        )
-        for angle in angles:
-            for wall in walls:
-                dist = point_dir(wall, (np.cos(angle), np.sin(angle)), 0.3)
-                if dist is not None:
-                    forward_dist = min(forward_dist, np.linalg.norm(dist))
+
+        # --- front distance (closest point in the front angle range) ---
+        forward_dist = _min_ray_dist(walls, self._front_angles)
         if forward_dist == np.inf:
             front_error = self.prev_front_error
         else:
@@ -405,21 +211,16 @@ class DriveController:
                 max(0, self.front_treshold - forward_dist) / self.front_treshold
             ) ** 2
         self.prev_front_error = front_error
-        msg = Float32()
-        msg.data = closest_dist
-        if self.distance_publisher is not None:
-            self.distance_publisher.publish(msg)
-        msg.data = wall_angle
-        if self.angle_publisher is not None:
-            self.angle_publisher.publish(msg)
 
         error = side_error - self.front_error_ratio * front_error
+
         current_time = rclpy.clock.Clock().now()
         if self.last_time is None:
             dt = 0.05
         else:
             dt = (current_time - self.last_time).nanoseconds / 1e9
         self.last_time = current_time
+
         control = self.pid_controller.update(0, error, dt)
         steering_angle = control * (-self.side)
 
@@ -427,17 +228,3 @@ class DriveController:
         drive_msg.drive.speed = self.velocity
         drive_msg.drive.steering_angle = steering_angle
         self.drive_publisher.publish(drive_msg)
-
-        # Feed data to the visualizer
-        if self.visualizer is not None:
-            self.visualizer.record(
-                timestamp_ns=current_time.nanoseconds,
-                side_error=side_error,
-                front_error=-self.front_error_ratio * front_error,
-                combined_error=error,
-                p_term=self.pid_controller.last_p_term,
-                i_term=self.pid_controller.last_i_term,
-                d_term=self.pid_controller.last_d_term,
-                control_output=control,
-                steering_angle=steering_angle,
-            )

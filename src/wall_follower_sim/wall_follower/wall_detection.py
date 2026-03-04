@@ -1,6 +1,5 @@
 #!/usr/bin/env python3
 import numpy as np
-from sklearn import linear_model
 
 
 def segment_points(points, window_size=30, overlap=10):

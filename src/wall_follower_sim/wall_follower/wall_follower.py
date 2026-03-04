@@ -29,7 +29,8 @@ class WallFollower(Node):
         self.declare_parameter("pid_controller_kp", 0.45)
         self.declare_parameter("pid_controller_ki", 0.125)
         self.declare_parameter("pid_controller_kd", 0.07)
-
+        self.delcare_parameter("pid_controller_maxi", 3)
+        self.delcare_parameter("pid_controller_maxd", 4)
         # self.add_on_set_parameters_callback(self.parameters_callback)
         self._param_event_sub = self.create_subscription(
             ParameterEvent,
@@ -81,12 +82,18 @@ class WallFollower(Node):
         self.PID_CONTROLLER_KD = (
             self.get_parameter("pid_controller_kd").get_parameter_value().double_value
         )
+        self.PID_CONTROLLER_MAXI = (
+            self.get_parameter("pid_controller_maxi").get_parameter_value().double_value
+        )
+        self.PID_CONTROLLER_MAXD = (
+            self.get_parameter("pid_controller_maxd").get_parameter_value().double_value
+        )
         self.drive_controller = DriveController(
             kp=self.PID_CONTROLLER_KP,
             ki=self.PID_CONTROLLER_KI,
             kd=self.PID_CONTROLLER_KD,
-            max_i=3,
-            max_d=4,
+            max_i=self.PID_CONTROLLER_MAXI,
+            max_d=self.PID_CONTROLLER_MAXD,
             side=self.SIDE,
             side_spread=np.pi / 4,
             side_samples=11,
