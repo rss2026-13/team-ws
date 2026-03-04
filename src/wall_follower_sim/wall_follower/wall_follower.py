@@ -103,7 +103,7 @@ class WallFollower(Node):
             desired_distance=self.DESIRED_DISTANCE,
             drive_publisher=self.drive_publisher,
             front_treshold=self.DESIRED_DISTANCE * 3.0,
-            front_error_ratio=2 + self.VELOCITY * 0.5,
+            front_error_ratio=3,
             distance_publisher=self.distance_publisher,
             angle_publisher=self.angle_publisher,
         )
@@ -128,7 +128,7 @@ class WallFollower(Node):
         self.post_init()
 
     def scan_callback(self, laser_scan):
-        walls = detect_walls(laser_scan, self.SIDE, min_points=10, D_t=0.1)
+        walls = detect_walls(laser_scan, min_points=10, D_t=0.1)
         self.visualization_tools.plot_walls(walls, laser_scan.header.stamp)
         self.drive_controller.update(walls)
 

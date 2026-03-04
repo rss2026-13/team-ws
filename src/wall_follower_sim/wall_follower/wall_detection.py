@@ -43,7 +43,7 @@ def fit_segment(points):
     return p1, p2
 
 
-def detect_walls(scan, side, min_points=2, D_t=0.5, max_dist=5):
+def detect_walls(scan, min_points=2, D_t=0.5):
 
     angle_min = scan.angle_min
     angle_max = scan.angle_max
