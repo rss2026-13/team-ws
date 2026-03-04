@@ -91,7 +91,7 @@ class VisualizationTools:
             points.append(wall[0])
             points.append(wall[1])
         points = np.array(points)
-        target_frame = "map"
+        target_frame = "base_link"
         try:
             t = self.tf_buffer.lookup_transform(target_frame, self.frame, timestamp)
 

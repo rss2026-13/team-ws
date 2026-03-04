@@ -58,7 +58,7 @@ class WallFollower(Node):
         self.tf_buffer = Buffer()
         self.tf_listener = TransformListener(self.tf_buffer, self)
         self.visualization_tools = VisualizationTools(
-            self.marker_publisher, "laser_model", self.tf_buffer
+            self.marker_publisher, "laser", self.tf_buffer
         )
         self.distance_publisher = self.create_publisher(Float32, "/distance", 10)
         self.angle_publisher = self.create_publisher(Float32, "/angle", 10)
