@@ -122,11 +122,18 @@ class DriveController:
             return
 
         closest_dist = np.inf
-        angles = np.linspace(
-            -self.side_spread + self.side * np.pi / 2,
-            self.side_spread + self.side * np.pi / 2,
-            self.side_samples,
-        )
+        if self.side == 1:
+            angles = np.linspace(
+                -self.side_spread + np.pi / 2,
+                0 + np.pi / 2,
+                self.side_samples,
+            )
+        else:
+            angles = np.linspace(
+                0 - np.pi / 2,
+                self.side_spread - np.pi / 2,
+                self.side_samples,
+            )
         for angle in angles:
             for wall in walls:
                 dist = point_dir(wall, (np.cos(angle), np.sin(angle)), 0.1)
