@@ -4,7 +4,7 @@ wall_follower:
     drive_topic: "/vesc/input/navigation"
     wall_top: "/wall"
     side: 1
-    velocity: 0.4
+    velocity: 0.8
     desired_distance: 0.5
     pid_controller_kp: 0.45
     pid_controller_ki: 0.125
