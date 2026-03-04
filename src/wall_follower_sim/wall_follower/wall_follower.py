@@ -97,7 +97,7 @@ class WallFollower(Node):
             side=self.SIDE,
             side_spread=np.pi / 4,
             side_samples=11,
-            front_spread=0.25,
+            front_spread=0.12,
             front_samples=5,
             velocity=self.VELOCITY,
             desired_distance=self.DESIRED_DISTANCE,
@@ -118,6 +118,8 @@ class WallFollower(Node):
                 "pid_controller_kp",
                 "pid_controller_ki",
                 "pid_controller_kd",
+                "pid_controller_maxi",
+                "pid_controller_maxd",
             ]
             for param in params.changed_parameters
         ):
@@ -126,7 +128,7 @@ class WallFollower(Node):
         self.post_init()
 
     def scan_callback(self, laser_scan):
-        walls = detect_walls(laser_scan, min_points=3, D_t=0.5)
+        walls = detect_walls(laser_scan, self.SIDE, min_points=3, D_t=0.5)
         # self.visualization_tools.plot_walls(walls, laser_scan.header.stamp)
         self.drive_controller.update(walls)
 
