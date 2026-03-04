@@ -1,0 +1,4 @@
+<launch>
+  <node pkg="ros_exercises" exec="static_tf_cam_publisher" name="static_tf_cam_publisher" output="screen"/>
+  <node pkg="ros_exercises" exec="base_link_tf_pub" name="base_link_tf_pub" output="screen"/>
+</launch>
