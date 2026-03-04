@@ -43,12 +43,15 @@ def fit_segment(points):
     return p1, p2
 
 
-def detect_walls(scan, side, min_points=2, D_t=0.5):
+def detect_walls(scan, side, min_points=2, D_t=0.5, max_dist=5):
 
     angle_min = scan.angle_min
     angle_max = scan.angle_max
     ranges = np.array(scan.ranges)
     angles = np.linspace(angle_min, angle_max, num=ranges.shape[0])
+    mask = ranges < max_dist
+    ranges = ranges[mask]
+    angles = angles[mask]
     points = np.array([ranges * np.cos(angles), ranges * np.sin(angles)]).T
     clusters = IEPF(np.array(points), D_t=D_t)
     walls = []
