@@ -102,7 +102,7 @@ class WallFollower(Node):
             velocity=self.VELOCITY,
             desired_distance=self.DESIRED_DISTANCE,
             drive_publisher=self.drive_publisher,
-            front_treshold=self.DESIRED_DISTANCE * 1.0,
+            front_treshold=self.DESIRED_DISTANCE * 3.0,
             front_error_ratio=2 + self.VELOCITY * 0.5,
             distance_publisher=self.distance_publisher,
             angle_publisher=self.angle_publisher,
