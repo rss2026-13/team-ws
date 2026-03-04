@@ -129,7 +129,7 @@ class WallFollower(Node):
 
     def scan_callback(self, laser_scan):
         walls = detect_walls(laser_scan, self.SIDE, min_points=3, D_t=0.5)
-        # self.visualization_tools.plot_walls(walls, laser_scan.header.stamp)
+        self.visualization_tools.plot_walls(walls, laser_scan.header.stamp)
         self.drive_controller.update(walls)
 
 
