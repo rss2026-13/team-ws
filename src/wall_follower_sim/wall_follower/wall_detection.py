@@ -2,14 +2,6 @@
 import numpy as np
 
 
-def segment_points(points, window_size=30, overlap=10):
-    segments = []
-    for i in range(0, len(points) - window_size + 1, window_size - overlap):
-        segment = points[i : i + window_size]
-        segments.append(segment)
-    return segments
-
-
 def IEPF(points, D_t):
     start = 0
     end = len(points) - 1
@@ -49,7 +41,7 @@ def detect_walls(scan, min_points=2, D_t=0.5):
     angle_max = scan.angle_max
     ranges = np.array(scan.ranges)
     angles = np.linspace(angle_min, angle_max, num=ranges.shape[0])
-    mask = abs(angles) < np.pi * (0.6)
+    mask = abs(angles) < np.pi * (0.5)
     ranges = ranges[mask]
     angles = angles[mask]
     points = np.array([ranges * np.cos(angles), ranges * np.sin(angles)]).T

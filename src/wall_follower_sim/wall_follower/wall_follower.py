@@ -1,5 +1,4 @@
 #!/usr/bin/env python3
-import numpy as np
 import rclpy
 from ackermann_msgs.msg import AckermannDriveStamped
 from rcl_interfaces.msg import ParameterEvent
@@ -18,20 +17,18 @@ from wall_follower.wall_detection import detect_walls
 class WallFollower(Node):
     def __init__(self):
         super().__init__("wall_follower")
-        # Declare parameters to make them available for use
-        # DO NOT MODIFY THIS!
-        self.declare_parameter("scan_topic", "/scan")
-        self.declare_parameter("drive_topic", "/drive")
-        self.declare_parameter("wall_topic", "/wall")
-        self.declare_parameter("side", 1)
-        self.declare_parameter("velocity", 1.0)
-        self.declare_parameter("desired_distance", 1.0)
-        self.declare_parameter("pid_controller_kp", 0.45)
-        self.declare_parameter("pid_controller_ki", 0.125)
-        self.declare_parameter("pid_controller_kd", 0.07)
-        self.declare_parameter("pid_controller_maxi", 3.0)
-        self.declare_parameter("pid_controller_maxd", 4.0)
-        # self.add_on_set_parameters_callback(self.parameters_callback)
+        self.declare_parameter("topics.scan", "/scan")
+        self.declare_parameter("topics.drive", "/drive")
+        self.declare_parameter("topics.wall", "/wall")
+        self.declare_parameter("controller.side", 1)
+        self.declare_parameter("controller.velocity", 1.0)
+        self.declare_parameter("controller.desired_distance", 1.0)
+        self.declare_parameter("controller.pid.kp", 0.45)
+        self.declare_parameter("controller.pid.ki", 0.125)
+        self.declare_parameter("controller.pid.kd", 0.07)
+        self.declare_parameter("controller.pid.max_i", 3.0)
+        self.declare_parameter("controller.pid.max_d", 4.0)
+
         self._param_event_sub = self.create_subscription(
             ParameterEvent,
             "/parameter_events",
@@ -39,15 +36,9 @@ class WallFollower(Node):
             10,
         )
 
-        self.SCAN_TOPIC = (
-            self.get_parameter("scan_topic").get_parameter_value().string_value
-        )
-        self.DRIVE_TOPIC = (
-            self.get_parameter("drive_topic").get_parameter_value().string_value
-        )
-        self.WALL_TOPIC = (
-            self.get_parameter("wall_topic").get_parameter_value().string_value
-        )
+        self.SCAN_TOPIC = self.get_parameter("topics.scan").value
+        self.DRIVE_TOPIC = self.get_parameter("topics.drive").value
+        self.WALL_TOPIC = self.get_parameter("topics.wall").value
         self.scan_subscription = self.create_subscription(
             LaserScan, self.SCAN_TOPIC, self.scan_callback, 10
         )
@@ -60,71 +51,39 @@ class WallFollower(Node):
         self.visualization_tools = VisualizationTools(
             self.marker_publisher, "laser", self.tf_buffer
         )
-        self.distance_publisher = self.create_publisher(Float32, "/distance", 10)
-        self.angle_publisher = self.create_publisher(Float32, "/angle", 10)
-        # Leave parameters that can be changed at runtime to post_init
         self.post_init()
 
     def post_init(self):
-        self.SIDE = self.get_parameter("side").get_parameter_value().integer_value
-        self.VELOCITY = (
-            self.get_parameter("velocity").get_parameter_value().double_value
-        )
-        self.DESIRED_DISTANCE = (
-            self.get_parameter("desired_distance").get_parameter_value().double_value
-        )
-        self.PID_CONTROLLER_KP = (
-            self.get_parameter("pid_controller_kp").get_parameter_value().double_value
-        )
-        self.PID_CONTROLLER_KI = (
-            self.get_parameter("pid_controller_ki").get_parameter_value().double_value
-        )
-        self.PID_CONTROLLER_KD = (
-            self.get_parameter("pid_controller_kd").get_parameter_value().double_value
-        )
-        self.PID_CONTROLLER_MAXI = (
-            self.get_parameter("pid_controller_maxi").get_parameter_value().double_value
-        )
-        self.PID_CONTROLLER_MAXD = (
-            self.get_parameter("pid_controller_maxd").get_parameter_value().double_value
-        )
+        self.side = self.get_parameter("controller.side").value
+        self.velocity = self.get_parameter("controller.velocity").value
+        self.desired_distance = self.get_parameter("controller.desired_distance").value
+        self.pid_params = {
+            k: v.value
+            for k, v in self.get_parameters_by_prefix("controller.pid").items()
+        }
         self.drive_controller = DriveController(
-            kp=self.PID_CONTROLLER_KP,
-            ki=self.PID_CONTROLLER_KI,
-            kd=self.PID_CONTROLLER_KD,
-            max_i=self.PID_CONTROLLER_MAXI,
-            max_d=self.PID_CONTROLLER_MAXD,
-            side=self.SIDE,
-            side_spread=np.pi / 4,
+            pid_params=self.pid_params,
+            side=self.side,
+            side_spread=45.0,
             side_samples=11,
-            front_spread=0.25,
+            front_spread=15.0,
             front_samples=11,
-            velocity=self.VELOCITY,
-            desired_distance=self.DESIRED_DISTANCE,
+            velocity=self.velocity,
+            desired_distance=self.desired_distance,
             drive_publisher=self.drive_publisher,
-            front_treshold=self.DESIRED_DISTANCE * 3.0,
+            front_treshold=self.desired_distance * 3.0,
             front_error_ratio=3,
-            distance_publisher=self.distance_publisher,
-            angle_publisher=self.angle_publisher,
+            clock=rclpy.clock.Clock(),
         )
 
     def parameters_callback(self, params):
         if not any(
-            param.name
-            in [
-                "side",
-                "velocity",
-                "desired_distance",
-                "pid_controller_kp",
-                "pid_controller_ki",
-                "pid_controller_kd",
-                "pid_controller_maxi",
-                "pid_controller_maxd",
-            ]
-            for param in params.changed_parameters
+            param.name.startswith("controller.") for param in params.changed_parameters
         ):
             return
-        self.get_logger().info("Parameters updated, updating controller parameters")
+        self.get_logger().info(
+            "Controller parameter updated, rebuilding drive controller"
+        )
         self.post_init()
 
     def scan_callback(self, laser_scan):
