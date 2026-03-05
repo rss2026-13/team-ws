@@ -4,5 +4,7 @@ safety_controller:
     drive_topic: "/drive"
     output_topic: "/drive"
     margin: 0.2
-    max_deceleration: 12.
+    max_deceleration: 0.6
     cone_angle: 5.
+    car_width: 0.25
+    lidar_offset: 0.05

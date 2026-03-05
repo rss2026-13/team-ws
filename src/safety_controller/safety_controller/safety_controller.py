@@ -1,7 +1,6 @@
 #!/usr/bin/env python3
 import numpy as np
 import rclpy
-import shapely
 from ackermann_msgs.msg import AckermannDriveStamped
 from rclpy.node import Node
 from sensor_msgs.msg import LaserScan
@@ -16,7 +15,11 @@ class SafetyController(Node):
         self.declare_parameter("scan_topic", "/scan")
         self.declare_parameter("margin", 0.5)
         self.declare_parameter("max_deceleration", 10.0)
-        self.declare_parameter("cone_angle", 10.0)
+        self.declare_parameter("cone_angle", 10.0) # In degrees
+        self.declare_parameter("car_width", 0.25)
+        self.declare_parameter(
+            "lidar_offset", 0.05
+        )  # Distance from lidar to front bumper
         self.DRIVE_TOPIC = (
             self.get_parameter("drive_topic").get_parameter_value().string_value
         )
@@ -33,30 +36,30 @@ class SafetyController(Node):
         self.CONE_ANGLE = (
             self.get_parameter("cone_angle").get_parameter_value().double_value
         )
-
+        self.CAR_WIDTH = (
+            self.get_parameter("car_width").get_parameter_value().double_value
+        )
         self.drive_subscription = self.create_subscription(
             AckermannDriveStamped, self.DRIVE_TOPIC, self.drive_callback, 10
         )
-        self.drive_publisher = self.create_publisher(
-            AckermannDriveStamped, self.OUTPUT_TOPIC, 10
-        )
         self.scan_subscription = self.create_subscription(
             LaserScan, self.SCAN_TOPIC, self.scan_callback, 10
+        )
+        self.drive_publisher = self.create_publisher(
+            AckermannDriveStamped, self.OUTPUT_TOPIC, 10
         )
         self.stop = False
         self.scan_data = None
         self.drive_command = None
 
-        self.robot_polygon = shapely.box(-0.275, -0.125, 0.05, 0.125).buffer(0.15)
-
     def drive_callback(self, msg):
         self.drive_command = msg
-        # self.get_logger().info("Received new drive command")
+        self.get_logger().debug("Received new drive command")
         self.evaluate_safety()
 
     def scan_callback(self, msg):
         self.scan_data = msg
-        # self.get_logger().info("Received new scan data")
+        self.get_logger().debug("Received new scan data")
         self.evaluate_safety()
 
     def evaluate_safety(self):
@@ -66,8 +69,8 @@ class SafetyController(Node):
             return
         if not self.stop:
             speed = self.drive_command.drive.speed
-            front_treshold = self.MARGIN + (speed**2) / (2.0 * self.MAX_DECELERATION)
-            self.get_logger().info(
+            front_treshold = self.MARGIN + (speed**2) / (2 * self.MAX_DECELERATION)
+            self.get_logger().debug(
                 f"Evaluating safety: speed={speed:.2f}, front_threshold={front_treshold:.2f}"
             )
             angle_min = self.scan_data.angle_min
@@ -76,9 +79,11 @@ class SafetyController(Node):
             angles = np.linspace(angle_min, angle_max, num=ranges.shape[0])
             points = np.array([ranges * np.cos(angles), ranges * np.sin(angles)]).T
             front_corners = [
-                [0.05, -0.125],
-                [0.05, 0.125],
+                [self.LIDAR_OFFSET, -self.CAR_WIDTH / 2],
+                [self.LIDAR_OFFSET, self.CAR_WIDTH / 2],
             ]
+
+            # Check cone from front corners
             for corner in front_corners:
                 for point in points:
                     if (
@@ -97,18 +102,13 @@ class SafetyController(Node):
                         break
             # Check rectangle between the corners as well
             for point in points:
-                if 0.05 < point[0] < 0.05 + self.MARGIN and -0.125 < point[1] < 0.125:
+                if (
+                    0 < point[0] < self.LIDAR_OFFSET + front_treshold
+                    and abs(point[1]) < self.CAR_WIDTH / 2
+                ):
                     self.stop = True
                     self.get_logger().warn(
-                        "Frontal object detected in the safety margin! Stopping the robot."
-                    )
-                    break
-            shapely_points = [shapely.geometry.Point(p) for p in points]
-            for point in shapely_points:
-                if self.robot_polygon.contains(point):
-                    self.stop = True
-                    self.get_logger().warn(
-                        "Obstacle too close to robot footprint detected! Stopping the robot."
+                        "Frontal object detected! Stopping the robot."
                     )
                     break
 
