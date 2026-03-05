@@ -1,0 +1,180 @@
+#!/usr/bin/env python3
+import numpy as np
+import rclpy
+from rclpy.node import Node
+from sensor_msgs.msg import LaserScan
+from ackermann_msgs.msg import AckermannDriveStamped
+from visualization_msgs.msg import Marker
+from rcl_interfaces.msg import SetParametersResult
+
+from wall_follower.visualization_tools import VisualizationTools
+
+from scipy import stats
+
+from std_msgs.msg import Float32
+
+
+class WallFollower(Node):
+
+    def __init__(self):
+        super().__init__("wall_follower")
+        # Declare parameters to make them available for use
+        # DO NOT MODIFY THIS! 
+        self.declare_parameter("scan_topic", "/scan")
+        self.declare_parameter("drive_topic", "/drive")
+        self.declare_parameter("side", 1)
+        self.declare_parameter("velocity", 1.0)
+        self.declare_parameter("desired_distance", 1.0)
+
+        # Fetch constants from the ROS parameter server
+        # DO NOT MODIFY THIS! This is necessary for the tests to be able to test varying parameters!
+        self.SCAN_TOPIC = self.get_parameter('scan_topic').get_parameter_value().string_value
+        self.DRIVE_TOPIC = self.get_parameter('drive_topic').get_parameter_value().string_value
+        self.SIDE = self.get_parameter('side').get_parameter_value().integer_value
+        self.VELOCITY = self.get_parameter('velocity').get_parameter_value().double_value
+        self.DESIRED_DISTANCE = self.get_parameter('desired_distance').get_parameter_value().double_value
+		
+        # This activates the parameters_callback function so that the tests are able
+        # to change the parameters during testing.
+        # DO NOT MODIFY THIS! 
+        self.add_on_set_parameters_callback(self.parameters_callback)
+  
+        # TODO: Initialize your publishers and subscribers here
+
+        # subscriber to the lidar scan topic
+        self.scan_sub = self.create_subscription(
+            LaserScan, 
+            self.SCAN_TOPIC, 
+            self.scan_callback, 
+            10
+        )
+        
+        # publisher to send drive commands to motor
+        self.drive_pub = self.create_publisher(
+            AckermannDriveStamped, 
+            self.DRIVE_TOPIC, 
+            10
+        )
+        
+        self.kp=2.5
+        self.kd=5
+        
+        self.dist_pub = self.create_publisher(Float32, 'distance', 10)
+        self.angle_pub = self.create_publisher(Float32, 'angle', 10)
+
+        # TODO: Write your callback functions here   
+    def scan_callback(self, msg):
+        
+        #LIDAR info
+        ranges = np.array(msg.ranges) #all the datapoints
+        angles = np.linspace(msg.angle_min, msg.angle_max, len(msg.ranges))
+        
+        #hypothesis:
+        #keep negative angle values (first half of ranges array) if following right wall
+        #keep positive angle values (second half of ranges array) if following left wall
+
+        # divide_by=len(ranges)//4 #divides the field of view into 4 quadrants
+        
+        # right_wall_vals=ranges[0:divide_by]
+        # right_wall_angles=angles[0:divide_by]
+        
+        # left_wall_vals=ranges[3*divide_by:-1] #look at area from 3rd quadrant to angle_max
+        # left_wall_angles=angles[3*divide_by:-1]
+        
+        divide_by=len(ranges)//2 #divides the field of view into 2 
+        
+        right_wall_vals=ranges[0:divide_by]
+        right_wall_angles=angles[0:divide_by]
+        
+        left_wall_vals=ranges[divide_by+1:-1]
+        left_wall_angles=angles[divide_by+1:-1]
+        
+        if self.SIDE==1:
+            usable_range=left_wall_vals
+            usable_angles=left_wall_angles
+        else:
+            usable_range=right_wall_vals
+            usable_angles=right_wall_angles
+
+        # Convert Polar to Cartesian (base_link frame)
+        x = usable_range * np.cos(usable_angles)
+        y = usable_range * np.sin(usable_angles)
+
+        # Perform Linear Regression: y = mx + c
+        # slope = m, intercept = c
+        slope, intercept, r_value, p_value, std_err = stats.linregress(x, y)
+
+        # Calculate distance from origin (the car) to the line
+        # For a line y = mx + c, the distance to (0,0) is:
+        dist = abs(intercept) / np.sqrt(slope**2 + 1)
+        
+        # Calculate error (angle of the car relative to the wall)
+        wall_angle = np.arctan(slope)
+        
+        # 2. Corrected PD Logic
+        # Calculate distance error
+        dist_error = self.DESIRED_DISTANCE - dist
+        
+        # Correct the steering direction based on which side we follow
+        if self.SIDE == 1: # Left wall
+            # Too close (dist_error > 0) -> Need to turn Right (negative)
+            # Too far (dist_error < 0) -> Need to turn Left (positive)
+            # The wall_angle (slope) also needs to be factored correctly
+            steer_angle = (-self.kp * dist_error) + (self.kd * wall_angle)
+        else: # Right wall
+            # Too close (dist_error > 0) -> Need to turn Left (positive)
+            # Too far (dist_error < 0) -> Need to turn Right (negative)
+            steer_angle = (self.kp * dist_error) + (self.kd * wall_angle)
+        
+        # Publish metrics for evaluation
+        dist_msg = Float32()
+        dist_msg.data = float(dist)
+        self.dist_pub.publish(dist_msg)
+
+        angle_msg = Float32()
+        angle_msg.data = float(wall_angle)
+        self.angle_pub.publish(angle_msg)
+            
+        drive_msg = AckermannDriveStamped()
+        drive_msg.header.stamp = self.get_clock().now().to_msg()
+        drive_msg.header.frame_id = "base_link"
+        
+        # # Use the parameters fetched in __init__
+        drive_msg.drive.speed = self.get_parameter('velocity').value
+        drive_msg.drive.steering_angle =  steer_angle
+        
+        self.drive_pub.publish(drive_msg)
+        
+        
+    
+    def parameters_callback(self, params):
+        """
+        DO NOT MODIFY THIS CALLBACK FUNCTION!
+        
+        This is used by the test cases to modify the parameters during testing. 
+        It's called whenever a parameter is set via 'ros2 param set'.
+        """
+        for param in params:
+            if param.name == 'side':
+                self.SIDE = param.value
+                self.get_logger().info(f"Updated side to {self.SIDE}")
+            elif param.name == 'velocity':
+                self.VELOCITY = param.value
+                self.get_logger().info(f"Updated velocity to {self.VELOCITY}")
+            elif param.name == 'desired_distance':
+                self.DESIRED_DISTANCE = param.value
+                self.get_logger().info(f"Updated desired_distance to {self.DESIRED_DISTANCE}")
+        return SetParametersResult(successful=True)
+
+
+def main():
+    rclpy.init()
+    wall_follower = WallFollower()
+    rclpy.spin(wall_follower)
+    wall_follower.destroy_node()
+    rclpy.shutdown()
+
+
+if __name__ == '__main__':
+    main()
+    
