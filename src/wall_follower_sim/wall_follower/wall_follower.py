@@ -2,14 +2,13 @@
 import numpy as np
 import rclpy
 from rclpy.node import Node
+from rclpy.qos import qos_profile_sensor_data
 from sensor_msgs.msg import LaserScan
 from ackermann_msgs.msg import AckermannDriveStamped
 from visualization_msgs.msg import Marker
 from std_msgs.msg import Float32
 from rcl_interfaces.msg import SetParametersResult
 
-
-from wall_follower.visualization_tools import VisualizationTools
 import math
 
 
@@ -42,12 +41,20 @@ class WallFollower(Node):
        # DO NOT MODIFY THIS!
        self.add_on_set_parameters_callback(self.parameters_callback)
         # TODO: Initialize your publishers and subscribers here
-       self.publisher = self.create_publisher(AckermannDriveStamped, '/vesc/high_level/input/nav_1', 10)
+       self.publisher = self.create_publisher(AckermannDriveStamped, self.DRIVE_TOPIC, 10)
        self.publisherVision = self.create_publisher(LaserScan, '/vision', 10)
-       self.subscriber = self.create_subscription(LaserScan, '/scan', self.listener_callback, 10)
+       self.subscriber = self.create_subscription(
+           LaserScan,
+           self.SCAN_TOPIC,
+           self.listener_callback,
+           qos_profile_sensor_data,
+       )
        # True distance (perpendicular to wall) and angle (wall relative to robot heading)
        self.distance_pub = self.create_publisher(Float32, '/distance', 10)
        self.angle_pub = self.create_publisher(Float32, '/angle', 10)
+       self.get_logger().info(
+           f"wall_follower started (scan_topic={self.SCAN_TOPIC}, drive_topic={self.DRIVE_TOPIC})"
+       )
   
    def listener_callback(self, msg):
        drive_command = AckermannDriveStamped()
