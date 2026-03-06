@@ -30,7 +30,8 @@ setup(
     tests_require=["pytest"],
     entry_points={
         "console_scripts": [
-            "safety_controller = safety_controller.safety_controller:main"
+            "safety_controller = safety_controller.safety_controller:main",
+            'wall_follower = wall_follower.wall_follower:main'
         ],
     },
 )
