@@ -66,18 +66,44 @@ class WallFollower(Node):
        filteredmsg.range_min = msg.range_min
        filteredmsg.range_max = msg.range_max
        filteredmsg.scan_time = msg.scan_time
+       margin = math.pi * 0.1
+       window = math.pi * 0.7
+       angle_increment = msg.angle_increment
+       if angle_increment <= 0.0:
+           return
+
+       total_points = len(msg.ranges)
+       if total_points == 0:
+           return
+
+       def angle_to_index(target_angle: float) -> int:
+           idx = int(round((target_angle - msg.angle_min) / angle_increment))
+           return max(0, min(total_points - 1, idx))
+
        if self.SIDE > 0:
-           filteredmsg.angle_min = msg.angle_min  #msg.angle_min
-           filteredmsg.angle_max = msg.angle_min + math.pi * 0.7 #min(math.pi, msg.angle_max)
-           filteredmsg.angle_increment = msg.angle_increment
-           count = int((filteredmsg.angle_max - filteredmsg.angle_min) / filteredmsg.angle_increment) + 1
-           filteredmsg.ranges = msg.ranges[:count]
+           start_angle = min(msg.angle_min + margin, msg.angle_max)
+           end_angle = min(start_angle + window, msg.angle_max)
+           start_idx = angle_to_index(start_angle)
+           end_idx = angle_to_index(end_angle)
+           if end_idx < start_idx:
+               return
+
+           filteredmsg.angle_min = msg.angle_min + start_idx * angle_increment
+           filteredmsg.angle_max = msg.angle_min + end_idx * angle_increment
+           filteredmsg.angle_increment = angle_increment
+           filteredmsg.ranges = list(msg.ranges[start_idx : end_idx + 1])
        else:
-           filteredmsg.angle_min = msg.angle_max - math.pi * 0.7 #msg.angle_min
-           filteredmsg.angle_max = msg.angle_max #min(math.pi, msg.angle_max)
-           filteredmsg.angle_increment = msg.angle_increment
-           count = int((filteredmsg.angle_max - filteredmsg.angle_min) / filteredmsg.angle_increment) + 1
-           filteredmsg.ranges = msg.ranges[-1 * count:]
+           end_angle = max(msg.angle_max - margin, msg.angle_min)
+           start_angle = max(end_angle - window, msg.angle_min)
+           start_idx = angle_to_index(start_angle)
+           end_idx = angle_to_index(end_angle)
+           if end_idx < start_idx:
+               return
+
+           filteredmsg.angle_min = msg.angle_min + start_idx * angle_increment
+           filteredmsg.angle_max = msg.angle_min + end_idx * angle_increment
+           filteredmsg.angle_increment = angle_increment
+           filteredmsg.ranges = list(msg.ranges[start_idx : end_idx + 1])
 
 
        #limit by distance
