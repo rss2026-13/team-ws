@@ -23,7 +23,7 @@ class WallFollower(Node):
        # Declare parameters to make them available for use
        # DO NOT MODIFY THIS!
        self.declare_parameter("scan_topic", "/scan")
-       self.declare_parameter("drive_topic", "/drive")
+       self.declare_parameter("drive_topic", "/vesc/high_level/input/nav_1")
        self.declare_parameter("side", -1)
        self.declare_parameter("velocity", 0.5)
        self.declare_parameter("desired_distance", 1.0)
