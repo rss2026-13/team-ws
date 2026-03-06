@@ -2,14 +2,13 @@
 import numpy as np
 import rclpy
 from rclpy.node import Node
+from rclpy.qos import qos_profile_sensor_data
 from sensor_msgs.msg import LaserScan
 from ackermann_msgs.msg import AckermannDriveStamped
 from visualization_msgs.msg import Marker
 from std_msgs.msg import Float32
 from rcl_interfaces.msg import SetParametersResult
 
-
-from wall_follower.visualization_tools import VisualizationTools
 import math
 
 
@@ -42,12 +41,20 @@ class WallFollower(Node):
        # DO NOT MODIFY THIS!
        self.add_on_set_parameters_callback(self.parameters_callback)
         # TODO: Initialize your publishers and subscribers here
-       self.publisher = self.create_publisher(AckermannDriveStamped, '/vesc/high_level/input/nav_1', 10)
+       self.publisher = self.create_publisher(AckermannDriveStamped, self.DRIVE_TOPIC, 10)
        self.publisherVision = self.create_publisher(LaserScan, '/vision', 10)
-       self.subscriber = self.create_subscription(LaserScan, '/scan', self.listener_callback, 10)
+       self.subscriber = self.create_subscription(
+           LaserScan,
+           self.SCAN_TOPIC,
+           self.listener_callback,
+           qos_profile_sensor_data,
+       )
        # True distance (perpendicular to wall) and angle (wall relative to robot heading)
        self.distance_pub = self.create_publisher(Float32, '/distance', 10)
        self.angle_pub = self.create_publisher(Float32, '/angle', 10)
+       self.get_logger().info(
+           f"wall_follower started (scan_topic={self.SCAN_TOPIC}, drive_topic={self.DRIVE_TOPIC})"
+       )
   
    def listener_callback(self, msg):
        drive_command = AckermannDriveStamped()
@@ -66,18 +73,44 @@ class WallFollower(Node):
        filteredmsg.range_min = msg.range_min
        filteredmsg.range_max = msg.range_max
        filteredmsg.scan_time = msg.scan_time
+       margin = math.pi * 0.1
+       window = math.pi * 0.7
+       angle_increment = msg.angle_increment
+       if angle_increment <= 0.0:
+           return
+
+       total_points = len(msg.ranges)
+       if total_points == 0:
+           return
+
+       def angle_to_index(target_angle: float) -> int:
+           idx = int(round((target_angle - msg.angle_min) / angle_increment))
+           return max(0, min(total_points - 1, idx))
+
        if self.SIDE > 0:
-           filteredmsg.angle_min = msg.angle_min  #msg.angle_min
-           filteredmsg.angle_max = msg.angle_min + math.pi * 0.7 #min(math.pi, msg.angle_max)
-           filteredmsg.angle_increment = msg.angle_increment
-           count = int((filteredmsg.angle_max - filteredmsg.angle_min) / filteredmsg.angle_increment) + 1
-           filteredmsg.ranges = msg.ranges[:count]
+           start_angle = min(msg.angle_min + margin, msg.angle_max)
+           end_angle = min(start_angle + window, msg.angle_max)
+           start_idx = angle_to_index(start_angle)
+           end_idx = angle_to_index(end_angle)
+           if end_idx < start_idx:
+               return
+
+           filteredmsg.angle_min = msg.angle_min + start_idx * angle_increment
+           filteredmsg.angle_max = msg.angle_min + end_idx * angle_increment
+           filteredmsg.angle_increment = angle_increment
+           filteredmsg.ranges = list(msg.ranges[start_idx : end_idx + 1])
        else:
-           filteredmsg.angle_min = msg.angle_max - math.pi * 0.7 #msg.angle_min
-           filteredmsg.angle_max = msg.angle_max #min(math.pi, msg.angle_max)
-           filteredmsg.angle_increment = msg.angle_increment
-           count = int((filteredmsg.angle_max - filteredmsg.angle_min) / filteredmsg.angle_increment) + 1
-           filteredmsg.ranges = msg.ranges[-1 * count:]
+           end_angle = max(msg.angle_max - margin, msg.angle_min)
+           start_angle = max(end_angle - window, msg.angle_min)
+           start_idx = angle_to_index(start_angle)
+           end_idx = angle_to_index(end_angle)
+           if end_idx < start_idx:
+               return
+
+           filteredmsg.angle_min = msg.angle_min + start_idx * angle_increment
+           filteredmsg.angle_max = msg.angle_min + end_idx * angle_increment
+           filteredmsg.angle_increment = angle_increment
+           filteredmsg.ranges = list(msg.ranges[start_idx : end_idx + 1])
 
 
        #limit by distance
@@ -120,18 +153,17 @@ class WallFollower(Node):
 
 
        self.publisherVision.publish(filteredmsg)
-       # self.get_logger().info('Publishing: "%s"' % count)
+       self.get_logger().info('Publishing filtered points: "%s"' % len(filteredmsg.ranges))
 
 
        #find the wall with least squares (x is forward, y is left?)
        pointsX = np.array([math.cos(filteredmsg.angle_min + i * filteredmsg.angle_increment) * x for i, x in enumerate(filteredmsg.ranges)])
        pointsY = np.array([math.sin(filteredmsg.angle_min + i * filteredmsg.angle_increment) * x for i, x in enumerate(filteredmsg.ranges)])
-       m = (len(pointsX) * np.sum(pointsX * pointsY) - np.sum(pointsX) * np.sum(pointsY)) / (len(pointsX) * sum(pointsX ** 2) - sum(pointsX)**2)
-       b = (np.sum(pointsY) - m * np.sum(pointsX)) / len(pointsX)
-      
        den = len(pointsX) * np.sum(pointsX**2) - (np.sum(pointsX))**2
        if abs(den) < 1e-6:
-           return  # or skip frame
+           return  # skip degenerate line-fit frame
+       m = (len(pointsX) * np.sum(pointsX * pointsY) - np.sum(pointsX) * np.sum(pointsY)) / den
+       b = (np.sum(pointsY) - m * np.sum(pointsX)) / len(pointsX)
 
 
        # True perpendicular distance to wall: |b| / sqrt(1 + m^2)
