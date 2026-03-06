@@ -51,14 +51,14 @@ class DriveController:
         closest_dist = np.inf
         if self.side == 1:
             angles = np.linspace(
-                -self.side_spread + np.pi / 2,
-                0 + np.pi / 2,
+                np.pi / 2 - self.side_spread,
+                np.pi / 2,
                 self.side_samples,
             )
         else:
             angles = np.linspace(
-                0 - np.pi / 2,
-                self.side_spread - np.pi / 2,
+                -np.pi / 2,
+                -np.pi / 2 + self.side_spread,
                 self.side_samples,
             )
         for angle in angles:

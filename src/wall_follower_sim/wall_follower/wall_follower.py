@@ -27,6 +27,7 @@ class WallFollower(Node):
         self.declare_parameter("controller.pid.kd", 0.07)
         self.declare_parameter("controller.pid.max_i", 3.0)
         self.declare_parameter("controller.pid.max_d", 4.0)
+        self.declare_parameter("controller.pid.decay", 0.9)
 
         self._param_event_sub = self.create_subscription(
             ParameterEvent,
@@ -86,7 +87,7 @@ class WallFollower(Node):
         self.post_init()
 
     def scan_callback(self, laser_scan):
-        walls = detect_walls(laser_scan, min_points=10, D_t=0.1, )
+        walls = detect_walls(laser_scan, min_points=10, D_t=0.1)
         self.visualization_tools.plot_walls(walls, laser_scan.header.stamp)
         self.drive_controller.update(walls)
 
