@@ -29,6 +29,7 @@ setup(
 	        'viz_example = wall_follower.viz_example:main',
         	'test_wall_follower = wall_follower.test_wall_follower:main',
             'evaluation_code = wall_follower.evaluation_code:main',
+            'wall_follower_tissany = wall_follower.wall_follower_tissany:main',
         ],
     },
 )
