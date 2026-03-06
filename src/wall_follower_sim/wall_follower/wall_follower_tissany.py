@@ -69,10 +69,13 @@ class WallFollower(Node):
         ranges = np.array(msg.ranges)
         angles = np.linspace(msg.angle_min, msg.angle_max, len(msg.ranges))
         
-        mask = ranges > 0.1
+        # mask = ranges > 0.1
         
-        filtered_ranges = ranges[mask]
-        filtered_angles = angles[mask]
+        # filtered_ranges = ranges[mask]
+        # filtered_angles = angles[mask]
+        
+        filtered_ranges=ranges
+        filtered_angles=angles
         
         #hypothesis:
         #keep negative angle values (first half of ranges array) if following right wall
