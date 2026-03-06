@@ -6,6 +6,7 @@ from rclpy.qos import qos_profile_sensor_data
 from sensor_msgs.msg import LaserScan
 from ackermann_msgs.msg import AckermannDriveStamped
 from visualization_msgs.msg import Marker
+from geometry_msgs.msg import Point
 from std_msgs.msg import Float32
 from rcl_interfaces.msg import SetParametersResult
 
@@ -43,6 +44,9 @@ class WallFollower(Node):
         # TODO: Initialize your publishers and subscribers here
        self.publisher = self.create_publisher(AckermannDriveStamped, self.DRIVE_TOPIC, 10)
        self.publisherVision = self.create_publisher(LaserScan, '/vision', 10)
+       self.filtered_points_marker_pub = self.create_publisher(Marker, '/vision_filtered_points', 10)
+       self.used_points_marker_pub = self.create_publisher(Marker, '/vision_used_points', 10)
+       self.wall_line_marker_pub = self.create_publisher(Marker, '/vision_wall_line', 10)
        self.subscriber = self.create_subscription(
            LaserScan,
            self.SCAN_TOPIC,
@@ -55,6 +59,56 @@ class WallFollower(Node):
        self.get_logger().info(
            f"wall_follower started (scan_topic={self.SCAN_TOPIC}, drive_topic={self.DRIVE_TOPIC})"
        )
+
+   def _publish_points_marker(self, publisher, marker_id, stamp, points_x, points_y, color_rgb):
+       marker = Marker()
+       marker.header.stamp = stamp
+       marker.header.frame_id = 'base_link'
+       marker.ns = 'wall_follower'
+       marker.id = marker_id
+       marker.type = Marker.POINTS
+       marker.action = Marker.ADD
+       marker.pose.orientation.w = 1.0
+       marker.scale.x = 0.035
+       marker.scale.y = 0.035
+       marker.color.a = 1.0
+       marker.color.r = color_rgb[0]
+       marker.color.g = color_rgb[1]
+       marker.color.b = color_rgb[2]
+       marker.points = []
+       for px, py in zip(points_x, points_y):
+           point = Point()
+           point.x = float(px)
+           point.y = float(py)
+           point.z = 0.0
+           marker.points.append(point)
+       publisher.publish(marker)
+
+   def _publish_line_marker(self, stamp, m, b, min_x, max_x):
+       line_marker = Marker()
+       line_marker.header.stamp = stamp
+       line_marker.header.frame_id = 'base_link'
+       line_marker.ns = 'wall_follower'
+       line_marker.id = 2
+       line_marker.type = Marker.LINE_STRIP
+       line_marker.action = Marker.ADD
+       line_marker.pose.orientation.w = 1.0
+       line_marker.scale.x = 0.02
+       line_marker.color.a = 1.0
+       line_marker.color.r = 1.0
+       line_marker.color.g = 0.4
+       line_marker.color.b = 0.9
+       line_marker.points = []
+
+       line_x = np.linspace(min_x, max_x, 20)
+       line_y = m * line_x + b
+       for px, py in zip(line_x, line_y):
+           point = Point()
+           point.x = float(px)
+           point.y = float(py)
+           point.z = 0.0
+           line_marker.points.append(point)
+       self.wall_line_marker_pub.publish(line_marker)
   
    def listener_callback(self, msg):
        drive_command = AckermannDriveStamped()
@@ -125,25 +179,29 @@ class WallFollower(Node):
 
 
        # --- add distance info without removing points ---
-       ranges = np.array(filteredmsg.ranges)
+       ranges = np.array(filteredmsg.ranges, dtype=float)
        angles = filteredmsg.angle_min + np.arange(len(ranges)) * filteredmsg.angle_increment
 
 
        # filter out invalid points for calculation only
        valid_mask = np.isfinite(ranges)
-       if np.any(valid_mask):
-           valid_ranges = ranges[valid_mask]
-           valid_angles = angles[valid_mask]
-          
-           # compute 25th percentile distance
-           p25_distance = np.percentile(valid_ranges, 30)
-          
-           # mark points in the lowest 25%
-           closest_mask = valid_ranges <= p25_distance
-          
-           # keep original ranges, but store mask in intensities
-           filteredmsg.ranges = ranges.tolist()
-           filteredmsg.intensities = closest_mask.astype(float).tolist()
+       if not np.any(valid_mask):
+           return
+       valid_ranges = ranges[valid_mask]
+       valid_angles = angles[valid_mask]
+
+       # Select the closest subset for line fitting.
+       p30_distance = np.percentile(valid_ranges, 30)
+       used_mask_valid = valid_ranges <= p30_distance
+       if np.count_nonzero(used_mask_valid) < 2:
+           used_mask_valid = np.ones_like(valid_ranges, dtype=bool)
+
+       # Keep all filtered points in ranges and mark fit points in intensities.
+       filteredmsg.ranges = ranges.tolist()
+       intensities = np.zeros(len(ranges), dtype=float)
+       valid_indices = np.where(valid_mask)[0]
+       intensities[valid_indices[used_mask_valid]] = 1.0
+       filteredmsg.intensities = intensities.tolist()
 
 
 
@@ -157,13 +215,24 @@ class WallFollower(Node):
 
 
        #find the wall with least squares (x is forward, y is left?)
-       pointsX = np.array([math.cos(filteredmsg.angle_min + i * filteredmsg.angle_increment) * x for i, x in enumerate(filteredmsg.ranges)])
-       pointsY = np.array([math.sin(filteredmsg.angle_min + i * filteredmsg.angle_increment) * x for i, x in enumerate(filteredmsg.ranges)])
+       all_points_x = valid_ranges * np.cos(valid_angles)
+       all_points_y = valid_ranges * np.sin(valid_angles)
+       used_ranges = valid_ranges[used_mask_valid]
+       used_angles = valid_angles[used_mask_valid]
+       pointsX = used_ranges * np.cos(used_angles)
+       pointsY = used_ranges * np.sin(used_angles)
+       self._publish_points_marker(
+           self.filtered_points_marker_pub, 0, msg.header.stamp, all_points_x, all_points_y, (1.0, 0.0, 0.0)
+       )
+       self._publish_points_marker(
+           self.used_points_marker_pub, 1, msg.header.stamp, pointsX, pointsY, (0.0, 1.0, 0.0)
+       )
        den = len(pointsX) * np.sum(pointsX**2) - (np.sum(pointsX))**2
        if abs(den) < 1e-6:
            return  # skip degenerate line-fit frame
        m = (len(pointsX) * np.sum(pointsX * pointsY) - np.sum(pointsX) * np.sum(pointsY)) / den
        b = (np.sum(pointsY) - m * np.sum(pointsX)) / len(pointsX)
+       self._publish_line_marker(msg.header.stamp, m, b, float(np.min(pointsX)), float(np.max(pointsX)))
 
 
        # True perpendicular distance to wall: |b| / sqrt(1 + m^2)
