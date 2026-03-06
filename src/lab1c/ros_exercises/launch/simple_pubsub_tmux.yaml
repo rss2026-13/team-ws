@@ -1,0 +1,11 @@
+session_name: 4-pane-rss_lab1c
+windows:
+- window_name: simple_pubsub
+  layout: tiled
+  shell_command_before:
+    - cd ~/                    # run as a first command in all panes
+  panes:
+    - ros2 run ros_exercises talker
+    - ros2 run ros_exercises listener
+    - ros2 topic echo /my_random_float
+    - ros2 topic hz /my_random_float

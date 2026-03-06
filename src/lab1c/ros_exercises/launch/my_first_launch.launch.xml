@@ -1,0 +1,6 @@
+<launch>
+  <node pkg="ros_exercises" exec="listener" name="simple_subscriber" />
+  <node pkg="ros_exercises" exec="talker" name="simple_publisher" />
+  <node pkg="ros_exercises" exec="fake_scan_publisher" name="fake_scan_publisher" />
+  <node pkg="ros_exercises" exec="open_space" name="open_space_publisher" />
+</launch>

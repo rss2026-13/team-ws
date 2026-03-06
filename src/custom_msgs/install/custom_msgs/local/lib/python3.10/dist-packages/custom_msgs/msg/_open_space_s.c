@@ -1,0 +1,1 @@
+/home/racecar/racecar_ws/src/custom_msgs/build/custom_msgs/rosidl_generator_py/custom_msgs/msg/_open_space_s.c

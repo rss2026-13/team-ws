@@ -1,0 +1,9 @@
+source;share/first_package_1c/hook/pythonpath.ps1
+source;share/first_package_1c/hook/pythonpath.dsv
+source;share/first_package_1c/hook/pythonpath.sh
+source;share/first_package_1c/hook/ament_prefix_path.ps1
+source;share/first_package_1c/hook/ament_prefix_path.dsv
+source;share/first_package_1c/hook/ament_prefix_path.sh
+source;../../build/first_package_1c/share/first_package_1c/hook/pythonpath_develop.ps1
+source;../../build/first_package_1c/share/first_package_1c/hook/pythonpath_develop.dsv
+source;../../build/first_package_1c/share/first_package_1c/hook/pythonpath_develop.sh

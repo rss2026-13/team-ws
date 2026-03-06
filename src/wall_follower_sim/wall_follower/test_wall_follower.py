@@ -1,19 +1,20 @@
 #!/usr/bin/env python3
-import time as pythontime
-
+import math
 import numpy as np
+import time as pythontime
 import rclpy
-from ackermann_msgs.msg import AckermannDriveStamped
-from geometry_msgs.msg import Pose
+
 from rclpy.node import Node
-from scipy.spatial.transform import Rotation as R
 from sensor_msgs.msg import LaserScan
-from std_msgs.msg import Int32
+from geometry_msgs.msg import Pose
+from ackermann_msgs.msg import AckermannDriveStamped
+from visualization_msgs.msg import Marker
+from std_msgs.msg import Float32
+from wall_follower.np_encrypt import encode
+from scipy.spatial.transform import Rotation as R
 from tf2_ros import TransformException
 from tf2_ros.buffer import Buffer
 from tf2_ros.transform_listener import TransformListener
-from visualization_msgs.msg import Marker
-from wall_follower.np_encrypt import encode
 
 
 class WallTest(Node):
@@ -66,8 +67,13 @@ class WallTest(Node):
         self.end_threshold = 1.0
 
         self.positions = []
-        self.dist_to_end = np.inf
+        self.dist_to_end = np.infty
         self.saves = {}
+
+        # Buffers for wall metrics: from wall_follower's distance/angle topics
+        self.past_distances = []
+        self.past_angles = []
+        self.metric_max_buffer = 5000
 
         self.tf_buffer = Buffer()
         self.tf_listener = TransformListener(self.tf_buffer, self)
@@ -85,7 +91,11 @@ class WallTest(Node):
 
         # A subscriber to laser scans
         self.create_subscription(LaserScan, self.SCAN_TOPIC, self.laser_callback, 1)
-        self.test_end_publisher = self.create_publisher(Int32, "/test_end", 1)
+
+        # Subscribers to wall_follower's distance/angle (compute metrics ourselves)
+        self.create_subscription(Float32, "/distance", self._cb_distance, 10)
+        self.create_subscription(Float32, "/angle", self._cb_angle, 10)
+
         self.START_POSE = [self.START_x, self.START_y, self.START_z]
         self.END_POSE = [self.END_x, self.END_y]
 
@@ -94,6 +104,64 @@ class WallTest(Node):
 
         self.moved = False
 
+    def _cb_distance(self, msg):
+        self.past_distances.append(float(msg.data))
+        if len(self.past_distances) > self.metric_max_buffer:
+            self.past_distances.pop(0)
+
+    def _cb_angle(self, msg):
+        self.past_angles.append(float(msg.data))
+        if len(self.past_angles) > self.metric_max_buffer:
+            self.past_angles.pop(0)
+
+    def _log_wall_metrics(self):
+        """Log wall metrics as error from desired: |actual - desired|, then average or average of squared."""
+        self.get_logger().info("--- Wall metrics (error from desired) for test '%s' ---" % self.TEST_NAME)
+        desired_d = self.DESIRED_DISTANCE
+        desired_a = 0.0  # desired angle = parallel to wall
+
+        # Distance error metrics
+        if self.past_distances:
+            arr = np.array(self.past_distances)
+            n = len(arr)
+            err_d = np.abs(arr - desired_d)
+            err_d_sq = (arr - desired_d) ** 2
+            self.get_logger().info(
+                "  average_distance_error (mean |d-desired|): %.4f (n=%d)" % (float(np.mean(err_d)), n)
+            )
+            self.get_logger().info(
+                "  squared_distance_error (mean (d-desired)^2): %.4f" % float(np.mean(err_d_sq))
+            )
+            self.get_logger().info(
+                "  std_distance_error:  %.4f" % (float(np.std(arr - desired_d)) if n > 1 else 0.0)
+            )
+            self.get_logger().info(
+                "  ste_distance_error:  %.4f"
+                % (float(np.std(arr - desired_d) / math.sqrt(n)) if n > 1 else 0.0)
+            )
+        else:
+            self.get_logger().info("  average_distance_error: (no data)")
+            self.get_logger().info("  squared_distance_error: (no data)")
+            self.get_logger().info("  std_distance_error: (no data)")
+            self.get_logger().info("  ste_distance_error: (no data)")
+
+        # Angle error metrics (desired angle = 0): average and std only
+        if self.past_angles:
+            arr = np.array(self.past_angles)
+            n = len(arr)
+            err_a = np.abs(arr - desired_a)
+            self.get_logger().info(
+                "  average_angle_error (mean |angle|): %.4f (n=%d)" % (float(np.mean(err_a)), n)
+            )
+            self.get_logger().info(
+                "  std_angle_error: %.4f" % (float(np.std(arr - desired_a)) if n > 1 else 0.0)
+            )
+        else:
+            self.get_logger().info("  average_angle_error: (no data)")
+            self.get_logger().info("  std_angle_error: (no data)")
+
+        self.get_logger().info("------------------------------------")
+
     def place_car(self, pose):
         p = Pose()
 
@@ -101,7 +169,7 @@ class WallTest(Node):
         p.position.y = pose[1]
 
         # Convert theta to a quaternion
-        quaternion = R.from_euler("xyz", [0, 0, pose[2]]).as_quat()
+        quaternion = R.from_euler('xyz', [0, 0, pose[2]]).as_quat()
         p.orientation.y = quaternion[1]
         p.orientation.z = quaternion[2]
         p.orientation.w = quaternion[3]
@@ -143,11 +211,7 @@ class WallTest(Node):
                     f"Placed Car: {self.START_POSE[0]}, {self.START_POSE[1]}"
                 )
             return
-        if self.buffer_count == 100:
-            msg = Int32()
-            msg.data = 1
-            self.test_end_publisher.publish(msg)
-            self.buffer_count += 1
+
         from_frame_rel = "base_link"
         to_frame_rel = "map"
 
@@ -169,7 +233,7 @@ class WallTest(Node):
             if 0.3 < (diff):
                 self.place_car(self.START_POSE)
                 self.get_logger().info(
-                    f"Not at start {self.START_x - t.transform.translation.x}, {self.START_y - t.transform.translation.y}, diff {diff}"
+                    f"Not at start {self.START_x-t.transform.translation.x}, {self.START_y-t.transform.translation.y}, diff {diff}"
                 )
                 return
             else:
@@ -212,6 +276,7 @@ class WallTest(Node):
             self.get_logger().error(
                 "\n\n\n\n\nERROR: Test timed out! Your car was not able to reach the target end position.\n\n\n\n\n"
             )
+            self._log_wall_metrics()
             # Send a message of zero
             stop = AckermannDriveStamped()
             stop.drive.speed = 0.0
@@ -225,9 +290,7 @@ class WallTest(Node):
                 "\n\n\n\n\nReached end of the test w/ Avg dist from wall = %f!\n\n\n\n\n"
                 % (dist)
             )
-            msg = Int32()
-            msg.data = 2
-            self.test_end_publisher.publish(msg)
+            self._log_wall_metrics()
             stop = AckermannDriveStamped()
             stop.drive.speed = 0.0
             stop.drive.steering_angle = 0.0

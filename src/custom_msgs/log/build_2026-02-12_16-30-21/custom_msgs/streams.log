@@ -1,0 +1,208 @@
+[0.016s] Invoking command in '/home/racecar/racecar_ws/src/custom_msgs/build/custom_msgs': CMAKE_PREFIX_PATH=${CMAKE_PREFIX_PATH}:/home/racecar/racecar_ws/install/ros_exercises:/home/racecar/racecar_ws/install/py_pubsub:/home/racecar/racecar_ws/install/first_package_1c:/opt/ros/humble /usr/bin/cmake /home/racecar/racecar_ws/src/custom_msgs -DAMENT_CMAKE_SYMLINK_INSTALL=1 -DCMAKE_INSTALL_PREFIX=/home/racecar/racecar_ws/src/custom_msgs/install/custom_msgs
+[0.062s] -- The C compiler identification is GNU 11.4.0
+[0.098s] -- The CXX compiler identification is GNU 11.4.0
+[0.103s] -- Detecting C compiler ABI info
+[0.165s] -- Detecting C compiler ABI info - done
+[0.171s] -- Check for working C compiler: /usr/bin/cc - skipped
+[0.171s] -- Detecting C compile features
+[0.171s] -- Detecting C compile features - done
+[0.175s] -- Detecting CXX compiler ABI info
+[0.250s] -- Detecting CXX compiler ABI info - done
+[0.255s] -- Check for working CXX compiler: /usr/bin/c++ - skipped
+[0.255s] -- Detecting CXX compile features
+[0.255s] -- Detecting CXX compile features - done
+[0.268s] -- Found ament_cmake: 1.3.12 (/opt/ros/humble/share/ament_cmake/cmake)
+[0.366s] -- Found Python3: /usr/bin/python3 (found version "3.10.12") found components: Interpreter 
+[0.404s] -- Override CMake install command with custom implementation using symlinks instead of copying resources
+[0.536s] -- Found rosidl_default_generators: 1.2.0 (/opt/ros/humble/share/rosidl_default_generators/cmake)
+[0.546s] -- Using all available rosidl_typesupport_c: rosidl_typesupport_fastrtps_c;rosidl_typesupport_introspection_c
+[0.577s] -- Found rosidl_adapter: 3.1.8 (/opt/ros/humble/share/rosidl_adapter/cmake)
+[0.687s] -- Using all available rosidl_typesupport_cpp: rosidl_typesupport_fastrtps_cpp;rosidl_typesupport_introspection_cpp
+[0.921s] -- Found ament_cmake_ros: 0.10.0 (/opt/ros/humble/share/ament_cmake_ros/cmake)
+[1.070s] -- Using all available rosidl_typesupport_c: rosidl_typesupport_fastrtps_c;rosidl_typesupport_introspection_c
+[1.228s] -- Using all available rosidl_typesupport_cpp: rosidl_typesupport_fastrtps_cpp;rosidl_typesupport_introspection_cpp
+[1.243s] -- Found PythonInterp: /usr/bin/python3 (found suitable version "3.10.12", minimum required is "3.6") 
+[1.252s] -- Found python_cmake_module: 0.10.0 (/opt/ros/humble/share/python_cmake_module/cmake)
+[1.269s] -- Found PythonLibs: /usr/lib/aarch64-linux-gnu/libpython3.10.so (found suitable version "3.10.12", minimum required is "3.5") 
+[1.269s] -- Using PYTHON_EXECUTABLE: /usr/bin/python3
+[1.270s] -- Using PYTHON_INCLUDE_DIRS: /usr/include/python3.10
+[1.270s] -- Using PYTHON_LIBRARIES: /usr/lib/aarch64-linux-gnu/libpython3.10.so
+[1.280s] -- Found PythonExtra: .so  
+[1.327s] -- Found ament_lint_auto: 0.12.14 (/opt/ros/humble/share/ament_lint_auto/cmake)
+[1.577s] -- Added test 'cppcheck' to perform static code analysis on C / C++ code
+[1.577s] -- Configured cppcheck include dirs: $<BUILD_INTERFACE:/home/racecar/racecar_ws/src/custom_msgs/build/custom_msgs/rosidl_generator_c>;$<BUILD_INTERFACE:/home/racecar/racecar_ws/src/custom_msgs/build/custom_msgs/rosidl_typesupport_fastrtps_c>;$<BUILD_INTERFACE:/home/racecar/racecar_ws/src/custom_msgs/build/custom_msgs/rosidl_typesupport_introspection_c>;$<BUILD_INTERFACE:/home/racecar/racecar_ws/src/custom_msgs/build/custom_msgs/rosidl_generator_cpp>;$<BUILD_INTERFACE:/home/racecar/racecar_ws/src/custom_msgs/build/custom_msgs/rosidl_typesupport_fastrtps_cpp>;$<BUILD_INTERFACE:/home/racecar/racecar_ws/src/custom_msgs/build/custom_msgs/rosidl_typesupport_introspection_cpp>;/home/racecar/racecar_ws/src/custom_msgs/build/custom_msgs/rosidl_generator_c;/home/racecar/racecar_ws/src/custom_msgs/build/custom_msgs/rosidl_generator_py
+[1.577s] -- Configured cppcheck exclude dirs and/or files: 
+[1.600s] -- Added test 'flake8' to check Python code syntax and style conventions
+[1.639s] -- Added test 'lint_cmake' to check CMake code style
+[1.661s] -- Added test 'pep257' to check Python code against some of the docstring style conventions in PEP 257
+[1.825s] -- Added test 'uncrustify' to check C / C++ code style
+[1.825s] -- Configured uncrustify additional arguments: 
+[1.848s] -- Added test 'xmllint' to check XML markup files
+[1.882s] -- Configuring done
+[2.060s] -- Generating done
+[2.101s] -- Build files have been written to: /home/racecar/racecar_ws/src/custom_msgs/build/custom_msgs
+[2.104s] Invoked command in '/home/racecar/racecar_ws/src/custom_msgs/build/custom_msgs' returned '0': CMAKE_PREFIX_PATH=${CMAKE_PREFIX_PATH}:/home/racecar/racecar_ws/install/ros_exercises:/home/racecar/racecar_ws/install/py_pubsub:/home/racecar/racecar_ws/install/first_package_1c:/opt/ros/humble /usr/bin/cmake /home/racecar/racecar_ws/src/custom_msgs -DAMENT_CMAKE_SYMLINK_INSTALL=1 -DCMAKE_INSTALL_PREFIX=/home/racecar/racecar_ws/src/custom_msgs/install/custom_msgs
+[2.106s] Invoking command in '/home/racecar/racecar_ws/src/custom_msgs/build/custom_msgs': CMAKE_PREFIX_PATH=${CMAKE_PREFIX_PATH}:/home/racecar/racecar_ws/install/ros_exercises:/home/racecar/racecar_ws/install/py_pubsub:/home/racecar/racecar_ws/install/first_package_1c:/opt/ros/humble /usr/bin/cmake --build /home/racecar/racecar_ws/src/custom_msgs/build/custom_msgs -- -j12 -l12
+[2.131s] [  3%] [34m[1mGenerating C code for ROS interfaces[0m
+[2.137s] [  6%] [34m[1mGenerating C++ code for ROS interfaces[0m
+[2.139s] [  6%] Built target ament_cmake_python_symlink_custom_msgs
+[2.255s] [  6%] Built target custom_msgs__cpp
+[2.257s] running egg_info
+[2.258s] creating custom_msgs.egg-info
+[2.258s] writing custom_msgs.egg-info/PKG-INFO
+[2.259s] writing dependency_links to custom_msgs.egg-info/dependency_links.txt
+[2.260s] writing top-level names to custom_msgs.egg-info/top_level.txt
+[2.261s] writing manifest file 'custom_msgs.egg-info/SOURCES.txt'
+[2.264s] [ 16%] [32mBuilding C object CMakeFiles/custom_msgs__rosidl_generator_c.dir/rosidl_generator_c/custom_msgs/msg/detail/open_space__functions.c.o[0m
+[2.264s] [ 16%] [34m[1mGenerating C++ type support for eProsima Fast-RTPS[0m
+[2.265s] [ 16%] [34m[1mGenerating C++ introspection for ROS interfaces[0m
+[2.265s] reading manifest file 'custom_msgs.egg-info/SOURCES.txt'
+[2.265s] [ 19%] [34m[1mGenerating C++ type support dispatch for ROS interfaces[0m
+[2.266s] writing manifest file 'custom_msgs.egg-info/SOURCES.txt'
+[2.284s] [ 19%] Built target ament_cmake_python_build_custom_msgs_egg
+[2.296s] [ 22%] [32m[1mLinking C shared library libcustom_msgs__rosidl_generator_c.so[0m
+[2.323s] [ 22%] Built target custom_msgs__rosidl_generator_c
+[2.331s] [ 29%] [34m[1mGenerating C type support dispatch for ROS interfaces[0m
+[2.331s] [ 32%] [34m[1mGenerating C introspection for ROS interfaces[0m
+[2.331s] [ 32%] [34m[1mGenerating C type support for eProsima Fast-RTPS[0m
+[2.377s] [ 35%] [32mBuilding CXX object CMakeFiles/custom_msgs__rosidl_typesupport_cpp.dir/rosidl_typesupport_cpp/custom_msgs/msg/open_space__type_support.cpp.o[0m
+[2.393s] [ 41%] [32mBuilding CXX object CMakeFiles/custom_msgs__rosidl_typesupport_fastrtps_cpp.dir/rosidl_typesupport_fastrtps_cpp/custom_msgs/msg/detail/dds_fastrtps/open_space__type_support.cpp.o[0m
+[2.393s] [ 41%] [32mBuilding CXX object CMakeFiles/custom_msgs__rosidl_typesupport_introspection_cpp.dir/rosidl_typesupport_introspection_cpp/custom_msgs/msg/detail/open_space__type_support.cpp.o[0m
+[2.444s] [ 45%] [32mBuilding CXX object CMakeFiles/custom_msgs__rosidl_typesupport_c.dir/rosidl_typesupport_c/custom_msgs/msg/open_space__type_support.cpp.o[0m
+[2.456s] [ 51%] [32mBuilding CXX object CMakeFiles/custom_msgs__rosidl_typesupport_fastrtps_c.dir/rosidl_typesupport_fastrtps_c/custom_msgs/msg/detail/open_space__type_support_c.cpp.o[0m
+[2.456s] [ 51%] [32mBuilding C object CMakeFiles/custom_msgs__rosidl_typesupport_introspection_c.dir/rosidl_typesupport_introspection_c/custom_msgs/msg/detail/open_space__type_support.c.o[0m
+[2.471s] [ 54%] [32m[1mLinking CXX shared library libcustom_msgs__rosidl_typesupport_c.so[0m
+[2.493s] [ 58%] [32m[1mLinking C shared library libcustom_msgs__rosidl_typesupport_introspection_c.so[0m
+[2.499s] [ 58%] Built target custom_msgs__rosidl_typesupport_c
+[2.518s] [ 58%] Built target custom_msgs__rosidl_typesupport_introspection_c
+[2.525s] [ 61%] [32m[1mLinking CXX shared library libcustom_msgs__rosidl_typesupport_cpp.so[0m
+[2.549s] [ 61%] Built target custom_msgs__rosidl_typesupport_cpp
+[2.611s] [ 64%] [32m[1mLinking CXX shared library libcustom_msgs__rosidl_typesupport_introspection_cpp.so[0m
+[2.616s] [ 67%] [32m[1mLinking CXX shared library libcustom_msgs__rosidl_typesupport_fastrtps_cpp.so[0m
+[2.637s] [ 67%] Built target custom_msgs__rosidl_typesupport_introspection_cpp
+[2.642s] [ 70%] [32m[1mLinking CXX shared library libcustom_msgs__rosidl_typesupport_fastrtps_c.so[0m
+[2.651s] [ 70%] Built target custom_msgs__rosidl_typesupport_fastrtps_cpp
+[2.677s] [ 70%] Built target custom_msgs__rosidl_typesupport_fastrtps_c
+[2.687s] [ 70%] Built target custom_msgs
+[2.699s] [ 74%] [34m[1mGenerating Python code for ROS interfaces[0m
+[2.832s] [ 74%] Built target custom_msgs__py
+[2.848s] [ 77%] [32mBuilding C object CMakeFiles/custom_msgs__rosidl_generator_py.dir/rosidl_generator_py/custom_msgs/msg/_open_space_s.c.o[0m
+[2.911s] [ 80%] [32m[1mLinking C shared library rosidl_generator_py/custom_msgs/libcustom_msgs__rosidl_generator_py.so[0m
+[2.936s] [ 80%] Built target custom_msgs__rosidl_generator_py
+[2.951s] [ 90%] [32mBuilding C object CMakeFiles/custom_msgs__rosidl_typesupport_c__pyext.dir/rosidl_generator_py/custom_msgs/_custom_msgs_s.ep.rosidl_typesupport_c.c.o[0m
+[2.951s] [ 90%] [32mBuilding C object CMakeFiles/custom_msgs__rosidl_typesupport_introspection_c__pyext.dir/rosidl_generator_py/custom_msgs/_custom_msgs_s.ep.rosidl_typesupport_introspection_c.c.o[0m
+[2.952s] [ 90%] [32mBuilding C object CMakeFiles/custom_msgs__rosidl_typesupport_fastrtps_c__pyext.dir/rosidl_generator_py/custom_msgs/_custom_msgs_s.ep.rosidl_typesupport_fastrtps_c.c.o[0m
+[3.020s] [ 93%] [32m[1mLinking C shared library rosidl_generator_py/custom_msgs/custom_msgs_s__rosidl_typesupport_c.cpython-310-aarch64-linux-gnu.so[0m
+[3.026s] [ 96%] [32m[1mLinking C shared library rosidl_generator_py/custom_msgs/custom_msgs_s__rosidl_typesupport_introspection_c.cpython-310-aarch64-linux-gnu.so[0m
+[3.032s] [100%] [32m[1mLinking C shared library rosidl_generator_py/custom_msgs/custom_msgs_s__rosidl_typesupport_fastrtps_c.cpython-310-aarch64-linux-gnu.so[0m
+[3.042s] [100%] Built target custom_msgs__rosidl_typesupport_c__pyext
+[3.051s] [100%] Built target custom_msgs__rosidl_typesupport_introspection_c__pyext
+[3.062s] [100%] Built target custom_msgs__rosidl_typesupport_fastrtps_c__pyext
+[3.070s] Invoked command in '/home/racecar/racecar_ws/src/custom_msgs/build/custom_msgs' returned '0': CMAKE_PREFIX_PATH=${CMAKE_PREFIX_PATH}:/home/racecar/racecar_ws/install/ros_exercises:/home/racecar/racecar_ws/install/py_pubsub:/home/racecar/racecar_ws/install/first_package_1c:/opt/ros/humble /usr/bin/cmake --build /home/racecar/racecar_ws/src/custom_msgs/build/custom_msgs -- -j12 -l12
+[3.076s] Invoking command in '/home/racecar/racecar_ws/src/custom_msgs/build/custom_msgs': CMAKE_PREFIX_PATH=${CMAKE_PREFIX_PATH}:/home/racecar/racecar_ws/install/ros_exercises:/home/racecar/racecar_ws/install/py_pubsub:/home/racecar/racecar_ws/install/first_package_1c:/opt/ros/humble /usr/bin/cmake --install /home/racecar/racecar_ws/src/custom_msgs/build/custom_msgs
+[3.079s] -- Install configuration: ""
+[3.082s] -- Execute custom install script
+[3.084s] -- Symlinking: /home/racecar/racecar_ws/src/custom_msgs/install/custom_msgs/share/ament_index/resource_index/rosidl_interfaces/custom_msgs
+[3.090s] -- Symlinking: /home/racecar/racecar_ws/src/custom_msgs/install/custom_msgs/include/custom_msgs/custom_msgs/msg/detail/open_space__functions.h
+[3.094s] -- Symlinking: /home/racecar/racecar_ws/src/custom_msgs/install/custom_msgs/include/custom_msgs/custom_msgs/msg/detail/open_space__struct.h
+[3.098s] -- Symlinking: /home/racecar/racecar_ws/src/custom_msgs/install/custom_msgs/include/custom_msgs/custom_msgs/msg/detail/open_space__type_support.h
+[3.102s] -- Symlinking: /home/racecar/racecar_ws/src/custom_msgs/install/custom_msgs/include/custom_msgs/custom_msgs/msg/open_space.h
+[3.107s] -- Symlinking: /home/racecar/racecar_ws/src/custom_msgs/install/custom_msgs/include/custom_msgs/custom_msgs/msg/rosidl_generator_c__visibility_control.h
+[3.113s] -- Symlinking: /home/racecar/racecar_ws/src/custom_msgs/install/custom_msgs/share/custom_msgs/environment/library_path.sh
+[3.118s] -- Symlinking: /home/racecar/racecar_ws/src/custom_msgs/install/custom_msgs/share/custom_msgs/environment/library_path.dsv
+[3.124s] -- Symlinking: /home/racecar/racecar_ws/src/custom_msgs/install/custom_msgs/include/custom_msgs/custom_msgs/msg/detail/open_space__rosidl_typesupport_fastrtps_c.h
+[3.128s] -- Symlinking: /home/racecar/racecar_ws/src/custom_msgs/install/custom_msgs/include/custom_msgs/custom_msgs/msg/rosidl_typesupport_fastrtps_c__visibility_control.h
+[3.133s] -- Symlinking: /home/racecar/racecar_ws/src/custom_msgs/install/custom_msgs/include/custom_msgs/custom_msgs/msg/detail/open_space__rosidl_typesupport_introspection_c.h
+[3.137s] -- Symlinking: /home/racecar/racecar_ws/src/custom_msgs/install/custom_msgs/include/custom_msgs/custom_msgs/msg/rosidl_typesupport_introspection_c__visibility_control.h
+[3.142s] -- Symlinking: /home/racecar/racecar_ws/src/custom_msgs/install/custom_msgs/include/custom_msgs/custom_msgs/msg/detail/open_space__builder.hpp
+[3.148s] -- Symlinking: /home/racecar/racecar_ws/src/custom_msgs/install/custom_msgs/include/custom_msgs/custom_msgs/msg/detail/open_space__struct.hpp
+[3.152s] -- Symlinking: /home/racecar/racecar_ws/src/custom_msgs/install/custom_msgs/include/custom_msgs/custom_msgs/msg/detail/open_space__traits.hpp
+[3.157s] -- Symlinking: /home/racecar/racecar_ws/src/custom_msgs/install/custom_msgs/include/custom_msgs/custom_msgs/msg/detail/open_space__type_support.hpp
+[3.161s] -- Symlinking: /home/racecar/racecar_ws/src/custom_msgs/install/custom_msgs/include/custom_msgs/custom_msgs/msg/open_space.hpp
+[3.165s] -- Symlinking: /home/racecar/racecar_ws/src/custom_msgs/install/custom_msgs/include/custom_msgs/custom_msgs/msg/rosidl_generator_cpp__visibility_control.hpp
+[3.171s] -- Symlinking: /home/racecar/racecar_ws/src/custom_msgs/install/custom_msgs/include/custom_msgs/custom_msgs/msg/detail/open_space__rosidl_typesupport_fastrtps_cpp.hpp
+[3.177s] -- Symlinking: /home/racecar/racecar_ws/src/custom_msgs/install/custom_msgs/include/custom_msgs/custom_msgs/msg/rosidl_typesupport_fastrtps_cpp__visibility_control.h
+[3.182s] -- Symlinking: /home/racecar/racecar_ws/src/custom_msgs/install/custom_msgs/include/custom_msgs/custom_msgs/msg/detail/open_space__rosidl_typesupport_introspection_cpp.hpp
+[3.187s] -- Symlinking: /home/racecar/racecar_ws/src/custom_msgs/install/custom_msgs/share/custom_msgs/environment/pythonpath.sh
+[3.191s] -- Symlinking: /home/racecar/racecar_ws/src/custom_msgs/install/custom_msgs/share/custom_msgs/environment/pythonpath.dsv
+[3.197s] -- Symlinking: /home/racecar/racecar_ws/src/custom_msgs/install/custom_msgs/local/lib/python3.10/dist-packages/custom_msgs-0.0.0-py3.10.egg-info/PKG-INFO
+[3.202s] -- Symlinking: /home/racecar/racecar_ws/src/custom_msgs/install/custom_msgs/local/lib/python3.10/dist-packages/custom_msgs-0.0.0-py3.10.egg-info/SOURCES.txt
+[3.206s] -- Symlinking: /home/racecar/racecar_ws/src/custom_msgs/install/custom_msgs/local/lib/python3.10/dist-packages/custom_msgs-0.0.0-py3.10.egg-info/dependency_links.txt
+[3.211s] -- Symlinking: /home/racecar/racecar_ws/src/custom_msgs/install/custom_msgs/local/lib/python3.10/dist-packages/custom_msgs-0.0.0-py3.10.egg-info/top_level.txt
+[3.218s] -- Symlinking: /home/racecar/racecar_ws/src/custom_msgs/install/custom_msgs/local/lib/python3.10/dist-packages/custom_msgs/__init__.py
+[3.223s] -- Symlinking: /home/racecar/racecar_ws/src/custom_msgs/install/custom_msgs/local/lib/python3.10/dist-packages/custom_msgs/_custom_msgs_s.ep.rosidl_typesupport_c.c
+[3.227s] -- Symlinking: /home/racecar/racecar_ws/src/custom_msgs/install/custom_msgs/local/lib/python3.10/dist-packages/custom_msgs/_custom_msgs_s.ep.rosidl_typesupport_fastrtps_c.c
+[3.231s] -- Symlinking: /home/racecar/racecar_ws/src/custom_msgs/install/custom_msgs/local/lib/python3.10/dist-packages/custom_msgs/_custom_msgs_s.ep.rosidl_typesupport_introspection_c.c
+[3.235s] -- Symlinking: /home/racecar/racecar_ws/src/custom_msgs/install/custom_msgs/local/lib/python3.10/dist-packages/custom_msgs/custom_msgs_s__rosidl_typesupport_c.cpython-310-aarch64-linux-gnu.so
+[3.242s] -- Symlinking: /home/racecar/racecar_ws/src/custom_msgs/install/custom_msgs/local/lib/python3.10/dist-packages/custom_msgs/custom_msgs_s__rosidl_typesupport_fastrtps_c.cpython-310-aarch64-linux-gnu.so
+[3.246s] -- Symlinking: /home/racecar/racecar_ws/src/custom_msgs/install/custom_msgs/local/lib/python3.10/dist-packages/custom_msgs/custom_msgs_s__rosidl_typesupport_introspection_c.cpython-310-aarch64-linux-gnu.so
+[3.251s] -- Symlinking: /home/racecar/racecar_ws/src/custom_msgs/install/custom_msgs/local/lib/python3.10/dist-packages/custom_msgs/libcustom_msgs__rosidl_generator_py.so
+[3.256s] -- Symlinking: /home/racecar/racecar_ws/src/custom_msgs/install/custom_msgs/local/lib/python3.10/dist-packages/custom_msgs/msg/__init__.py
+[3.260s] -- Symlinking: /home/racecar/racecar_ws/src/custom_msgs/install/custom_msgs/local/lib/python3.10/dist-packages/custom_msgs/msg/_open_space.py
+[3.265s] -- Symlinking: /home/racecar/racecar_ws/src/custom_msgs/install/custom_msgs/local/lib/python3.10/dist-packages/custom_msgs/msg/_open_space_s.c
+[3.269s] -- Up-to-date symlink: /home/racecar/racecar_ws/src/custom_msgs/install/custom_msgs/local/lib/python3.10/dist-packages/custom_msgs/custom_msgs_s__rosidl_typesupport_fastrtps_c.cpython-310-aarch64-linux-gnu.so
+[3.270s] -- Up-to-date symlink: /home/racecar/racecar_ws/src/custom_msgs/install/custom_msgs/local/lib/python3.10/dist-packages/custom_msgs/custom_msgs_s__rosidl_typesupport_introspection_c.cpython-310-aarch64-linux-gnu.so
+[3.270s] -- Up-to-date symlink: /home/racecar/racecar_ws/src/custom_msgs/install/custom_msgs/local/lib/python3.10/dist-packages/custom_msgs/custom_msgs_s__rosidl_typesupport_c.cpython-310-aarch64-linux-gnu.so
+[3.273s] -- Symlinking: /home/racecar/racecar_ws/src/custom_msgs/install/custom_msgs/share/custom_msgs/msg/OpenSpace.idl
+[3.277s] -- Symlinking: /home/racecar/racecar_ws/src/custom_msgs/install/custom_msgs/share/custom_msgs/msg/OpenSpace.msg
+[3.282s] -- Symlinking: /home/racecar/racecar_ws/src/custom_msgs/install/custom_msgs/share/ament_index/resource_index/package_run_dependencies/custom_msgs
+[3.287s] -- Symlinking: /home/racecar/racecar_ws/src/custom_msgs/install/custom_msgs/share/ament_index/resource_index/parent_prefix_path/custom_msgs
+[3.291s] -- Symlinking: /home/racecar/racecar_ws/src/custom_msgs/install/custom_msgs/share/custom_msgs/environment/ament_prefix_path.sh
+[3.296s] -- Symlinking: /home/racecar/racecar_ws/src/custom_msgs/install/custom_msgs/share/custom_msgs/environment/ament_prefix_path.dsv
+[3.300s] -- Symlinking: /home/racecar/racecar_ws/src/custom_msgs/install/custom_msgs/share/custom_msgs/environment/path.sh
+[3.306s] -- Symlinking: /home/racecar/racecar_ws/src/custom_msgs/install/custom_msgs/share/custom_msgs/environment/path.dsv
+[3.311s] -- Symlinking: /home/racecar/racecar_ws/src/custom_msgs/install/custom_msgs/share/custom_msgs/local_setup.bash
+[3.316s] -- Symlinking: /home/racecar/racecar_ws/src/custom_msgs/install/custom_msgs/share/custom_msgs/local_setup.sh
+[3.320s] -- Symlinking: /home/racecar/racecar_ws/src/custom_msgs/install/custom_msgs/share/custom_msgs/local_setup.zsh
+[3.324s] -- Symlinking: /home/racecar/racecar_ws/src/custom_msgs/install/custom_msgs/share/custom_msgs/local_setup.dsv
+[3.328s] -- Symlinking: /home/racecar/racecar_ws/src/custom_msgs/install/custom_msgs/share/custom_msgs/package.dsv
+[3.333s] -- Symlinking: /home/racecar/racecar_ws/src/custom_msgs/install/custom_msgs/share/ament_index/resource_index/packages/custom_msgs
+[3.340s] -- Symlinking: /home/racecar/racecar_ws/src/custom_msgs/install/custom_msgs/share/custom_msgs/cmake/rosidl_cmake-extras.cmake
+[3.344s] -- Symlinking: /home/racecar/racecar_ws/src/custom_msgs/install/custom_msgs/share/custom_msgs/cmake/ament_cmake_export_include_directories-extras.cmake
+[3.349s] -- Symlinking: /home/racecar/racecar_ws/src/custom_msgs/install/custom_msgs/share/custom_msgs/cmake/ament_cmake_export_libraries-extras.cmake
+[3.353s] -- Symlinking: /home/racecar/racecar_ws/src/custom_msgs/install/custom_msgs/share/custom_msgs/cmake/ament_cmake_export_targets-extras.cmake
+[3.357s] -- Symlinking: /home/racecar/racecar_ws/src/custom_msgs/install/custom_msgs/share/custom_msgs/cmake/rosidl_cmake_export_typesupport_targets-extras.cmake
+[3.361s] -- Symlinking: /home/racecar/racecar_ws/src/custom_msgs/install/custom_msgs/share/custom_msgs/cmake/ament_cmake_export_dependencies-extras.cmake
+[3.366s] -- Symlinking: /home/racecar/racecar_ws/src/custom_msgs/install/custom_msgs/share/custom_msgs/cmake/rosidl_cmake_export_typesupport_libraries-extras.cmake
+[3.371s] -- Symlinking: /home/racecar/racecar_ws/src/custom_msgs/install/custom_msgs/share/custom_msgs/cmake/custom_msgsConfig.cmake
+[3.375s] -- Symlinking: /home/racecar/racecar_ws/src/custom_msgs/install/custom_msgs/share/custom_msgs/cmake/custom_msgsConfig-version.cmake
+[3.380s] -- Symlinking: /home/racecar/racecar_ws/src/custom_msgs/install/custom_msgs/share/custom_msgs/package.xml
+[3.385s] -- Installing: /home/racecar/racecar_ws/src/custom_msgs/install/custom_msgs/lib/libcustom_msgs__rosidl_generator_c.so
+[3.387s] -- Set runtime path of "/home/racecar/racecar_ws/src/custom_msgs/install/custom_msgs/lib/libcustom_msgs__rosidl_generator_c.so" to ""
+[3.387s] -- Installing: /home/racecar/racecar_ws/src/custom_msgs/install/custom_msgs/lib/libcustom_msgs__rosidl_typesupport_fastrtps_c.so
+[3.390s] -- Set runtime path of "/home/racecar/racecar_ws/src/custom_msgs/install/custom_msgs/lib/libcustom_msgs__rosidl_typesupport_fastrtps_c.so" to ""
+[3.390s] -- Installing: /home/racecar/racecar_ws/src/custom_msgs/install/custom_msgs/lib/libcustom_msgs__rosidl_typesupport_introspection_c.so
+[3.393s] -- Set runtime path of "/home/racecar/racecar_ws/src/custom_msgs/install/custom_msgs/lib/libcustom_msgs__rosidl_typesupport_introspection_c.so" to ""
+[3.393s] -- Installing: /home/racecar/racecar_ws/src/custom_msgs/install/custom_msgs/lib/libcustom_msgs__rosidl_typesupport_c.so
+[3.396s] -- Set runtime path of "/home/racecar/racecar_ws/src/custom_msgs/install/custom_msgs/lib/libcustom_msgs__rosidl_typesupport_c.so" to ""
+[3.396s] -- Installing: /home/racecar/racecar_ws/src/custom_msgs/install/custom_msgs/lib/libcustom_msgs__rosidl_typesupport_fastrtps_cpp.so
+[3.398s] -- Set runtime path of "/home/racecar/racecar_ws/src/custom_msgs/install/custom_msgs/lib/libcustom_msgs__rosidl_typesupport_fastrtps_cpp.so" to ""
+[3.399s] -- Installing: /home/racecar/racecar_ws/src/custom_msgs/install/custom_msgs/lib/libcustom_msgs__rosidl_typesupport_introspection_cpp.so
+[3.401s] -- Set runtime path of "/home/racecar/racecar_ws/src/custom_msgs/install/custom_msgs/lib/libcustom_msgs__rosidl_typesupport_introspection_cpp.so" to ""
+[3.402s] -- Installing: /home/racecar/racecar_ws/src/custom_msgs/install/custom_msgs/lib/libcustom_msgs__rosidl_typesupport_cpp.so
+[3.407s] -- Set runtime path of "/home/racecar/racecar_ws/src/custom_msgs/install/custom_msgs/lib/libcustom_msgs__rosidl_typesupport_cpp.so" to ""
+[3.431s] Listing '/home/racecar/racecar_ws/src/custom_msgs/install/custom_msgs/local/lib/python3.10/dist-packages/custom_msgs'...
+[3.431s] Compiling '/home/racecar/racecar_ws/src/custom_msgs/install/custom_msgs/local/lib/python3.10/dist-packages/custom_msgs/__init__.py'...
+[3.431s] Listing '/home/racecar/racecar_ws/src/custom_msgs/install/custom_msgs/local/lib/python3.10/dist-packages/custom_msgs/msg'...
+[3.433s] Compiling '/home/racecar/racecar_ws/src/custom_msgs/install/custom_msgs/local/lib/python3.10/dist-packages/custom_msgs/msg/__init__.py'...
+[3.434s] Compiling '/home/racecar/racecar_ws/src/custom_msgs/install/custom_msgs/local/lib/python3.10/dist-packages/custom_msgs/msg/_open_space.py'...
+[3.435s] -- Installing: /home/racecar/racecar_ws/src/custom_msgs/install/custom_msgs/lib/libcustom_msgs__rosidl_generator_py.so
+[3.438s] -- Set runtime path of "/home/racecar/racecar_ws/src/custom_msgs/install/custom_msgs/lib/libcustom_msgs__rosidl_generator_py.so" to ""
+[3.438s] -- Installing: /home/racecar/racecar_ws/src/custom_msgs/install/custom_msgs/share/custom_msgs/cmake/export_custom_msgs__rosidl_generator_cExport.cmake
+[3.440s] -- Installing: /home/racecar/racecar_ws/src/custom_msgs/install/custom_msgs/share/custom_msgs/cmake/export_custom_msgs__rosidl_generator_cExport-noconfig.cmake
+[3.442s] -- Installing: /home/racecar/racecar_ws/src/custom_msgs/install/custom_msgs/share/custom_msgs/cmake/export_custom_msgs__rosidl_typesupport_fastrtps_cExport.cmake
+[3.443s] -- Installing: /home/racecar/racecar_ws/src/custom_msgs/install/custom_msgs/share/custom_msgs/cmake/export_custom_msgs__rosidl_typesupport_fastrtps_cExport-noconfig.cmake
+[3.445s] -- Installing: /home/racecar/racecar_ws/src/custom_msgs/install/custom_msgs/share/custom_msgs/cmake/custom_msgs__rosidl_typesupport_introspection_cExport.cmake
+[3.449s] -- Installing: /home/racecar/racecar_ws/src/custom_msgs/install/custom_msgs/share/custom_msgs/cmake/custom_msgs__rosidl_typesupport_introspection_cExport-noconfig.cmake
+[3.451s] -- Installing: /home/racecar/racecar_ws/src/custom_msgs/install/custom_msgs/share/custom_msgs/cmake/custom_msgs__rosidl_typesupport_cExport.cmake
+[3.453s] -- Installing: /home/racecar/racecar_ws/src/custom_msgs/install/custom_msgs/share/custom_msgs/cmake/custom_msgs__rosidl_typesupport_cExport-noconfig.cmake
+[3.454s] -- Installing: /home/racecar/racecar_ws/src/custom_msgs/install/custom_msgs/share/custom_msgs/cmake/export_custom_msgs__rosidl_generator_cppExport.cmake
+[3.457s] -- Installing: /home/racecar/racecar_ws/src/custom_msgs/install/custom_msgs/share/custom_msgs/cmake/export_custom_msgs__rosidl_typesupport_fastrtps_cppExport.cmake
+[3.467s] -- Installing: /home/racecar/racecar_ws/src/custom_msgs/install/custom_msgs/share/custom_msgs/cmake/export_custom_msgs__rosidl_typesupport_fastrtps_cppExport-noconfig.cmake
+[3.470s] -- Installing: /home/racecar/racecar_ws/src/custom_msgs/install/custom_msgs/share/custom_msgs/cmake/custom_msgs__rosidl_typesupport_introspection_cppExport.cmake
+[3.473s] -- Installing: /home/racecar/racecar_ws/src/custom_msgs/install/custom_msgs/share/custom_msgs/cmake/custom_msgs__rosidl_typesupport_introspection_cppExport-noconfig.cmake
+[3.477s] -- Installing: /home/racecar/racecar_ws/src/custom_msgs/install/custom_msgs/share/custom_msgs/cmake/custom_msgs__rosidl_typesupport_cppExport.cmake
+[3.479s] -- Installing: /home/racecar/racecar_ws/src/custom_msgs/install/custom_msgs/share/custom_msgs/cmake/custom_msgs__rosidl_typesupport_cppExport-noconfig.cmake
+[3.484s] -- Installing: /home/racecar/racecar_ws/src/custom_msgs/install/custom_msgs/share/custom_msgs/cmake/export_custom_msgs__rosidl_generator_pyExport.cmake
+[3.486s] -- Installing: /home/racecar/racecar_ws/src/custom_msgs/install/custom_msgs/share/custom_msgs/cmake/export_custom_msgs__rosidl_generator_pyExport-noconfig.cmake
+[3.490s] Invoked command in '/home/racecar/racecar_ws/src/custom_msgs/build/custom_msgs' returned '0': CMAKE_PREFIX_PATH=${CMAKE_PREFIX_PATH}:/home/racecar/racecar_ws/install/ros_exercises:/home/racecar/racecar_ws/install/py_pubsub:/home/racecar/racecar_ws/install/first_package_1c:/opt/ros/humble /usr/bin/cmake --install /home/racecar/racecar_ws/src/custom_msgs/build/custom_msgs

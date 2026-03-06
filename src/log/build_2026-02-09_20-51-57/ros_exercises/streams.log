@@ -1,0 +1,25 @@
+[0.629s] Invoking command in '/home/racecar/racecar_ws/src/build/ros_exercises': PYTHONPATH=/home/racecar/racecar_ws/src/build/ros_exercises/prefix_override:/usr/lib/python3/dist-packages/colcon_core/task/python/colcon_distutils_commands:/home/racecar/racecar_ws/src/install/ros_exercises/lib/python3.10/site-packages:${PYTHONPATH} /usr/bin/python3 -W ignore:setup.py install is deprecated -W ignore:easy_install command is deprecated setup.py develop --editable --build-directory /home/racecar/racecar_ws/src/build/ros_exercises/build --no-deps symlink_data
+[0.779s] running develop
+[0.887s] running egg_info
+[0.888s] creating ros_exercises.egg-info
+[0.888s] writing ros_exercises.egg-info/PKG-INFO
+[0.889s] writing dependency_links to ros_exercises.egg-info/dependency_links.txt
+[0.889s] writing entry points to ros_exercises.egg-info/entry_points.txt
+[0.890s] writing requirements to ros_exercises.egg-info/requires.txt
+[0.890s] writing top-level names to ros_exercises.egg-info/top_level.txt
+[0.891s] writing manifest file 'ros_exercises.egg-info/SOURCES.txt'
+[0.894s] reading manifest file 'ros_exercises.egg-info/SOURCES.txt'
+[0.896s] writing manifest file 'ros_exercises.egg-info/SOURCES.txt'
+[0.919s] running build_ext
+[0.919s] Creating /home/racecar/racecar_ws/src/install/ros_exercises/lib/python3.10/site-packages/ros-exercises.egg-link (link to .)
+[0.922s] Installing listener script to /home/racecar/racecar_ws/src/install/ros_exercises/lib/ros_exercises
+[0.922s] Installing talker script to /home/racecar/racecar_ws/src/install/ros_exercises/lib/ros_exercises
+[0.923s] 
+[0.924s] Installed /home/racecar/racecar_ws/src/build/ros_exercises
+[0.925s] running symlink_data
+[0.925s] creating /home/racecar/racecar_ws/src/install/ros_exercises/share/ament_index
+[0.926s] creating /home/racecar/racecar_ws/src/install/ros_exercises/share/ament_index/resource_index
+[0.926s] creating /home/racecar/racecar_ws/src/install/ros_exercises/share/ament_index/resource_index/packages
+[0.927s] symbolically linking /home/racecar/racecar_ws/src/build/ros_exercises/resource/ros_exercises -> /home/racecar/racecar_ws/src/install/ros_exercises/share/ament_index/resource_index/packages
+[0.927s] symbolically linking /home/racecar/racecar_ws/src/build/ros_exercises/package.xml -> /home/racecar/racecar_ws/src/install/ros_exercises/share/ros_exercises
+[0.955s] Invoked command in '/home/racecar/racecar_ws/src/build/ros_exercises' returned '0': PYTHONPATH=/home/racecar/racecar_ws/src/build/ros_exercises/prefix_override:/usr/lib/python3/dist-packages/colcon_core/task/python/colcon_distutils_commands:/home/racecar/racecar_ws/src/install/ros_exercises/lib/python3.10/site-packages:${PYTHONPATH} /usr/bin/python3 -W ignore:setup.py install is deprecated -W ignore:easy_install command is deprecated setup.py develop --editable --build-directory /home/racecar/racecar_ws/src/build/ros_exercises/build --no-deps symlink_data

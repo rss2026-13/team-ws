@@ -1,0 +1,21 @@
+running develop
+running egg_info
+creating first_package_1c.egg-info
+writing first_package_1c.egg-info/PKG-INFO
+writing dependency_links to first_package_1c.egg-info/dependency_links.txt
+writing entry points to first_package_1c.egg-info/entry_points.txt
+writing requirements to first_package_1c.egg-info/requires.txt
+writing top-level names to first_package_1c.egg-info/top_level.txt
+writing manifest file 'first_package_1c.egg-info/SOURCES.txt'
+reading manifest file 'first_package_1c.egg-info/SOURCES.txt'
+writing manifest file 'first_package_1c.egg-info/SOURCES.txt'
+running build_ext
+Creating /home/racecar/racecar_ws/src/install/first_package_1c/lib/python3.10/site-packages/first-package-1c.egg-link (link to .)
+
+Installed /home/racecar/racecar_ws/src/build/first_package_1c
+running symlink_data
+creating /home/racecar/racecar_ws/src/install/first_package_1c/share/ament_index
+creating /home/racecar/racecar_ws/src/install/first_package_1c/share/ament_index/resource_index
+creating /home/racecar/racecar_ws/src/install/first_package_1c/share/ament_index/resource_index/packages
+symbolically linking /home/racecar/racecar_ws/src/build/first_package_1c/resource/first_package_1c -> /home/racecar/racecar_ws/src/install/first_package_1c/share/ament_index/resource_index/packages
+symbolically linking /home/racecar/racecar_ws/src/build/first_package_1c/package.xml -> /home/racecar/racecar_ws/src/install/first_package_1c/share/first_package_1c

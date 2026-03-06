@@ -1,0 +1,23 @@
+[0.625s] Invoking command in '/home/racecar/racecar_ws/src/build/first_package_1c': PYTHONPATH=/home/racecar/racecar_ws/src/build/first_package_1c/prefix_override:/usr/lib/python3/dist-packages/colcon_core/task/python/colcon_distutils_commands:/home/racecar/racecar_ws/src/install/first_package_1c/lib/python3.10/site-packages:${PYTHONPATH} /usr/bin/python3 -W ignore:setup.py install is deprecated -W ignore:easy_install command is deprecated setup.py develop --editable --build-directory /home/racecar/racecar_ws/src/build/first_package_1c/build --no-deps symlink_data
+[0.773s] running develop
+[0.872s] running egg_info
+[0.873s] creating first_package_1c.egg-info
+[0.875s] writing first_package_1c.egg-info/PKG-INFO
+[0.876s] writing dependency_links to first_package_1c.egg-info/dependency_links.txt
+[0.876s] writing entry points to first_package_1c.egg-info/entry_points.txt
+[0.877s] writing requirements to first_package_1c.egg-info/requires.txt
+[0.877s] writing top-level names to first_package_1c.egg-info/top_level.txt
+[0.884s] writing manifest file 'first_package_1c.egg-info/SOURCES.txt'
+[0.887s] reading manifest file 'first_package_1c.egg-info/SOURCES.txt'
+[0.891s] writing manifest file 'first_package_1c.egg-info/SOURCES.txt'
+[0.914s] running build_ext
+[0.914s] Creating /home/racecar/racecar_ws/src/install/first_package_1c/lib/python3.10/site-packages/first-package-1c.egg-link (link to .)
+[0.916s] 
+[0.916s] Installed /home/racecar/racecar_ws/src/build/first_package_1c
+[0.917s] running symlink_data
+[0.918s] creating /home/racecar/racecar_ws/src/install/first_package_1c/share/ament_index
+[0.918s] creating /home/racecar/racecar_ws/src/install/first_package_1c/share/ament_index/resource_index
+[0.918s] creating /home/racecar/racecar_ws/src/install/first_package_1c/share/ament_index/resource_index/packages
+[0.922s] symbolically linking /home/racecar/racecar_ws/src/build/first_package_1c/resource/first_package_1c -> /home/racecar/racecar_ws/src/install/first_package_1c/share/ament_index/resource_index/packages
+[0.923s] symbolically linking /home/racecar/racecar_ws/src/build/first_package_1c/package.xml -> /home/racecar/racecar_ws/src/install/first_package_1c/share/first_package_1c
+[0.945s] Invoked command in '/home/racecar/racecar_ws/src/build/first_package_1c' returned '0': PYTHONPATH=/home/racecar/racecar_ws/src/build/first_package_1c/prefix_override:/usr/lib/python3/dist-packages/colcon_core/task/python/colcon_distutils_commands:/home/racecar/racecar_ws/src/install/first_package_1c/lib/python3.10/site-packages:${PYTHONPATH} /usr/bin/python3 -W ignore:setup.py install is deprecated -W ignore:easy_install command is deprecated setup.py develop --editable --build-directory /home/racecar/racecar_ws/src/build/first_package_1c/build --no-deps symlink_data

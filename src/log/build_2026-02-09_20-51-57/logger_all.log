@@ -1,0 +1,264 @@
+[0.047s] DEBUG:colcon:Command line arguments: ['/usr/bin/colcon', 'build', '--symlink-install']
+[0.048s] DEBUG:colcon:Parsed command line arguments: Namespace(log_base=None, log_level=None, verb_name='build', build_base='build', install_base='install', merge_install=False, symlink_install=True, test_result_base=None, continue_on_error=False, executor='parallel', parallel_workers=12, event_handlers=None, ignore_user_meta=False, metas=['./colcon.meta'], base_paths=['.'], packages_ignore=None, packages_ignore_regex=None, paths=None, packages_up_to=None, packages_up_to_regex=None, packages_above=None, packages_above_and_dependencies=None, packages_above_depth=None, packages_select_by_dep=None, packages_skip_by_dep=None, packages_skip_up_to=None, packages_select_build_failed=False, packages_skip_build_finished=False, packages_select_test_failures=False, packages_skip_test_passed=False, packages_select=None, packages_skip=None, packages_select_regex=None, packages_skip_regex=None, packages_start=None, packages_end=None, cmake_args=None, cmake_target=None, cmake_target_skip_unavailable=False, cmake_clean_cache=False, cmake_clean_first=False, cmake_force_configure=False, ament_cmake_args=None, catkin_cmake_args=None, catkin_skip_building_tests=False, mixin_files=None, mixin=None, verb_parser=<colcon_mixin.mixin.mixin_argument.MixinArgumentDecorator object at 0xffff7fc45840>, verb_extension=<colcon_core.verb.build.BuildVerb object at 0xffff7fc45300>, main=<bound method BuildVerb.main of <colcon_core.verb.build.BuildVerb object at 0xffff7fc45300>>, mixin_verb=('build',))
+[0.110s] Level 1:colcon.colcon_core.package_discovery:discover_packages(colcon_meta) check parameters
+[0.110s] Level 1:colcon.colcon_core.package_discovery:discover_packages(recursive) check parameters
+[0.110s] Level 1:colcon.colcon_core.package_discovery:discover_packages(ignore) check parameters
+[0.110s] Level 1:colcon.colcon_core.package_discovery:discover_packages(path) check parameters
+[0.110s] Level 1:colcon.colcon_core.package_discovery:discover_packages(colcon_meta) discover
+[0.110s] Level 1:colcon.colcon_core.package_discovery:discover_packages(recursive) discover
+[0.111s] INFO:colcon.colcon_core.package_discovery:Crawling recursively for packages in '/home/racecar/racecar_ws/src'
+[0.111s] Level 1:colcon.colcon_core.package_identification:_identify(.) by extensions ['ignore', 'ignore_ament_install']
+[0.111s] Level 1:colcon.colcon_core.package_identification:_identify(.) by extension 'ignore'
+[0.111s] Level 1:colcon.colcon_core.package_identification:_identify(.) by extension 'ignore_ament_install'
+[0.111s] Level 1:colcon.colcon_core.package_identification:_identify(.) by extensions ['colcon_pkg']
+[0.111s] Level 1:colcon.colcon_core.package_identification:_identify(.) by extension 'colcon_pkg'
+[0.112s] Level 1:colcon.colcon_core.package_identification:_identify(.) by extensions ['colcon_meta']
+[0.112s] Level 1:colcon.colcon_core.package_identification:_identify(.) by extension 'colcon_meta'
+[0.112s] Level 1:colcon.colcon_core.package_identification:_identify(.) by extensions ['ros']
+[0.112s] Level 1:colcon.colcon_core.package_identification:_identify(.) by extension 'ros'
+[0.117s] Level 1:colcon.colcon_core.package_identification:_identify(.) by extensions ['cmake', 'python']
+[0.117s] Level 1:colcon.colcon_core.package_identification:_identify(.) by extension 'cmake'
+[0.117s] Level 1:colcon.colcon_core.package_identification:_identify(.) by extension 'python'
+[0.117s] Level 1:colcon.colcon_core.package_identification:_identify(.) by extensions ['python_setup_py']
+[0.117s] Level 1:colcon.colcon_core.package_identification:_identify(.) by extension 'python_setup_py'
+[0.118s] Level 1:colcon.colcon_core.package_identification:_identify(build) by extensions ['ignore', 'ignore_ament_install']
+[0.118s] Level 1:colcon.colcon_core.package_identification:_identify(build) by extension 'ignore'
+[0.118s] Level 1:colcon.colcon_core.package_identification:_identify(build) ignored
+[0.118s] Level 1:colcon.colcon_core.package_identification:_identify(first_package_1c) by extensions ['ignore', 'ignore_ament_install']
+[0.118s] Level 1:colcon.colcon_core.package_identification:_identify(first_package_1c) by extension 'ignore'
+[0.118s] Level 1:colcon.colcon_core.package_identification:_identify(first_package_1c) by extension 'ignore_ament_install'
+[0.119s] Level 1:colcon.colcon_core.package_identification:_identify(first_package_1c) by extensions ['colcon_pkg']
+[0.119s] Level 1:colcon.colcon_core.package_identification:_identify(first_package_1c) by extension 'colcon_pkg'
+[0.119s] Level 1:colcon.colcon_core.package_identification:_identify(first_package_1c) by extensions ['colcon_meta']
+[0.119s] Level 1:colcon.colcon_core.package_identification:_identify(first_package_1c) by extension 'colcon_meta'
+[0.119s] Level 1:colcon.colcon_core.package_identification:_identify(first_package_1c) by extensions ['ros']
+[0.119s] Level 1:colcon.colcon_core.package_identification:_identify(first_package_1c) by extension 'ros'
+[0.120s] DEBUG:colcon.colcon_core.package_identification:Package 'first_package_1c' with type 'ros.ament_python' and name 'first_package_1c'
+[0.120s] Level 1:colcon.colcon_core.package_identification:_identify(install) by extensions ['ignore', 'ignore_ament_install']
+[0.120s] Level 1:colcon.colcon_core.package_identification:_identify(install) by extension 'ignore'
+[0.121s] Level 1:colcon.colcon_core.package_identification:_identify(install) ignored
+[0.121s] Level 1:colcon.colcon_core.package_identification:_identify(intro_to_linux) by extensions ['ignore', 'ignore_ament_install']
+[0.121s] Level 1:colcon.colcon_core.package_identification:_identify(intro_to_linux) by extension 'ignore'
+[0.121s] Level 1:colcon.colcon_core.package_identification:_identify(intro_to_linux) by extension 'ignore_ament_install'
+[0.121s] Level 1:colcon.colcon_core.package_identification:_identify(intro_to_linux) by extensions ['colcon_pkg']
+[0.121s] Level 1:colcon.colcon_core.package_identification:_identify(intro_to_linux) by extension 'colcon_pkg'
+[0.121s] Level 1:colcon.colcon_core.package_identification:_identify(intro_to_linux) by extensions ['colcon_meta']
+[0.121s] Level 1:colcon.colcon_core.package_identification:_identify(intro_to_linux) by extension 'colcon_meta'
+[0.121s] Level 1:colcon.colcon_core.package_identification:_identify(intro_to_linux) by extensions ['ros']
+[0.121s] Level 1:colcon.colcon_core.package_identification:_identify(intro_to_linux) by extension 'ros'
+[0.122s] Level 1:colcon.colcon_core.package_identification:_identify(intro_to_linux) by extensions ['cmake', 'python']
+[0.122s] Level 1:colcon.colcon_core.package_identification:_identify(intro_to_linux) by extension 'cmake'
+[0.122s] Level 1:colcon.colcon_core.package_identification:_identify(intro_to_linux) by extension 'python'
+[0.122s] Level 1:colcon.colcon_core.package_identification:_identify(intro_to_linux) by extensions ['python_setup_py']
+[0.122s] Level 1:colcon.colcon_core.package_identification:_identify(intro_to_linux) by extension 'python_setup_py'
+[0.122s] Level 1:colcon.colcon_core.package_identification:_identify(intro_to_linux/lab1) by extensions ['ignore', 'ignore_ament_install']
+[0.122s] Level 1:colcon.colcon_core.package_identification:_identify(intro_to_linux/lab1) by extension 'ignore'
+[0.122s] Level 1:colcon.colcon_core.package_identification:_identify(intro_to_linux/lab1) by extension 'ignore_ament_install'
+[0.122s] Level 1:colcon.colcon_core.package_identification:_identify(intro_to_linux/lab1) by extensions ['colcon_pkg']
+[0.122s] Level 1:colcon.colcon_core.package_identification:_identify(intro_to_linux/lab1) by extension 'colcon_pkg'
+[0.123s] Level 1:colcon.colcon_core.package_identification:_identify(intro_to_linux/lab1) by extensions ['colcon_meta']
+[0.123s] Level 1:colcon.colcon_core.package_identification:_identify(intro_to_linux/lab1) by extension 'colcon_meta'
+[0.123s] Level 1:colcon.colcon_core.package_identification:_identify(intro_to_linux/lab1) by extensions ['ros']
+[0.123s] Level 1:colcon.colcon_core.package_identification:_identify(intro_to_linux/lab1) by extension 'ros'
+[0.123s] Level 1:colcon.colcon_core.package_identification:_identify(intro_to_linux/lab1) by extensions ['cmake', 'python']
+[0.123s] Level 1:colcon.colcon_core.package_identification:_identify(intro_to_linux/lab1) by extension 'cmake'
+[0.123s] Level 1:colcon.colcon_core.package_identification:_identify(intro_to_linux/lab1) by extension 'python'
+[0.123s] Level 1:colcon.colcon_core.package_identification:_identify(intro_to_linux/lab1) by extensions ['python_setup_py']
+[0.123s] Level 1:colcon.colcon_core.package_identification:_identify(intro_to_linux/lab1) by extension 'python_setup_py'
+[0.123s] Level 1:colcon.colcon_core.package_identification:_identify(lab1c) by extensions ['ignore', 'ignore_ament_install']
+[0.123s] Level 1:colcon.colcon_core.package_identification:_identify(lab1c) by extension 'ignore'
+[0.124s] Level 1:colcon.colcon_core.package_identification:_identify(lab1c) by extension 'ignore_ament_install'
+[0.124s] Level 1:colcon.colcon_core.package_identification:_identify(lab1c) by extensions ['colcon_pkg']
+[0.124s] Level 1:colcon.colcon_core.package_identification:_identify(lab1c) by extension 'colcon_pkg'
+[0.124s] Level 1:colcon.colcon_core.package_identification:_identify(lab1c) by extensions ['colcon_meta']
+[0.124s] Level 1:colcon.colcon_core.package_identification:_identify(lab1c) by extension 'colcon_meta'
+[0.124s] Level 1:colcon.colcon_core.package_identification:_identify(lab1c) by extensions ['ros']
+[0.124s] Level 1:colcon.colcon_core.package_identification:_identify(lab1c) by extension 'ros'
+[0.124s] Level 1:colcon.colcon_core.package_identification:_identify(lab1c) by extensions ['cmake', 'python']
+[0.124s] Level 1:colcon.colcon_core.package_identification:_identify(lab1c) by extension 'cmake'
+[0.124s] Level 1:colcon.colcon_core.package_identification:_identify(lab1c) by extension 'python'
+[0.125s] Level 1:colcon.colcon_core.package_identification:_identify(lab1c) by extensions ['python_setup_py']
+[0.125s] Level 1:colcon.colcon_core.package_identification:_identify(lab1c) by extension 'python_setup_py'
+[0.125s] Level 1:colcon.colcon_core.package_identification:_identify(lab1c/ros_exercises) by extensions ['ignore', 'ignore_ament_install']
+[0.125s] Level 1:colcon.colcon_core.package_identification:_identify(lab1c/ros_exercises) by extension 'ignore'
+[0.125s] Level 1:colcon.colcon_core.package_identification:_identify(lab1c/ros_exercises) by extension 'ignore_ament_install'
+[0.125s] Level 1:colcon.colcon_core.package_identification:_identify(lab1c/ros_exercises) by extensions ['colcon_pkg']
+[0.125s] Level 1:colcon.colcon_core.package_identification:_identify(lab1c/ros_exercises) by extension 'colcon_pkg'
+[0.125s] Level 1:colcon.colcon_core.package_identification:_identify(lab1c/ros_exercises) by extensions ['colcon_meta']
+[0.125s] Level 1:colcon.colcon_core.package_identification:_identify(lab1c/ros_exercises) by extension 'colcon_meta'
+[0.126s] Level 1:colcon.colcon_core.package_identification:_identify(lab1c/ros_exercises) by extensions ['ros']
+[0.126s] Level 1:colcon.colcon_core.package_identification:_identify(lab1c/ros_exercises) by extension 'ros'
+[0.126s] DEBUG:colcon.colcon_core.package_identification:Package 'lab1c/ros_exercises' with type 'ros.ament_python' and name 'ros_exercises'
+[0.127s] Level 1:colcon.colcon_core.package_identification:_identify(log) by extensions ['ignore', 'ignore_ament_install']
+[0.127s] Level 1:colcon.colcon_core.package_identification:_identify(log) by extension 'ignore'
+[0.127s] Level 1:colcon.colcon_core.package_identification:_identify(log) ignored
+[0.127s] Level 1:colcon.colcon_core.package_identification:_identify(py_pubsub) by extensions ['ignore', 'ignore_ament_install']
+[0.127s] Level 1:colcon.colcon_core.package_identification:_identify(py_pubsub) by extension 'ignore'
+[0.127s] Level 1:colcon.colcon_core.package_identification:_identify(py_pubsub) by extension 'ignore_ament_install'
+[0.127s] Level 1:colcon.colcon_core.package_identification:_identify(py_pubsub) by extensions ['colcon_pkg']
+[0.127s] Level 1:colcon.colcon_core.package_identification:_identify(py_pubsub) by extension 'colcon_pkg'
+[0.128s] Level 1:colcon.colcon_core.package_identification:_identify(py_pubsub) by extensions ['colcon_meta']
+[0.128s] Level 1:colcon.colcon_core.package_identification:_identify(py_pubsub) by extension 'colcon_meta'
+[0.128s] Level 1:colcon.colcon_core.package_identification:_identify(py_pubsub) by extensions ['ros']
+[0.128s] Level 1:colcon.colcon_core.package_identification:_identify(py_pubsub) by extension 'ros'
+[0.128s] DEBUG:colcon.colcon_core.package_identification:Package 'py_pubsub' with type 'ros.ament_python' and name 'py_pubsub'
+[0.128s] Level 1:colcon.colcon_core.package_discovery:discover_packages(recursive) using defaults
+[0.128s] Level 1:colcon.colcon_core.package_discovery:discover_packages(ignore) discover
+[0.129s] Level 1:colcon.colcon_core.package_discovery:discover_packages(ignore) using defaults
+[0.129s] Level 1:colcon.colcon_core.package_discovery:discover_packages(path) discover
+[0.129s] Level 1:colcon.colcon_core.package_discovery:discover_packages(path) using defaults
+[0.137s] Level 5:colcon.colcon_core.verb:set package 'first_package_1c' build argument 'cmake_args' from command line to 'None'
+[0.137s] Level 5:colcon.colcon_core.verb:set package 'first_package_1c' build argument 'cmake_target' from command line to 'None'
+[0.137s] Level 5:colcon.colcon_core.verb:set package 'first_package_1c' build argument 'cmake_target_skip_unavailable' from command line to 'False'
+[0.137s] Level 5:colcon.colcon_core.verb:set package 'first_package_1c' build argument 'cmake_clean_cache' from command line to 'False'
+[0.137s] Level 5:colcon.colcon_core.verb:set package 'first_package_1c' build argument 'cmake_clean_first' from command line to 'False'
+[0.137s] Level 5:colcon.colcon_core.verb:set package 'first_package_1c' build argument 'cmake_force_configure' from command line to 'False'
+[0.137s] Level 5:colcon.colcon_core.verb:set package 'first_package_1c' build argument 'ament_cmake_args' from command line to 'None'
+[0.137s] Level 5:colcon.colcon_core.verb:set package 'first_package_1c' build argument 'catkin_cmake_args' from command line to 'None'
+[0.137s] Level 5:colcon.colcon_core.verb:set package 'first_package_1c' build argument 'catkin_skip_building_tests' from command line to 'False'
+[0.138s] DEBUG:colcon.colcon_core.verb:Building package 'first_package_1c' with the following arguments: {'ament_cmake_args': None, 'build_base': '/home/racecar/racecar_ws/src/build/first_package_1c', 'catkin_cmake_args': None, 'catkin_skip_building_tests': False, 'cmake_args': None, 'cmake_clean_cache': False, 'cmake_clean_first': False, 'cmake_force_configure': False, 'cmake_target': None, 'cmake_target_skip_unavailable': False, 'install_base': '/home/racecar/racecar_ws/src/install/first_package_1c', 'merge_install': False, 'path': '/home/racecar/racecar_ws/src/first_package_1c', 'symlink_install': True, 'test_result_base': None}
+[0.138s] Level 5:colcon.colcon_core.verb:set package 'py_pubsub' build argument 'cmake_args' from command line to 'None'
+[0.138s] Level 5:colcon.colcon_core.verb:set package 'py_pubsub' build argument 'cmake_target' from command line to 'None'
+[0.138s] Level 5:colcon.colcon_core.verb:set package 'py_pubsub' build argument 'cmake_target_skip_unavailable' from command line to 'False'
+[0.138s] Level 5:colcon.colcon_core.verb:set package 'py_pubsub' build argument 'cmake_clean_cache' from command line to 'False'
+[0.138s] Level 5:colcon.colcon_core.verb:set package 'py_pubsub' build argument 'cmake_clean_first' from command line to 'False'
+[0.138s] Level 5:colcon.colcon_core.verb:set package 'py_pubsub' build argument 'cmake_force_configure' from command line to 'False'
+[0.138s] Level 5:colcon.colcon_core.verb:set package 'py_pubsub' build argument 'ament_cmake_args' from command line to 'None'
+[0.138s] Level 5:colcon.colcon_core.verb:set package 'py_pubsub' build argument 'catkin_cmake_args' from command line to 'None'
+[0.138s] Level 5:colcon.colcon_core.verb:set package 'py_pubsub' build argument 'catkin_skip_building_tests' from command line to 'False'
+[0.138s] DEBUG:colcon.colcon_core.verb:Building package 'py_pubsub' with the following arguments: {'ament_cmake_args': None, 'build_base': '/home/racecar/racecar_ws/src/build/py_pubsub', 'catkin_cmake_args': None, 'catkin_skip_building_tests': False, 'cmake_args': None, 'cmake_clean_cache': False, 'cmake_clean_first': False, 'cmake_force_configure': False, 'cmake_target': None, 'cmake_target_skip_unavailable': False, 'install_base': '/home/racecar/racecar_ws/src/install/py_pubsub', 'merge_install': False, 'path': '/home/racecar/racecar_ws/src/py_pubsub', 'symlink_install': True, 'test_result_base': None}
+[0.138s] Level 5:colcon.colcon_core.verb:set package 'ros_exercises' build argument 'cmake_args' from command line to 'None'
+[0.138s] Level 5:colcon.colcon_core.verb:set package 'ros_exercises' build argument 'cmake_target' from command line to 'None'
+[0.138s] Level 5:colcon.colcon_core.verb:set package 'ros_exercises' build argument 'cmake_target_skip_unavailable' from command line to 'False'
+[0.138s] Level 5:colcon.colcon_core.verb:set package 'ros_exercises' build argument 'cmake_clean_cache' from command line to 'False'
+[0.138s] Level 5:colcon.colcon_core.verb:set package 'ros_exercises' build argument 'cmake_clean_first' from command line to 'False'
+[0.139s] Level 5:colcon.colcon_core.verb:set package 'ros_exercises' build argument 'cmake_force_configure' from command line to 'False'
+[0.139s] Level 5:colcon.colcon_core.verb:set package 'ros_exercises' build argument 'ament_cmake_args' from command line to 'None'
+[0.139s] Level 5:colcon.colcon_core.verb:set package 'ros_exercises' build argument 'catkin_cmake_args' from command line to 'None'
+[0.139s] Level 5:colcon.colcon_core.verb:set package 'ros_exercises' build argument 'catkin_skip_building_tests' from command line to 'False'
+[0.139s] DEBUG:colcon.colcon_core.verb:Building package 'ros_exercises' with the following arguments: {'ament_cmake_args': None, 'build_base': '/home/racecar/racecar_ws/src/build/ros_exercises', 'catkin_cmake_args': None, 'catkin_skip_building_tests': False, 'cmake_args': None, 'cmake_clean_cache': False, 'cmake_clean_first': False, 'cmake_force_configure': False, 'cmake_target': None, 'cmake_target_skip_unavailable': False, 'install_base': '/home/racecar/racecar_ws/src/install/ros_exercises', 'merge_install': False, 'path': '/home/racecar/racecar_ws/src/lab1c/ros_exercises', 'symlink_install': True, 'test_result_base': None}
+[0.139s] INFO:colcon.colcon_core.executor:Executing jobs using 'parallel' executor
+[0.139s] DEBUG:colcon.colcon_parallel_executor.executor.parallel:run_until_complete
+[0.139s] INFO:colcon.colcon_ros.task.ament_python.build:Building ROS package in '/home/racecar/racecar_ws/src/first_package_1c' with build type 'ament_python'
+[0.140s] Level 1:colcon.colcon_core.shell:create_environment_hook('first_package_1c', 'ament_prefix_path')
+[0.140s] INFO:colcon.colcon_core.plugin_system:Skipping extension 'colcon_core.shell.bat': Not used on non-Windows systems
+[0.140s] INFO:colcon.colcon_core.shell:Creating environment hook '/home/racecar/racecar_ws/src/install/first_package_1c/share/first_package_1c/hook/ament_prefix_path.ps1'
+[0.142s] INFO:colcon.colcon_core.shell:Creating environment descriptor '/home/racecar/racecar_ws/src/install/first_package_1c/share/first_package_1c/hook/ament_prefix_path.dsv'
+[0.143s] INFO:colcon.colcon_core.shell:Creating environment hook '/home/racecar/racecar_ws/src/install/first_package_1c/share/first_package_1c/hook/ament_prefix_path.sh'
+[0.146s] INFO:colcon.colcon_core.shell:Skip shell extension 'powershell' for command environment: Not usable outside of PowerShell
+[0.147s] DEBUG:colcon.colcon_core.shell:Skip shell extension 'dsv' for command environment
+[0.153s] INFO:colcon.colcon_ros.task.ament_python.build:Building ROS package in '/home/racecar/racecar_ws/src/py_pubsub' with build type 'ament_python'
+[0.153s] Level 1:colcon.colcon_core.shell:create_environment_hook('py_pubsub', 'ament_prefix_path')
+[0.153s] INFO:colcon.colcon_core.shell:Creating environment hook '/home/racecar/racecar_ws/src/install/py_pubsub/share/py_pubsub/hook/ament_prefix_path.ps1'
+[0.155s] INFO:colcon.colcon_core.shell:Creating environment descriptor '/home/racecar/racecar_ws/src/install/py_pubsub/share/py_pubsub/hook/ament_prefix_path.dsv'
+[0.155s] INFO:colcon.colcon_core.shell:Creating environment hook '/home/racecar/racecar_ws/src/install/py_pubsub/share/py_pubsub/hook/ament_prefix_path.sh'
+[0.156s] INFO:colcon.colcon_core.shell:Skip shell extension 'powershell' for command environment: Not usable outside of PowerShell
+[0.156s] DEBUG:colcon.colcon_core.shell:Skip shell extension 'dsv' for command environment
+[0.160s] INFO:colcon.colcon_ros.task.ament_python.build:Building ROS package in '/home/racecar/racecar_ws/src/lab1c/ros_exercises' with build type 'ament_python'
+[0.160s] Level 1:colcon.colcon_core.shell:create_environment_hook('ros_exercises', 'ament_prefix_path')
+[0.160s] INFO:colcon.colcon_core.shell:Creating environment hook '/home/racecar/racecar_ws/src/install/ros_exercises/share/ros_exercises/hook/ament_prefix_path.ps1'
+[0.162s] INFO:colcon.colcon_core.shell:Creating environment descriptor '/home/racecar/racecar_ws/src/install/ros_exercises/share/ros_exercises/hook/ament_prefix_path.dsv'
+[0.163s] INFO:colcon.colcon_core.shell:Creating environment hook '/home/racecar/racecar_ws/src/install/ros_exercises/share/ros_exercises/hook/ament_prefix_path.sh'
+[0.164s] INFO:colcon.colcon_core.shell:Skip shell extension 'powershell' for command environment: Not usable outside of PowerShell
+[0.164s] DEBUG:colcon.colcon_core.shell:Skip shell extension 'dsv' for command environment
+[0.279s] INFO:colcon.colcon_core.task.python.build:Building Python package in '/home/racecar/racecar_ws/src/first_package_1c'
+[0.279s] INFO:colcon.colcon_core.shell:Skip shell extension 'powershell' for command environment: Not usable outside of PowerShell
+[0.279s] DEBUG:colcon.colcon_core.shell:Skip shell extension 'dsv' for command environment
+[0.402s] INFO:colcon.colcon_core.task.python.build:Building Python package in '/home/racecar/racecar_ws/src/py_pubsub'
+[0.402s] INFO:colcon.colcon_core.shell:Skip shell extension 'powershell' for command environment: Not usable outside of PowerShell
+[0.402s] DEBUG:colcon.colcon_core.shell:Skip shell extension 'dsv' for command environment
+[0.508s] INFO:colcon.colcon_core.task.python.build:Building Python package in '/home/racecar/racecar_ws/src/lab1c/ros_exercises'
+[0.508s] INFO:colcon.colcon_core.shell:Skip shell extension 'powershell' for command environment: Not usable outside of PowerShell
+[0.509s] DEBUG:colcon.colcon_core.shell:Skip shell extension 'dsv' for command environment
+[0.766s] DEBUG:colcon.colcon_core.event_handler.log_command:Invoking command in '/home/racecar/racecar_ws/src/build/first_package_1c': PYTHONPATH=/home/racecar/racecar_ws/src/build/first_package_1c/prefix_override:/usr/lib/python3/dist-packages/colcon_core/task/python/colcon_distutils_commands:/home/racecar/racecar_ws/src/install/first_package_1c/lib/python3.10/site-packages:${PYTHONPATH} /usr/bin/python3 -W ignore:setup.py install is deprecated -W ignore:easy_install command is deprecated setup.py develop --editable --build-directory /home/racecar/racecar_ws/src/build/first_package_1c/build --no-deps symlink_data
+[0.774s] DEBUG:colcon.colcon_core.event_handler.log_command:Invoking command in '/home/racecar/racecar_ws/src/build/py_pubsub': PYTHONPATH=/home/racecar/racecar_ws/src/build/py_pubsub/prefix_override:/usr/lib/python3/dist-packages/colcon_core/task/python/colcon_distutils_commands:/home/racecar/racecar_ws/src/install/py_pubsub/lib/python3.10/site-packages:${PYTHONPATH} /usr/bin/python3 -W ignore:setup.py install is deprecated -W ignore:easy_install command is deprecated setup.py develop --editable --build-directory /home/racecar/racecar_ws/src/build/py_pubsub/build --no-deps symlink_data
+[0.789s] DEBUG:colcon.colcon_core.event_handler.log_command:Invoking command in '/home/racecar/racecar_ws/src/build/ros_exercises': PYTHONPATH=/home/racecar/racecar_ws/src/build/ros_exercises/prefix_override:/usr/lib/python3/dist-packages/colcon_core/task/python/colcon_distutils_commands:/home/racecar/racecar_ws/src/install/ros_exercises/lib/python3.10/site-packages:${PYTHONPATH} /usr/bin/python3 -W ignore:setup.py install is deprecated -W ignore:easy_install command is deprecated setup.py develop --editable --build-directory /home/racecar/racecar_ws/src/build/ros_exercises/build --no-deps symlink_data
+[1.084s] Level 1:colcon.colcon_core.shell:create_environment_hook('first_package_1c', 'pythonpath_develop')
+[1.085s] INFO:colcon.colcon_core.shell:Creating environment hook '/home/racecar/racecar_ws/src/build/first_package_1c/share/first_package_1c/hook/pythonpath_develop.ps1'
+[1.086s] DEBUG:colcon.colcon_core.event_handler.log_command:Invoked command in '/home/racecar/racecar_ws/src/build/first_package_1c' returned '0': PYTHONPATH=/home/racecar/racecar_ws/src/build/first_package_1c/prefix_override:/usr/lib/python3/dist-packages/colcon_core/task/python/colcon_distutils_commands:/home/racecar/racecar_ws/src/install/first_package_1c/lib/python3.10/site-packages:${PYTHONPATH} /usr/bin/python3 -W ignore:setup.py install is deprecated -W ignore:easy_install command is deprecated setup.py develop --editable --build-directory /home/racecar/racecar_ws/src/build/first_package_1c/build --no-deps symlink_data
+[1.086s] INFO:colcon.colcon_core.shell:Creating environment descriptor '/home/racecar/racecar_ws/src/build/first_package_1c/share/first_package_1c/hook/pythonpath_develop.dsv'
+[1.087s] INFO:colcon.colcon_core.shell:Creating environment hook '/home/racecar/racecar_ws/src/build/first_package_1c/share/first_package_1c/hook/pythonpath_develop.sh'
+[1.089s] Level 1:colcon.colcon_core.environment:checking '/home/racecar/racecar_ws/src/install/first_package_1c' for CMake module files
+[1.090s] Level 1:colcon.colcon_core.environment:checking '/home/racecar/racecar_ws/src/install/first_package_1c' for CMake config files
+[1.092s] Level 1:colcon.colcon_core.environment:checking '/home/racecar/racecar_ws/src/install/first_package_1c/lib'
+[1.093s] Level 1:colcon.colcon_core.environment:checking '/home/racecar/racecar_ws/src/install/first_package_1c/bin'
+[1.093s] Level 1:colcon.colcon_core.environment:checking '/home/racecar/racecar_ws/src/install/first_package_1c/lib/pkgconfig/first_package_1c.pc'
+[1.093s] Level 1:colcon.colcon_core.environment:checking '/home/racecar/racecar_ws/src/install/first_package_1c/lib/python3.10/site-packages'
+[1.093s] Level 1:colcon.colcon_core.shell:create_environment_hook('first_package_1c', 'pythonpath')
+[1.093s] INFO:colcon.colcon_core.shell:Creating environment hook '/home/racecar/racecar_ws/src/install/first_package_1c/share/first_package_1c/hook/pythonpath.ps1'
+[1.094s] INFO:colcon.colcon_core.shell:Creating environment descriptor '/home/racecar/racecar_ws/src/install/first_package_1c/share/first_package_1c/hook/pythonpath.dsv'
+[1.094s] INFO:colcon.colcon_core.shell:Creating environment hook '/home/racecar/racecar_ws/src/install/first_package_1c/share/first_package_1c/hook/pythonpath.sh'
+[1.095s] Level 1:colcon.colcon_core.environment:checking '/home/racecar/racecar_ws/src/install/first_package_1c/bin'
+[1.095s] Level 1:colcon.colcon_core.environment:create_environment_scripts_only(first_package_1c)
+[1.096s] INFO:colcon.colcon_core.shell:Creating package script '/home/racecar/racecar_ws/src/install/first_package_1c/share/first_package_1c/package.ps1'
+[1.097s] INFO:colcon.colcon_core.shell:Creating package descriptor '/home/racecar/racecar_ws/src/install/first_package_1c/share/first_package_1c/package.dsv'
+[1.097s] INFO:colcon.colcon_core.shell:Creating package script '/home/racecar/racecar_ws/src/install/first_package_1c/share/first_package_1c/package.sh'
+[1.098s] INFO:colcon.colcon_core.shell:Creating package script '/home/racecar/racecar_ws/src/install/first_package_1c/share/first_package_1c/package.bash'
+[1.098s] INFO:colcon.colcon_core.shell:Creating package script '/home/racecar/racecar_ws/src/install/first_package_1c/share/first_package_1c/package.zsh'
+[1.099s] Level 1:colcon.colcon_core.environment:create_file_with_runtime_dependencies(/home/racecar/racecar_ws/src/install/first_package_1c/share/colcon-core/packages/first_package_1c)
+[1.100s] Level 1:colcon.colcon_core.shell:create_environment_hook('py_pubsub', 'pythonpath_develop')
+[1.100s] INFO:colcon.colcon_core.shell:Creating environment hook '/home/racecar/racecar_ws/src/build/py_pubsub/share/py_pubsub/hook/pythonpath_develop.ps1'
+[1.102s] DEBUG:colcon.colcon_core.event_handler.log_command:Invoked command in '/home/racecar/racecar_ws/src/build/py_pubsub' returned '0': PYTHONPATH=/home/racecar/racecar_ws/src/build/py_pubsub/prefix_override:/usr/lib/python3/dist-packages/colcon_core/task/python/colcon_distutils_commands:/home/racecar/racecar_ws/src/install/py_pubsub/lib/python3.10/site-packages:${PYTHONPATH} /usr/bin/python3 -W ignore:setup.py install is deprecated -W ignore:easy_install command is deprecated setup.py develop --editable --build-directory /home/racecar/racecar_ws/src/build/py_pubsub/build --no-deps symlink_data
+[1.102s] INFO:colcon.colcon_core.shell:Creating environment descriptor '/home/racecar/racecar_ws/src/build/py_pubsub/share/py_pubsub/hook/pythonpath_develop.dsv'
+[1.103s] INFO:colcon.colcon_core.shell:Creating environment hook '/home/racecar/racecar_ws/src/build/py_pubsub/share/py_pubsub/hook/pythonpath_develop.sh'
+[1.103s] Level 1:colcon.colcon_core.environment:checking '/home/racecar/racecar_ws/src/install/py_pubsub' for CMake module files
+[1.105s] Level 1:colcon.colcon_core.environment:checking '/home/racecar/racecar_ws/src/install/py_pubsub' for CMake config files
+[1.107s] Level 1:colcon.colcon_core.environment:checking '/home/racecar/racecar_ws/src/install/py_pubsub/lib'
+[1.107s] Level 1:colcon.colcon_core.environment:checking '/home/racecar/racecar_ws/src/install/py_pubsub/bin'
+[1.107s] Level 1:colcon.colcon_core.environment:checking '/home/racecar/racecar_ws/src/install/py_pubsub/lib/pkgconfig/py_pubsub.pc'
+[1.107s] Level 1:colcon.colcon_core.environment:checking '/home/racecar/racecar_ws/src/install/py_pubsub/lib/python3.10/site-packages'
+[1.107s] Level 1:colcon.colcon_core.shell:create_environment_hook('py_pubsub', 'pythonpath')
+[1.107s] INFO:colcon.colcon_core.shell:Creating environment hook '/home/racecar/racecar_ws/src/install/py_pubsub/share/py_pubsub/hook/pythonpath.ps1'
+[1.108s] INFO:colcon.colcon_core.shell:Creating environment descriptor '/home/racecar/racecar_ws/src/install/py_pubsub/share/py_pubsub/hook/pythonpath.dsv'
+[1.109s] INFO:colcon.colcon_core.shell:Creating environment hook '/home/racecar/racecar_ws/src/install/py_pubsub/share/py_pubsub/hook/pythonpath.sh'
+[1.109s] Level 1:colcon.colcon_core.environment:checking '/home/racecar/racecar_ws/src/install/py_pubsub/bin'
+[1.109s] Level 1:colcon.colcon_core.environment:create_environment_scripts_only(py_pubsub)
+[1.109s] INFO:colcon.colcon_core.shell:Creating package script '/home/racecar/racecar_ws/src/install/py_pubsub/share/py_pubsub/package.ps1'
+[1.110s] INFO:colcon.colcon_core.shell:Creating package descriptor '/home/racecar/racecar_ws/src/install/py_pubsub/share/py_pubsub/package.dsv'
+[1.111s] INFO:colcon.colcon_core.shell:Creating package script '/home/racecar/racecar_ws/src/install/py_pubsub/share/py_pubsub/package.sh'
+[1.111s] INFO:colcon.colcon_core.shell:Creating package script '/home/racecar/racecar_ws/src/install/py_pubsub/share/py_pubsub/package.bash'
+[1.112s] INFO:colcon.colcon_core.shell:Creating package script '/home/racecar/racecar_ws/src/install/py_pubsub/share/py_pubsub/package.zsh'
+[1.112s] Level 1:colcon.colcon_core.environment:create_file_with_runtime_dependencies(/home/racecar/racecar_ws/src/install/py_pubsub/share/colcon-core/packages/py_pubsub)
+[1.113s] Level 1:colcon.colcon_core.shell:create_environment_hook('ros_exercises', 'pythonpath_develop')
+[1.113s] INFO:colcon.colcon_core.shell:Creating environment hook '/home/racecar/racecar_ws/src/build/ros_exercises/share/ros_exercises/hook/pythonpath_develop.ps1'
+[1.115s] INFO:colcon.colcon_core.shell:Creating environment descriptor '/home/racecar/racecar_ws/src/build/ros_exercises/share/ros_exercises/hook/pythonpath_develop.dsv'
+[1.115s] DEBUG:colcon.colcon_core.event_handler.log_command:Invoked command in '/home/racecar/racecar_ws/src/build/ros_exercises' returned '0': PYTHONPATH=/home/racecar/racecar_ws/src/build/ros_exercises/prefix_override:/usr/lib/python3/dist-packages/colcon_core/task/python/colcon_distutils_commands:/home/racecar/racecar_ws/src/install/ros_exercises/lib/python3.10/site-packages:${PYTHONPATH} /usr/bin/python3 -W ignore:setup.py install is deprecated -W ignore:easy_install command is deprecated setup.py develop --editable --build-directory /home/racecar/racecar_ws/src/build/ros_exercises/build --no-deps symlink_data
+[1.116s] INFO:colcon.colcon_core.shell:Creating environment hook '/home/racecar/racecar_ws/src/build/ros_exercises/share/ros_exercises/hook/pythonpath_develop.sh'
+[1.116s] Level 1:colcon.colcon_core.environment:checking '/home/racecar/racecar_ws/src/install/ros_exercises' for CMake module files
+[1.118s] Level 1:colcon.colcon_core.environment:checking '/home/racecar/racecar_ws/src/install/ros_exercises' for CMake config files
+[1.120s] Level 1:colcon.colcon_core.environment:checking '/home/racecar/racecar_ws/src/install/ros_exercises/lib'
+[1.120s] Level 1:colcon.colcon_core.environment:checking '/home/racecar/racecar_ws/src/install/ros_exercises/bin'
+[1.120s] Level 1:colcon.colcon_core.environment:checking '/home/racecar/racecar_ws/src/install/ros_exercises/lib/pkgconfig/ros_exercises.pc'
+[1.120s] Level 1:colcon.colcon_core.environment:checking '/home/racecar/racecar_ws/src/install/ros_exercises/lib/python3.10/site-packages'
+[1.121s] Level 1:colcon.colcon_core.shell:create_environment_hook('ros_exercises', 'pythonpath')
+[1.121s] INFO:colcon.colcon_core.shell:Creating environment hook '/home/racecar/racecar_ws/src/install/ros_exercises/share/ros_exercises/hook/pythonpath.ps1'
+[1.121s] INFO:colcon.colcon_core.shell:Creating environment descriptor '/home/racecar/racecar_ws/src/install/ros_exercises/share/ros_exercises/hook/pythonpath.dsv'
+[1.122s] INFO:colcon.colcon_core.shell:Creating environment hook '/home/racecar/racecar_ws/src/install/ros_exercises/share/ros_exercises/hook/pythonpath.sh'
+[1.123s] Level 1:colcon.colcon_core.environment:checking '/home/racecar/racecar_ws/src/install/ros_exercises/bin'
+[1.123s] Level 1:colcon.colcon_core.environment:create_environment_scripts_only(ros_exercises)
+[1.123s] INFO:colcon.colcon_core.shell:Creating package script '/home/racecar/racecar_ws/src/install/ros_exercises/share/ros_exercises/package.ps1'
+[1.124s] INFO:colcon.colcon_core.shell:Creating package descriptor '/home/racecar/racecar_ws/src/install/ros_exercises/share/ros_exercises/package.dsv'
+[1.124s] INFO:colcon.colcon_core.shell:Creating package script '/home/racecar/racecar_ws/src/install/ros_exercises/share/ros_exercises/package.sh'
+[1.125s] INFO:colcon.colcon_core.shell:Creating package script '/home/racecar/racecar_ws/src/install/ros_exercises/share/ros_exercises/package.bash'
+[1.125s] INFO:colcon.colcon_core.shell:Creating package script '/home/racecar/racecar_ws/src/install/ros_exercises/share/ros_exercises/package.zsh'
+[1.126s] Level 1:colcon.colcon_core.environment:create_file_with_runtime_dependencies(/home/racecar/racecar_ws/src/install/ros_exercises/share/colcon-core/packages/ros_exercises)
+[1.126s] DEBUG:colcon.colcon_parallel_executor.executor.parallel:closing loop
+[1.127s] DEBUG:colcon.colcon_parallel_executor.executor.parallel:loop closed
+[1.127s] DEBUG:colcon.colcon_parallel_executor.executor.parallel:run_until_complete finished with '0'
+[1.127s] DEBUG:colcon.colcon_core.event_reactor:joining thread
+[1.130s] INFO:colcon.colcon_core.plugin_system:Skipping extension 'colcon_notification.desktop_notification.notify_send': Could not find 'notify-send'
+[1.131s] INFO:colcon.colcon_core.plugin_system:Skipping extension 'colcon_notification.desktop_notification.terminal_notifier': Not used on non-Darwin systems
+[1.131s] INFO:colcon.colcon_core.plugin_system:Skipping extension 'colcon_notification.desktop_notification.win32': Not used on non-Windows systems
+[1.131s] INFO:colcon.colcon_notification.desktop_notification:Sending desktop notification using 'notify2'
+[1.131s] DEBUG:colcon.colcon_notification.desktop_notification.notify2:Failed to initialize notify2: org.freedesktop.DBus.Error.NotSupported: Unable to autolaunch a dbus-daemon without a $DISPLAY for X11
+[1.131s] DEBUG:colcon.colcon_core.event_reactor:joined thread
+[1.131s] INFO:colcon.colcon_core.shell:Creating prefix script '/home/racecar/racecar_ws/src/install/local_setup.ps1'
+[1.132s] INFO:colcon.colcon_core.shell:Creating prefix util module '/home/racecar/racecar_ws/src/install/_local_setup_util_ps1.py'
+[1.133s] INFO:colcon.colcon_core.shell:Creating prefix chain script '/home/racecar/racecar_ws/src/install/setup.ps1'
+[1.135s] INFO:colcon.colcon_core.shell:Creating prefix script '/home/racecar/racecar_ws/src/install/local_setup.sh'
+[1.136s] INFO:colcon.colcon_core.shell:Creating prefix util module '/home/racecar/racecar_ws/src/install/_local_setup_util_sh.py'
+[1.136s] INFO:colcon.colcon_core.shell:Creating prefix chain script '/home/racecar/racecar_ws/src/install/setup.sh'
+[1.138s] INFO:colcon.colcon_core.shell:Creating prefix script '/home/racecar/racecar_ws/src/install/local_setup.bash'
+[1.139s] INFO:colcon.colcon_core.shell:Creating prefix chain script '/home/racecar/racecar_ws/src/install/setup.bash'
+[1.141s] INFO:colcon.colcon_core.shell:Creating prefix script '/home/racecar/racecar_ws/src/install/local_setup.zsh'
+[1.142s] INFO:colcon.colcon_core.shell:Creating prefix chain script '/home/racecar/racecar_ws/src/install/setup.zsh'
