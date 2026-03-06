@@ -3,7 +3,7 @@ import os
 
 from setuptools import find_packages, setup
 
-package_name = "safety_controller"
+package_name = "wall_follower"
 
 setup(
     name=package_name,
