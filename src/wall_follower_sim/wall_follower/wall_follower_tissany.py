@@ -122,6 +122,7 @@ class WallFollower(Node):
         # 2. Corrected PD Logic
         # Calculate distance error
         dist_error = self.DESIRED_DISTANCE - dist
+        dist_error=dist_error/2 #half error term
         
         # Correct the steering direction based on which side we follow
         if self.SIDE == 1: # Left wall
