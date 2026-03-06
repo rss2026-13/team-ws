@@ -21,7 +21,7 @@ class WallFollower(Node):
         # Declare parameters to make them available for use
         # DO NOT MODIFY THIS! 
         self.declare_parameter("scan_topic", "/scan")
-        self.declare_parameter("drive_topic", "/drive")
+        self.declare_parameter("drive_topic", "/vesc/high_level/input/nav_0")
         self.declare_parameter("side", 1)
         self.declare_parameter("velocity", 1.0)
         self.declare_parameter("desired_distance", 1.0)
@@ -89,7 +89,7 @@ class WallFollower(Node):
         left_wall_vals=ranges[divide_by+1:-1]
         left_wall_angles=angles[divide_by+1:-1]
         
-        if self.SIDE==1:
+        if self.SIDE==-1:
             usable_range=left_wall_vals
             usable_angles=left_wall_angles
         else:
@@ -116,7 +116,7 @@ class WallFollower(Node):
         dist_error = self.DESIRED_DISTANCE - dist
         
         # Correct the steering direction based on which side we follow
-        if self.SIDE == 1: # Left wall
+        if self.SIDE == -1: # Left wall
             # Too close (dist_error > 0) -> Need to turn Right (negative)
             # Too far (dist_error < 0) -> Need to turn Left (positive)
             # The wall_angle (slope) also needs to be factored correctly
@@ -130,6 +130,7 @@ class WallFollower(Node):
         dist_msg = Float32()
         dist_msg.data = float(dist)
         self.dist_pub.publish(dist_msg)
+        self.get_logger().info(f'The distance: {dist_msg}')
 
         angle_msg = Float32()
         angle_msg.data = float(wall_angle)
