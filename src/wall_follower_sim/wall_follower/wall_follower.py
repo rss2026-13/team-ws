@@ -153,7 +153,7 @@ class WallFollower(Node):
 
 
        self.publisherVision.publish(filteredmsg)
-       # self.get_logger().info('Publishing: "%s"' % count)
+       self.get_logger().info('Publishing: "%s"' % count)
 
 
        #find the wall with least squares (x is forward, y is left?)
