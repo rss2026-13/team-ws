@@ -1,6 +1,8 @@
 #!/usr/bin/env python3
 import numpy as np
 
+from wall_follower.geometry_utilities import angles_points_from_scan
+
 
 def IEPF(points, D_t):
     start = 0
@@ -36,15 +38,10 @@ def fit_segment(points):
 
 
 def detect_walls(scan, min_points=2, D_t=0.5):
-
-    angle_min = scan.angle_min
-    angle_max = scan.angle_max
-    ranges = np.array(scan.ranges)
-    angles = np.linspace(angle_min, angle_max, num=ranges.shape[0])
+    angles, points = angles_points_from_scan(scan)
     mask = abs(angles) < np.pi * (0.5)
-    ranges = ranges[mask]
     angles = angles[mask]
-    points = np.array([ranges * np.cos(angles), ranges * np.sin(angles)]).T
+    points = points[mask]
     clusters = IEPF(np.array(points), D_t=D_t)
     walls = []
     for cluster in clusters:

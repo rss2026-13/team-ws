@@ -1,5 +1,4 @@
 import numpy as np
-import rclpy
 from geometry_msgs.msg import Point, Transform
 from scipy.spatial.transform import Rotation as R
 from tf2_ros import TransformException

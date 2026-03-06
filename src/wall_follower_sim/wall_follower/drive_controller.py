@@ -2,26 +2,8 @@
 import numpy as np
 from ackermann_msgs.msg import AckermannDriveStamped
 
-from wall_follower.pid import PIDController
-
-
-def point_dir(wall, dir, margin=0.3):
-    p1, p2 = wall
-    line_vec = p2 - p1
-    line_len = np.linalg.norm(line_vec)
-    if line_len == 0:
-        return None
-    line_vec /= line_len
-    dir_vec = np.array(dir)
-    dir_vec /= np.linalg.norm(dir_vec)
-    det = line_vec[0] * dir_vec[1] - line_vec[1] * dir_vec[0]
-    if det == 0:
-        return None
-    t = (dir_vec[0] * (p1[1] - 0) - dir_vec[1] * (p1[0] - 0)) / det
-    u = (line_vec[0] * (p1[1] - 0) - line_vec[1] * (p1[0] - 0)) / det
-    if t < -margin or t > line_len + margin or u < 0:
-        return None
-    return p1 + t * line_vec
+from wall_follower.geometry_utilities import point_dir
+from wall_follower.pid_controller import PIDController
 
 
 class DriveController:

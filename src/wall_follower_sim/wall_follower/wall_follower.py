@@ -4,12 +4,11 @@ from ackermann_msgs.msg import AckermannDriveStamped
 from rcl_interfaces.msg import ParameterEvent
 from rclpy.node import Node
 from sensor_msgs.msg import LaserScan
-from std_msgs.msg import Float32
 from tf2_ros.buffer import Buffer
 from tf2_ros.transform_listener import TransformListener
 from visualization_msgs.msg import Marker
 
-from wall_follower.drive import DriveController
+from wall_follower.drive_controller import DriveController
 from wall_follower.visualization_tools import VisualizationTools
 from wall_follower.wall_detection import detect_walls
 
@@ -87,7 +86,7 @@ class WallFollower(Node):
         self.post_init()
 
     def scan_callback(self, laser_scan):
-        walls = detect_walls(laser_scan, min_points=10, D_t=0.1)
+        walls = detect_walls(laser_scan, min_points=10, D_t=0.1, )
         self.visualization_tools.plot_walls(walls, laser_scan.header.stamp)
         self.drive_controller.update(walls)
 
