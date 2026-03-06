@@ -66,8 +66,13 @@ class WallFollower(Node):
     def scan_callback(self, msg):
         
         #LIDAR info
-        ranges = np.array(msg.ranges) #all the datapoints
+        ranges = np.array(msg.ranges)
         angles = np.linspace(msg.angle_min, msg.angle_max, len(msg.ranges))
+        
+        mask = ranges > 0.1
+        
+        filtered_ranges = ranges[mask]
+        filtered_angles = angles[mask]
         
         #hypothesis:
         #keep negative angle values (first half of ranges array) if following right wall
@@ -81,15 +86,15 @@ class WallFollower(Node):
         # left_wall_vals=ranges[3*divide_by:-1] #look at area from 3rd quadrant to angle_max
         # left_wall_angles=angles[3*divide_by:-1]
         
-        divide_by=len(ranges)//2 #divides the field of view into 2 
+        divide_by=len(filtered_ranges)//2 #divides the field of view into 2 
         
-        right_wall_vals=ranges[0:divide_by]
-        right_wall_angles=angles[0:divide_by]
+        right_wall_vals=filtered_ranges[0:divide_by]
+        right_wall_angles=filtered_angles[0:divide_by]
         
-        left_wall_vals=ranges[divide_by+1:-1]
-        left_wall_angles=angles[divide_by+1:-1]
+        left_wall_vals=filtered_ranges[divide_by+1:-1]
+        left_wall_angles=filtered_angles[divide_by+1:-1]
         
-        if self.SIDE==-1:
+        if self.SIDE==1:
             usable_range=left_wall_vals
             usable_angles=left_wall_angles
         else:
@@ -116,7 +121,7 @@ class WallFollower(Node):
         dist_error = self.DESIRED_DISTANCE - dist
         
         # Correct the steering direction based on which side we follow
-        if self.SIDE == -1: # Left wall
+        if self.SIDE == 1: # Left wall
             # Too close (dist_error > 0) -> Need to turn Right (negative)
             # Too far (dist_error < 0) -> Need to turn Left (positive)
             # The wall_angle (slope) also needs to be factored correctly
