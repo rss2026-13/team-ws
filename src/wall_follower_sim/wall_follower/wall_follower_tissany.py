@@ -5,9 +5,8 @@ from rclpy.node import Node
 from sensor_msgs.msg import LaserScan
 from ackermann_msgs.msg import AckermannDriveStamped
 from visualization_msgs.msg import Marker
+from geometry_msgs.msg import Point
 from rcl_interfaces.msg import SetParametersResult
-
-from wall_follower.visualization_tools import VisualizationTools
 
 from scipy import stats
 
@@ -61,6 +60,8 @@ class WallFollower(Node):
         
         self.dist_pub = self.create_publisher(Float32, 'distance', 10)
         self.angle_pub = self.create_publisher(Float32, 'angle', 10)
+        self.used_points_pub = self.create_publisher(Marker, "used_points_marker", 10)
+        self.wall_line_pub = self.create_publisher(Marker, "wall_line_marker", 10)
 
         # TODO: Write your callback functions here   
     def scan_callback(self, msg):
@@ -68,11 +69,6 @@ class WallFollower(Node):
         #LIDAR info
         ranges = np.array(msg.ranges)
         angles = np.linspace(msg.angle_min, msg.angle_max, len(msg.ranges))
-        
-        # mask = ranges > 0.1
-        
-        # filtered_ranges = ranges[mask]
-        # filtered_angles = angles[mask]
         
         filtered_ranges=ranges
         filtered_angles=angles
@@ -104,13 +100,27 @@ class WallFollower(Node):
             usable_range=right_wall_vals
             usable_angles=right_wall_angles
 
+        valid_mask = (
+            np.isfinite(usable_range)
+            & (usable_range >= msg.range_min)
+            & (usable_range <= msg.range_max)
+        )
+        usable_range = usable_range[valid_mask]
+        usable_angles = usable_angles[valid_mask]
+
+        if usable_range.size < 2:
+            self.get_logger().warn("Not enough valid scan points for wall fit.")
+            return
+
         # Convert Polar to Cartesian (base_link frame)
         x = usable_range * np.cos(usable_angles)
         y = usable_range * np.sin(usable_angles)
+        self.publish_used_points_marker(x, y)
 
         # Perform Linear Regression: y = mx + c
         # slope = m, intercept = c
         slope, intercept, r_value, p_value, std_err = stats.linregress(x, y)
+        self.publish_wall_line_marker(x, slope, intercept)
 
         # Calculate distance from origin (the car) to the line
         # For a line y = mx + c, the distance to (0,0) is:
@@ -157,6 +167,63 @@ class WallFollower(Node):
         
         
     
+    def publish_used_points_marker(self, x_points, y_points):
+        marker = Marker()
+        marker.header.frame_id = "base_link"
+        marker.header.stamp = self.get_clock().now().to_msg()
+        marker.ns = "wall_follower"
+        marker.id = 0
+        marker.type = Marker.POINTS
+        marker.action = Marker.ADD
+        marker.scale.x = 0.05
+        marker.scale.y = 0.05
+        marker.color.a = 1.0
+        marker.color.r = 0.1
+        marker.color.g = 1.0
+        marker.color.b = 0.1
+
+        marker.points = []
+        for x_val, y_val in zip(x_points, y_points):
+            point = Point()
+            point.x = float(x_val)
+            point.y = float(y_val)
+            point.z = 0.0
+            marker.points.append(point)
+
+        self.used_points_pub.publish(marker)
+
+    def publish_wall_line_marker(self, x_points, slope, intercept):
+        marker = Marker()
+        marker.header.frame_id = "base_link"
+        marker.header.stamp = self.get_clock().now().to_msg()
+        marker.ns = "wall_follower"
+        marker.id = 1
+        marker.type = Marker.LINE_STRIP
+        marker.action = Marker.ADD
+        marker.scale.x = 0.06
+        marker.color.a = 1.0
+        marker.color.r = 1.0
+        marker.color.g = 0.2
+        marker.color.b = 0.2
+
+        x_min = float(np.min(x_points))
+        x_max = float(np.max(x_points))
+        if np.isclose(x_min, x_max):
+            x_max = x_min + 0.01
+
+        line_x = np.array([x_min, x_max], dtype=float)
+        line_y = slope * line_x + intercept
+
+        marker.points = []
+        for x_val, y_val in zip(line_x, line_y):
+            point = Point()
+            point.x = float(x_val)
+            point.y = float(y_val)
+            point.z = 0.0
+            marker.points.append(point)
+
+        self.wall_line_pub.publish(marker)
+
     def parameters_callback(self, params):
         """
         DO NOT MODIFY THIS CALLBACK FUNCTION!
