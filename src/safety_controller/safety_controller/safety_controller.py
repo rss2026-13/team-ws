@@ -15,7 +15,7 @@ class SafetyController(Node):
         self.declare_parameter("scan_topic", "/scan")
         self.declare_parameter("margin", 0.5)
         self.declare_parameter("max_deceleration", 10.0)
-        self.declare_parameter("cone_angle", 10.0) # In degrees
+        self.declare_parameter("cone_angle", 10.0)  # In degrees
         self.declare_parameter("car_width", 0.25)
         self.declare_parameter(
             "lidar_offset", 0.05
@@ -38,6 +38,9 @@ class SafetyController(Node):
         )
         self.CAR_WIDTH = (
             self.get_parameter("car_width").get_parameter_value().double_value
+        )
+        self.LIDAR_OFFSET = (
+            self.get_parameter("lidar_offset").get_parameter_value().double_value
         )
         self.drive_subscription = self.create_subscription(
             AckermannDriveStamped, self.DRIVE_TOPIC, self.drive_callback, 10
