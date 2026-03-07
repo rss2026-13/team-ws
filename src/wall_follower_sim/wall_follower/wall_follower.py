@@ -17,7 +17,7 @@ class WallFollower(Node):
     def __init__(self):
         super().__init__("wall_follower")
         self.declare_parameter("topics.scan", "/scan")
-        self.declare_parameter("topics.drive", "/drive")
+        self.declare_parameter("topics.drive", "/vesc/high_level/input/nav_1")
         self.declare_parameter("topics.wall", "/wall")
         self.declare_parameter("controller.side", 1)
         self.declare_parameter("controller.velocity", 1.0)
