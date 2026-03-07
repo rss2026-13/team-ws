@@ -25,7 +25,7 @@ class WallFollower(Node):
        self.declare_parameter("scan_topic", "/scan")
        self.declare_parameter("drive_topic", "/vesc/high_level/input/nav_1")
        self.declare_parameter("side", -1)
-       self.declare_parameter("velocity", 0.5)
+       self.declare_parameter("velocity", 0.75)
        self.declare_parameter("desired_distance", 1.0)
 
 
@@ -279,7 +279,7 @@ class WallFollower(Node):
        # magnitude; that includes deceleration.
        theta = math.atan(m) if self.SIDE < 0 else -1 * math.atan(m)
        error = -2 * theta - (abs(b) - abs(d) * math.sqrt(1 + m*m))
-       error = 0.5 * error
+       error = 0.25 * error
        gain = 2.5
        if self.SIDE < 0:
            if 0 > error:
