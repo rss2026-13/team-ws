@@ -279,7 +279,7 @@ class WallFollower(Node):
        # magnitude; that includes deceleration.
        theta = math.atan(m) if self.SIDE < 0 else -1 * math.atan(m)
        error = -2 * theta - (abs(b) - abs(d) * math.sqrt(1 + m*m))
-       error = 0.25 * error
+       error = 0.3 * error
        gain = 2.5
        if self.SIDE < 0:
            if 0 > error:
