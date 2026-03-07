@@ -132,7 +132,8 @@ class WallFollower(Node):
         # 2. Corrected PD Logic
         # Calculate distance error
         dist_error = self.DESIRED_DISTANCE - dist
-        dist_error=dist_error/4 #half error term
+        dist_error=dist_error/4 #quarter error term
+        wall_angle=wall_angle/4
         
         # Correct the steering direction based on which side we follow
         if self.SIDE == 1: # Left wall
@@ -254,4 +255,5 @@ def main():
 
 if __name__ == '__main__':
     main()
+    
     
