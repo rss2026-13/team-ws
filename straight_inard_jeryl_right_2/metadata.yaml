@@ -28,9 +28,9 @@ rosbag2_bagfile_information:
   compression_format: ""
   compression_mode: ""
   relative_file_paths:
-    - straight_inard_jeryl_right_2_0.db3
+    - straight_inward_jeryl_right_2_0.db3
   files:
-    - path: straight_inard_jeryl_right_2_0.db3
+    - path: straight_inward_jeryl_right_2_0.db3
       starting_time:
         nanoseconds_since_epoch: 1772907278062943614
       duration:
