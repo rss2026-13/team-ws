@@ -1,31 +1,20 @@
-session_name: rss_tmux_template
+session_name: rss_tmux_ansisg
 windows:
-  - window_name: perception
+  - window_name: main
     layout: tiled
     shell_command_before:
       - source /opt/ros/humble/setup.bash
       - source /home/racecar/.bashrc
+      - cd ~/racecar_ws
+      - colcon build --symlink-install
+      - source install/setup.bash
     panes:
       - shell_command:
-        - echo "Hello world!"
-      
-      - shell_command:
-        - echo "Press ctrl-b, shift % to split vertically"
-      
-      - shell_command:
-        - echo "Press ctrl-b, shift " to split horizontally"
+          - git status
 
       - shell_command:
-        - echo "Press ctrl-b, n to go to the next window"
-  
-  - window_name: planning
-    layout: tiled
-    shell_command_before:
-      - source /opt/ros/humble/setup.bash
-      - source /home/racecar/.bashrc
-    panes:
-      - shell_command:
-        - htop
+          - ros2 topic list
 
       - shell_command:
-        - echo "Enter ctrl-b, :, kill-session to kill the session"
+          - ros2 topic hz /drive
+      -
