@@ -2,15 +2,43 @@
 
 This folder holds rosbag recordings (e.g. `straight_inward_*` runs) for the team workspace.
 
-## Adding existing bags from repo root to main
+## How to move bags into this folder
 
-If you have bag directories (e.g. `straight_inward_muktha_right_1`, `straight_inward_tissany_left_2`, …) in the repo root, move them here and commit on `main`:
+**1. Open Terminal and go to the repo root (where you see the `straight_inward_*` folders):**
 
 ```bash
-# From repo root
+cd /Users/muktharamesh/Documents/team-ws
+```
+
+**2. Move all bag folders into `rosbag_data/`:**
+
+```bash
+mv straight_inward_ansis_left_1 straight_inward_ansis_left_2 straight_inward_ansis_left_3 \
+   straight_inward_ansis_right_1 straight_inward_ansis_right_2 straight_inward_ansis_right_3 \
+   straight_inward_muktha_left_1 straight_inward_muktha_left_2 straight_inward_muktha_left_3 \
+   straight_inward_muktha_right_1 straight_inward_muktha_right_2 straight_inward_muktha_right_3 \
+   straight_inward_tissany_left_1 straight_inward_tissany_left_2 straight_inward_tissany_left_3 \
+   straight_inward_tissany_right_1 straight_inward_tissany_right_2 straight_inward_tissany_right_3 \
+   rosbag_data/
+```
+
+If you only have some of these, list the ones you have:
+
+```bash
+ls -d straight_inward_*
+```
+
+Then move them (replace with your actual names if different):
+
+```bash
 mv straight_inward_* rosbag_data/
+```
+
+**3. Commit and push to main:**
+
+```bash
 git add rosbag_data/
-git status   # confirm all bags are staged
+git status
 git commit -m "Move rosbag data into rosbag_data/ on main"
 git push origin main
 ```
