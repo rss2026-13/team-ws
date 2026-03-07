@@ -191,7 +191,7 @@ class WallFollower(Node):
        valid_angles = angles[valid_mask]
 
        # Select the closest subset for line fitting.
-       p30_distance = np.percentile(valid_ranges, 15)
+       p30_distance = np.percentile(valid_ranges, 20)
        used_mask_valid = valid_ranges <= p30_distance
        if np.count_nonzero(used_mask_valid) < 2:
            used_mask_valid = np.ones_like(valid_ranges, dtype=bool)
@@ -279,7 +279,7 @@ class WallFollower(Node):
        # magnitude; that includes deceleration.
        theta = math.atan(m) if self.SIDE < 0 else -1 * math.atan(m)
        error = -2 * theta - (abs(b) - abs(d) * math.sqrt(1 + m*m))
-       error = 0.3 * error
+       error = 0.5 * error
        gain = 2.5
        if self.SIDE < 0:
            if 0 > error:
