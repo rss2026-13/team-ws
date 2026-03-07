@@ -191,7 +191,7 @@ class WallFollower(Node):
        valid_angles = angles[valid_mask]
 
        # Select the closest subset for line fitting.
-       p30_distance = np.percentile(valid_ranges, 12)
+       p30_distance = np.percentile(valid_ranges, 16)
        used_mask_valid = valid_ranges <= p30_distance
        if np.count_nonzero(used_mask_valid) < 2:
            used_mask_valid = np.ones_like(valid_ranges, dtype=bool)
