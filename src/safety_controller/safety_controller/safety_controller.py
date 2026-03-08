@@ -75,6 +75,9 @@ class SafetyController(Node):
         if not self.stop:
             speed = self.drive_command.drive.speed
             front_treshold = self.MARGIN + (speed**2) / (2 * self.MAX_DECELERATION)
+            self.debug_publisher.publish(
+                String(data=f"Front threshold: {front_treshold:.2f}")
+            )
             self.get_logger().debug(
                 f"Evaluating safety: speed={speed:.2f}, front_threshold={front_treshold:.2f}"
             )
@@ -157,11 +160,6 @@ class SafetyController(Node):
                             "Frontal object detected! Stopping the robot."
                         )
                         break
-            self.debug_publisher.publish(
-                String(
-                    data=f"Front threshold: {front_treshold:.2f}, Max angle: {np.degrees(max_angle):.2f}, Rect hit: {rect_hit}, Cone hit: {self.stop}"
-                )
-            )
         if self.stop:
             safe_command = AckermannDriveStamped()
             safe_command.header.stamp = self.get_clock().now().to_msg()
