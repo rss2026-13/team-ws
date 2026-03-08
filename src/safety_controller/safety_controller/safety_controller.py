@@ -72,28 +72,27 @@ class SafetyController(Node):
             return
         if self.drive_command.drive.speed < 0.001:
             return
-        if not self.stop:
-            speed = self.drive_command.drive.speed
-            front_treshold = (
-                self.MARGIN
-                + self.LIDAR_OFFSET
-                + (speed**2) / (2 * self.MAX_DECELERATION)
+        # if not self.stop:
+        speed = self.drive_command.drive.speed
+        front_treshold = (
+            self.MARGIN + self.LIDAR_OFFSET + (speed**2) / (2 * self.MAX_DECELERATION)
+        )
+        angle_min = self.scan_data.angle_min
+        angle_max = self.scan_data.angle_max
+        ranges = np.array(self.scan_data.ranges)
+        angles = np.linspace(angle_min, angle_max, num=ranges.shape[0])
+        cone_mask = np.abs(angles) < np.radians(self.CONE_ANGLE)
+        # width_mask = np.abs(np.sin(angles)) * ranges < (self.CAR_WIDTH / 2 + 0.05)
+        danger_mask = cone_mask & (ranges < front_treshold)
+        closest_obstacle = np.min(ranges[cone_mask]) if np.any(cone_mask) else np.inf
+        if np.any(danger_mask):
+            self.get_logger().warn("Obstacle detected! Stopping the car.")
+            self.stop = True
+        self.debug_publisher.publish(
+            String(
+                data=f"Front threshold: {front_treshold:.2f}, Danger: {np.any(danger_mask)}, Closest: {closest_obstacle:.2f}"
             )
-            angle_min = self.scan_data.angle_min
-            angle_max = self.scan_data.angle_max
-            ranges = np.array(self.scan_data.ranges)
-            angles = np.linspace(angle_min, angle_max, num=ranges.shape[0])
-            cone_mask = np.abs(angles) < np.radians(self.CONE_ANGLE)
-            # width_mask = np.abs(np.sin(angles)) * ranges < (self.CAR_WIDTH / 2 + 0.05)
-            danger_mask = cone_mask & (ranges < front_treshold)
-            if np.any(danger_mask):
-                self.get_logger().warn("Obstacle detected! Stopping the car.")
-                self.stop = True
-            self.debug_publisher.publish(
-                String(
-                    data=f"Front threshold: {front_treshold:.2f}, Danger: {np.any(danger_mask)}"
-                )
-            )
+        )
 
         if self.stop:
             safe_command = AckermannDriveStamped()
