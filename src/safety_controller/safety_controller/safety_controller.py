@@ -70,8 +70,8 @@ class SafetyController(Node):
     def evaluate_safety(self):
         if self.scan_data is None or self.drive_command is None:
             return
-        if self.drive_command.drive.speed < 0.001:
-            return
+        # if self.drive_command.drive.speed < 0.001:
+        #    return
         # if not self.stop:
         speed = self.drive_command.drive.speed
         front_treshold = (
