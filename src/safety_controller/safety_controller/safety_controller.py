@@ -82,8 +82,11 @@ class SafetyController(Node):
         ranges = np.array(self.scan_data.ranges)
         angles = np.linspace(angle_min, angle_max, num=ranges.shape[0])
         cone_mask = np.abs(angles) < np.radians(self.CONE_ANGLE)
-        # width_mask = np.abs(np.sin(angles)) * ranges < (self.CAR_WIDTH / 2 + 0.05)
-        danger_mask = cone_mask & (ranges < front_treshold)
+        width_mask = np.abs(np.sin(angles)) * ranges < (self.CAR_WIDTH / 2 + 0.05)
+        front_mask = np.cos(angles) * ranges < front_treshold
+        danger_mask = (cone_mask & (ranges < front_treshold)) | (
+            width_mask & front_mask
+        )
         closest_obstacle = np.min(ranges[cone_mask]) if np.any(cone_mask) else np.inf
         if np.any(danger_mask):
             self.get_logger().warn("Obstacle detected! Stopping the car.")
