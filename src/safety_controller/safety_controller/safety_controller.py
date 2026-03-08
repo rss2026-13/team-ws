@@ -70,33 +70,52 @@ class SafetyController(Node):
     def evaluate_safety(self):
         if self.scan_data is None or self.drive_command is None:
             return
-        # if self.drive_command.drive.speed < 0.001:
-        #    return
-        # if not self.stop:
-        speed = self.drive_command.drive.speed
-        front_treshold = (
-            self.MARGIN + self.LIDAR_OFFSET + (speed**2) / (2 * self.MAX_DECELERATION)
-        )
-        angle_min = self.scan_data.angle_min
-        angle_max = self.scan_data.angle_max
-        ranges = np.array(self.scan_data.ranges)
-        angles = np.linspace(angle_min, angle_max, num=ranges.shape[0])
-        cone_mask = np.abs(angles) < np.radians(self.CONE_ANGLE)
-        width_mask = np.abs(np.sin(angles)) * ranges < (self.CAR_WIDTH / 2 + 0.05)
-        front_mask = np.cos(angles) * ranges < front_treshold
-        danger_mask = (cone_mask & (ranges < front_treshold)) | (
-            width_mask & front_mask
-        )
-        closest_obstacle = np.min(ranges[cone_mask]) if np.any(cone_mask) else np.inf
-        if np.any(danger_mask):
-            self.get_logger().warn("Obstacle detected! Stopping the car.")
-            self.stop = True
-        self.debug_publisher.publish(
-            String(
-                data=f"Front threshold: {front_treshold:.2f}, Danger: {np.any(danger_mask)}, Closest: {closest_obstacle:.2f}"
+        if self.drive_command.drive.speed < 0.001:
+            return
+        if not self.stop:
+            speed = self.drive_command.drive.speed
+            front_treshold = self.MARGIN + (speed**2) / (2 * self.MAX_DECELERATION)
+            self.get_logger().debug(
+                f"Evaluating safety: speed={speed:.2f}, front_threshold={front_treshold:.2f}"
             )
-        )
+            angle_min = self.scan_data.angle_min
+            angle_max = self.scan_data.angle_max
+            ranges = np.array(self.scan_data.ranges)
+            angles = np.linspace(angle_min, angle_max, num=ranges.shape[0])
+            points = np.array([ranges * np.cos(angles), ranges * np.sin(angles)]).T
+            front_corners = [
+                [self.LIDAR_OFFSET, -self.CAR_WIDTH / 2],
+                [self.LIDAR_OFFSET, self.CAR_WIDTH / 2],
+            ]
 
+            # Check cone from front corners
+            for corner in front_corners:
+                for point in points:
+                    if (
+                        np.linalg.norm(point - corner) < front_treshold
+                        and abs(
+                            np.arctan2(point[1] - corner[1], point[0] - corner[0])
+                            * 180
+                            / np.pi
+                        )
+                        < self.CONE_ANGLE
+                    ):
+                        self.stop = True
+                        self.get_logger().warn(
+                            "Frontal object detected! Stopping the robot."
+                        )
+                        break
+            # Check rectangle between the corners as well
+            for point in points:
+                if (
+                    0 < point[0] < self.LIDAR_OFFSET + front_treshold
+                    and abs(point[1]) < self.CAR_WIDTH / 2
+                ):
+                    self.stop = True
+                    self.get_logger().warn(
+                        "Frontal object detected! Stopping the robot."
+                    )
+                    break
         if self.stop:
             safe_command = AckermannDriveStamped()
             safe_command.header.stamp = self.get_clock().now().to_msg()
