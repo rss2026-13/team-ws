@@ -158,7 +158,9 @@ class SafetyController(Node):
                         )
                         break
             self.debug_publisher.publish(
-                f"front_threshold={front_treshold:.2f}, max_angle={np.degrees(max_angle):.1f}, "
+                String(
+                    data=f"Front threshold: {front_treshold:.2f}, Max angle: {np.degrees(max_angle):.2f}, Rect hit: {rect_hit}, Cone hit: {self.stop}"
+                )
             )
         if self.stop:
             safe_command = AckermannDriveStamped()
