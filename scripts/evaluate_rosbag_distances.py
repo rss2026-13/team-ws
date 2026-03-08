@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 """
 Evaluate wall distance from lidar using each of the 4 branch methods (muktha, tissany, ansisg, jeryl)
-over all rosbags in rosbag_data/, and write aggregated stats to muktha_evaluation_stats.csv and .md.
+over all rosbags in rosbag_data/, and write aggregated stats to evaluation_stats.csv and evaluation_stats.md.
 
 Run from repo root (no ROS required on macOS):
   uv run scripts/evaluate_rosbag_distances.py
@@ -60,12 +60,14 @@ def distance_muktha(ranges: np.ndarray, angle_min: float, angle_max: float, angl
     if n == 0 or angle_increment <= 0:
         return None
     angles = angle_min + np.arange(n) * angle_increment
+    # Left wall (side > 0): use left side of scan (angles near angle_max, positive in REP 105).
+    # Right wall (side < 0): use right side of scan (angles near angle_min, negative in REP 105).
     if side > 0:
-        start_angle = min(angle_min + margin, angle_max)
-        end_angle = min(start_angle + window, angle_max)
-    else:
-        end_angle = max(angle_max - margin, angle_min)
+        end_angle = min(angle_max - margin, angle_max)
         start_angle = max(end_angle - window, angle_min)
+    else:
+        start_angle = max(angle_min + margin, angle_min)
+        end_angle = min(start_angle + window, angle_max)
     mask = (angles >= start_angle) & (angles <= end_angle)
     r = np.array(ranges, dtype=float)[mask]
     a = angles[mask]
@@ -233,6 +235,13 @@ def side_from_bag_name(name: str) -> int:
     return 1 if "left" in name.lower() else -1
 
 
+def test_case_id_from_bag_name(name: str) -> str:
+    """Strip trailing _1, _2, _3 to get test case (3 runs per test case). E.g. straight_inward_muktha_left_1 -> straight_inward_muktha_left."""
+    if name.endswith("_1") or name.endswith("_2") or name.endswith("_3"):
+        return name.rsplit("_", 1)[0]
+    return name
+
+
 def _read_scans_rosbags(bag_path: str, topic: str = "/scan") -> list[tuple[float, SimpleNamespace]]:
     """Read /scan from a ROS2 bag using rosbags (no ROS required). Returns (timestamp_ns, scan_like)."""
     out = []
@@ -255,6 +264,30 @@ def _read_scans_rosbags(bag_path: str, topic: str = "/scan") -> list[tuple[float
                 out.append((float(timestamp), scan))
     except Exception:  # anyreader can raise on open or deserialize
         pass
+    return out
+
+
+def get_per_scan_distances(
+    scans: list[tuple[float, SimpleNamespace]],
+    side: int,
+) -> dict[str, list[float]]:
+    """For a list of (timestamp, scan) and side (1=left, -1=right), return per-method lists of distances.
+    Keys: 'muktha', 'tissany', 'ansisg', 'jeryl', 'median_of_4'. Each value has len(scans) elements (nan if no value)."""
+    method_keys = list(METHODS.keys())
+    n = len(scans)
+    out: dict[str, list[float]] = {k: [] for k in method_keys}
+    out["median_of_4"] = []
+    ranges_list = [np.array(s.ranges, dtype=float) for _, s in scans]
+    for (_, msg), ranges in zip(scans, ranges_list):
+        inc = msg.angle_increment
+        if inc <= 0 and len(msg.ranges) > 1:
+            inc = (msg.angle_max - msg.angle_min) / (len(msg.ranges) - 1)
+        four = [fn(ranges, msg.angle_min, msg.angle_max, inc, side) for fn in METHODS.values()]
+        valid = [d for d in four if d is not None]
+        med = float(np.median(valid)) if valid else float("nan")
+        for k, d in zip(method_keys, four):
+            out[k].append(d if d is not None else float("nan"))
+        out["median_of_4"].append(med)
     return out
 
 
@@ -284,6 +317,25 @@ def read_scans_from_bag(bag_path: str, topic: str = "/scan") -> list[tuple[float
     return _read_scans_rosbags(bag_path, topic)
 
 
+def _metrics_description() -> str:
+    return """## Metrics (per bag, per method)
+
+- **count**: Number of lidar scans in the bag for which this method produced a valid distance (meters).
+- **mean**: Mean of those distances (average wall distance over the run).
+- **std**: Standard deviation of the distances (spread; higher = more variation/oscillation).
+- **min** / **max**: Minimum and maximum distance observed.
+- **mean_abs_error**: Average absolute error (meters) vs the desired wall distance of **0.6 m**; i.e. mean of |distance − 0.6| over scans. Lower = closer to target.
+
+Each **method** is a different way of estimating "distance to the wall" from the same lidar scan:
+- **muktha**, **tissany**, **ansisg**, **jeryl**: The four branch algorithms (angle-filtered line fit, half-scan linregress, IEPF segments + raycast, polyfit on side filter).
+- **median_of_4**: For each scan, the median of the four methods' distances; then we report count/mean/std/min/max over those per-scan medians. Use this to compare a single aggregate estimate vs individual methods.
+
+**Test case structure:** Each test case has 3 runs (e.g. straight_inward_muktha_left_1, _2, _3). There are 3 runs per (runner, side): 3 left + 3 right per runner. The **per test case (3 runs)** tables pool all scans from the 3 bags in that test case and report one row per (test_case, method).
+
+**tissany_left:** Bags in this test case are truncated to the average scan count of the other two left runs (_2 and _3) so the long run (_1) does not dominate the pooled stats.
+"""
+
+
 def run_evaluation(rosbag_data_dir: str, output_dir: str) -> None:
     rosbag_data_dir = Path(rosbag_data_dir)
     output_dir = Path(output_dir)
@@ -293,38 +345,79 @@ def run_evaluation(rosbag_data_dir: str, output_dir: str) -> None:
         print("No rosbag directories found under", rosbag_data_dir, file=sys.stderr)
         return
 
+    # Pre-pass: compute tissany_left target length from the other two left runs (_2 and _3)
+    tissany_left_target_len: int | None = None
+    tissany_left_dirs = sorted([d for d in bag_dirs if d.name.startswith("straight_inward_tissany_left")])
+    if len(tissany_left_dirs) >= 3:
+        counts: list[int] = []
+        try:
+            for d in tissany_left_dirs:
+                scans_pre = read_scans_from_bag(str(d))
+                counts.append(len(scans_pre) if scans_pre else 0)
+            # target = average of _2 and _3 (indices 1 and 2 after sort: ..._left_1, _2, _3)
+            c2, c3 = counts[1], counts[2]
+            if c2 > 0 and c3 > 0:
+                tissany_left_target_len = int(round((c2 + c3) / 2.0))
+                print(f"[1/3] tissany_left target length (avg of _2 and _3): {tissany_left_target_len} scans")
+        except (OSError, RuntimeError):
+            pass  # skip truncation if pre-pass fails
+
+    n_bags = len(bag_dirs)
+    print(f"[1/3] Found {n_bags} rosbag(s) (3 runs per test case: left + right per runner). Starting evaluation...")
     all_rows = []
-    for bag_dir in bag_dirs:
+    # Pool distances and per-scan errors per (test_case_id, method) for 3-run aggregation
+    pooled: dict[tuple[str, str], list[float]] = {}
+    pooled_errors: dict[tuple[str, str], list[float]] = {}
+    method_order = list(METHODS.keys()) + ["median_of_4"]
+    DESIRED_DISTANCE = 0.6  # meters; reference for mean_abs_error
+
+    for idx, bag_dir in enumerate(bag_dirs):
         name = bag_dir.name
+        test_case_id = test_case_id_from_bag_name(name)
+        print(f"  [{idx + 1}/{n_bags}] Processing: {name} (test case: {test_case_id})")
         side = side_from_bag_name(name)
         try:
             scans = read_scans_from_bag(str(bag_dir))
         except (OSError, RuntimeError) as e:
-            print("Skip", name, ":", e, file=sys.stderr)
+            print(f"    Skip: {e}")
             continue
         if not scans:
-            print("No /scan in", name, file=sys.stderr)
+            print("    No /scan messages in bag, skipping.")
             continue
+        # Truncate tissany_left bags to average length of the other two left runs
+        if test_case_id == "straight_inward_tissany_left" and tissany_left_target_len is not None:
+            n_before = len(scans)
+            scans = scans[:tissany_left_target_len]
+            if n_before > len(scans):
+                print(f"    Truncated to {len(scans)} scans (tissany_left target)")
+        print(f"    Scans: {len(scans)}")
         ranges_list = [np.array(s.ranges, dtype=float) for _, s in scans]
-        # Per-scan median of all 4 methods (for evaluation)
+        method_keys = list(METHODS.keys())
+        # One pass: per-scan median of 4 methods + per-method distances and absolute errors vs desired distance (0.6 m)
         median_of_four_dists = []
+        dists_per_method: dict[str, list[float]] = {k: [] for k in method_keys}
+        errors_per_method: dict[str, list[float]] = {k: [] for k in method_keys}
         for (_, msg), ranges in zip(scans, ranges_list):
             inc = msg.angle_increment
             if inc <= 0 and len(msg.ranges) > 1:
                 inc = (msg.angle_max - msg.angle_min) / (len(msg.ranges) - 1)
             four = [fn(ranges, msg.angle_min, msg.angle_max, inc, side) for fn in METHODS.values()]
             valid = [d for d in four if d is not None]
-            if valid:
-                median_of_four_dists.append(float(np.median(valid)))
-        for method_key, fn in METHODS.items():
-            dists = []
-            for (_, msg), ranges in zip(scans, ranges_list):
-                inc = msg.angle_increment
-                if inc <= 0 and len(msg.ranges) > 1:
-                    inc = (msg.angle_max - msg.angle_min) / (len(msg.ranges) - 1)
-                d = fn(ranges, msg.angle_min, msg.angle_max, inc, side)
+            med = float(np.median(valid)) if valid else None
+            if med is not None:
+                median_of_four_dists.append(med)
+            for k, d in zip(method_keys, four):
                 if d is not None:
-                    dists.append(d)
+                    dists_per_method[k].append(d)
+                    errors_per_method[k].append(abs(d - DESIRED_DISTANCE))
+        # Individual methods
+        for method_key in method_keys:
+            dists = dists_per_method[method_key]
+            errors = errors_per_method[method_key]
+            key = (test_case_id, method_key)
+            pooled.setdefault(key, []).extend(dists)
+            pooled_errors.setdefault(key, []).extend(errors)
+            mean_abs_err = float(np.mean(errors)) if errors else float("nan")
             if dists:
                 arr = np.array(dists)
                 all_rows.append({
@@ -336,12 +429,19 @@ def run_evaluation(rosbag_data_dir: str, output_dir: str) -> None:
                     "std": float(np.std(arr)) if len(arr) > 1 else 0.0,
                     "min": float(np.min(arr)),
                     "max": float(np.max(arr)),
+                    "mean_abs_error": mean_abs_err,
+                    "aggregation": "per_bag",
                 })
             else:
-                all_rows.append({"bag": name, "method": method_key, "side": "left" if side == 1 else "right", "count": 0, "mean": float("nan"), "std": float("nan"), "min": float("nan"), "max": float("nan")})
-        # Median-of-all-4 per point
+                all_rows.append({"bag": name, "method": method_key, "side": "left" if side == 1 else "right", "count": 0, "mean": float("nan"), "std": float("nan"), "min": float("nan"), "max": float("nan"), "mean_abs_error": float("nan"), "aggregation": "per_bag"})
+        # Median-of-4 (separate method; error = |median - desired|)
+        key_med = (test_case_id, "median_of_4")
+        pooled.setdefault(key_med, []).extend(median_of_four_dists)
+        errors_med = [abs(m - DESIRED_DISTANCE) for m in median_of_four_dists]
+        pooled_errors.setdefault(key_med, []).extend(errors_med)
         if median_of_four_dists:
             arr = np.array(median_of_four_dists)
+            mean_abs_err_med = float(np.mean(errors_med))
             all_rows.append({
                 "bag": name,
                 "method": "median_of_4",
@@ -351,28 +451,83 @@ def run_evaluation(rosbag_data_dir: str, output_dir: str) -> None:
                 "std": float(np.std(arr)) if len(arr) > 1 else 0.0,
                 "min": float(np.min(arr)),
                 "max": float(np.max(arr)),
+                "mean_abs_error": mean_abs_err_med,
+                "aggregation": "per_bag",
             })
         else:
-            all_rows.append({"bag": name, "method": "median_of_4", "side": "left" if side == 1 else "right", "count": 0, "mean": float("nan"), "std": float("nan"), "min": float("nan"), "max": float("nan")})
+            all_rows.append({"bag": name, "method": "median_of_4", "side": "left" if side == 1 else "right", "count": 0, "mean": float("nan"), "std": float("nan"), "min": float("nan"), "max": float("nan"), "mean_abs_error": float("nan"), "aggregation": "per_bag"})
 
-    # Write CSV
-    csv_path = output_dir / "muktha_evaluation_stats.csv"
+    # Aggregated rows: one per (test_case_id, method) pooling all 3 runs
+    for (tc_id, method_key), dists in pooled.items():
+        if not dists:
+            continue
+        arr = np.array(dists)
+        errs = pooled_errors.get((tc_id, method_key), [])
+        mean_abs_err = float(np.mean(errs)) if errs else float("nan")
+        side = "left" if "left" in tc_id else "right"
+        all_rows.append({
+            "bag": f"{tc_id} (3 runs)",
+            "method": method_key,
+            "side": side,
+            "count": len(arr),
+            "mean": float(np.mean(arr)),
+            "std": float(np.std(arr)) if len(arr) > 1 else 0.0,
+            "min": float(np.min(arr)),
+            "max": float(np.max(arr)),
+            "mean_abs_error": mean_abs_err,
+            "aggregation": "3_runs",
+        })
+
+    # Order: by method, then by bag (per_bag first, then 3_runs)
+    def row_sort_key(r: dict) -> tuple:
+        m = method_order.index(r["method"])
+        agg = 0 if r.get("aggregation") == "per_bag" else 1
+        return (m, agg, r["bag"])
+    all_rows.sort(key=row_sort_key)
+
+    print(f"[2/3] Writing evaluation_stats.csv and evaluation_stats.md (per bag + per test case 3 runs)...")
+    csv_path = output_dir / "evaluation_stats.csv"
     with open(csv_path, "w", encoding="utf-8") as f:
-        f.write("bag,method,side,count,mean,std,min,max\n")
+        f.write("bag,method,side,aggregation,count,mean,std,min,max,mean_abs_error\n")
         for r in all_rows:
-            f.write(f"{r['bag']},{r['method']},{r['side']},{r['count']},{r['mean']:.6f},{r['std']:.6f},{r['min']:.6f},{r['max']:.6f}\n")
-    print("Wrote", csv_path)
+            agg = r.get("aggregation", "per_bag")
+            err = r.get("mean_abs_error", float("nan"))
+            err_str = f"{err:.6f}" if (err == err) else "nan"
+            f.write(f"{r['bag']},{r['method']},{r['side']},{agg},{r['count']},{r['mean']:.6f},{r['std']:.6f},{r['min']:.6f},{r['max']:.6f},{err_str}\n")
+    print(f"  Wrote {csv_path}")
 
-    # Write Markdown summary
-    md_path = output_dir / "muktha_evaluation_stats.md"
+    md_path = output_dir / "evaluation_stats.md"
     with open(md_path, "w", encoding="utf-8") as f:
-        f.write("# Rosbag distance evaluation (4 branches + median of 4)\n\n")
-        f.write("Distance-from-wall stats from lidar: each branch's method and, per scan, the median of all four.\n\n")
-        f.write("| bag | method | side | count | mean | std | min | max |\n")
-        f.write("|-----|--------|------|-------|------|-----|-----|-----|\n")
-        for r in all_rows:
-            f.write(f"| {r['bag']} | {r['method']} | {r['side']} | {r['count']} | {r['mean']:.4f} | {r['std']:.4f} | {r['min']:.4f} | {r['max']:.4f} |\n")
-    print("Wrote", md_path)
+        f.write("# Distance evaluation stats\n\n")
+        f.write(_metrics_description())
+        f.write("\n---\n\n")
+        for method in method_order:
+            rows = [r for r in all_rows if r["method"] == method]
+            if not rows:
+                continue
+            f.write(f"## Method: `{method}`\n\n")
+            per_bag = [r for r in rows if r.get("aggregation") == "per_bag"]
+            if per_bag:
+                f.write("### Per bag (individual runs)\n\n")
+                f.write("| bag | side | count | mean | std | min | max | avg error |\n")
+                f.write("|-----|------|-------|------|-----|-----|-----|----------|\n")
+                for r in per_bag:
+                    err = r.get("mean_abs_error", float("nan"))
+                    err_s = f"{err:.4f}" if err == err else "—"
+                    f.write(f"| {r['bag']} | {r['side']} | {r['count']} | {r['mean']:.4f} | {r['std']:.4f} | {r['min']:.4f} | {r['max']:.4f} | {err_s} |\n")
+                f.write("\n")
+            three_runs = [r for r in rows if r.get("aggregation") == "3_runs"]
+            if three_runs:
+                f.write("### Per test case (3 runs pooled)\n\n")
+                f.write("| test case | side | count | mean | std | min | max | avg error |\n")
+                f.write("|------------|------|-------|------|-----|-----|-----|----------|\n")
+                for r in three_runs:
+                    err = r.get("mean_abs_error", float("nan"))
+                    err_s = f"{err:.4f}" if err == err else "—"
+                    f.write(f"| {r['bag']} | {r['side']} | {r['count']} | {r['mean']:.4f} | {r['std']:.4f} | {r['min']:.4f} | {r['max']:.4f} | {err_s} |\n")
+                f.write("\n")
+    print(f"  Wrote {md_path}")
+    print("[3/3] Done.")
 
 
 def main() -> None:
