@@ -138,7 +138,10 @@ class SafetyController(Node):
 
             if rect_hit:
                 self.stop = True
-                self.get_logger().warn("Frontal object detected! Stopping the robot.")
+                self.get_logger().warn(
+                    "Frontal object detected! Stopping the robot. Rectangle hit"
+                )
+                self.get_logger().warn(f"Front treshold: {front_treshold:.2f}")
 
             if not self.stop:
                 # --- Cone check from both front corners (vectorised) ---
@@ -157,8 +160,9 @@ class SafetyController(Node):
                     if np.any(ang < cone_rad):
                         self.stop = True
                         self.get_logger().warn(
-                            "Frontal object detected! Stopping the robot."
+                            "Frontal object detected! Stopping the robot. Cone hit."
                         )
+                        self.get_logger().warn(f"Front treshold: {front_treshold:.2f}")
                         break
         if self.stop:
             safe_command = AckermannDriveStamped()
