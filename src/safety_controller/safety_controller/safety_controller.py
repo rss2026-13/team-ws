@@ -20,7 +20,8 @@ class SafetyController(Node):
         self.declare_parameter("max_deceleration", 2.0)
         self.declare_parameter("car_width", 0.25)
         self.declare_parameter("car_length", 0.325)
-        self.declare_parameter("lidar_offset", 0.05)  # Distance from lidar to front bumper
+        self.declare_parameter("lidar_offset", 0.12)  # Distance from lidar to front bumper
+        self.declare_parameter("base_to_lidar", 0.04)
         self.declare_parameter("visualize", True)
 
         self.DRIVE_TOPIC = self.get_parameter("drive_topic").get_parameter_value().string_value
@@ -31,6 +32,7 @@ class SafetyController(Node):
         self.CAR_WIDTH = self.get_parameter("car_width").get_parameter_value().double_value
         self.CAR_LENGTH = self.get_parameter("car_length").get_parameter_value().double_value
         self.LIDAR_OFFSET = self.get_parameter("lidar_offset").get_parameter_value().double_value
+        self.BASE_TO_LIDAR = self.get_parameter("base_to_lidar").get_parameter_value().double_value
         self.VISUALIZE = self.get_parameter("visualize").get_parameter_value().bool_value
 
         self.drive_subscription = self.create_subscription(
@@ -42,7 +44,7 @@ class SafetyController(Node):
         self.drive_publisher = self.create_publisher(
             AckermannDriveStamped, self.OUTPUT_TOPIC, 10
         )
-        self.distance_publisher = self.create_publisher(Float32, "/sc_wall_dist", 10)
+        self.distance_pub = self.create_publisher(Float32, "/sc_wall_dist", 10)
 
         self.marker_pub = self.create_publisher(Marker, "/safety_marker", 1)
         self.is_collision = False
@@ -50,6 +52,8 @@ class SafetyController(Node):
         self.drive_command = None
         self.scan_cos_angles = None
         self.scan_sin_angles = None
+        self.collision_counter = 0
+        self.DETECTION_THRESHOLD = 3
 
     def drive_callback(self, msg):
         self.drive_command = msg
@@ -89,7 +93,7 @@ class SafetyController(Node):
         mask = (np.abs(py) < self.CAR_WIDTH/2) & (dist_x > 0)
         if np.any(mask):
             distance = Float32()
-            distance.data = float(np.mean(dist_x[mask])) 
+            distance.data = float(np.median(dist_x[mask])) 
             self.distance_pub.publish(distance)
         # 3. Adjust for LIDAR offset (Move points to car's front bumper frame)
         # If px=0 is the LIDAR, then the bumper is at self.LIDAR_OFFSET
@@ -130,6 +134,11 @@ class SafetyController(Node):
             self.is_collision = np.any(in_path)
         
         if self.is_collision:
+            self.collision_counter += 1
+        else:
+            self.collision_counter = 0
+
+        if self.collision_counter > self.DETECTION_THRESHOLD:
             safe_command = AckermannDriveStamped()
             safe_command.header.stamp = self.get_clock().now().to_msg()
             safe_command.drive.speed = 0.0
@@ -166,7 +175,7 @@ class SafetyController(Node):
             # --- Straight Case: Two Parallel Lines ---
             y_inner = -self.CAR_WIDTH / 2
             y_outer = self.CAR_WIDTH / 2
-            x_start = self.CAR_LENGTH
+            x_start = 0.0 
             x_end = x_start + stop_dist
             
             # Left Boundary
