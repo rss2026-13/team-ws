@@ -6,6 +6,7 @@ from rclpy.node import Node
 from sensor_msgs.msg import LaserScan
 from visualization_msgs.msg import Marker
 from std_msgs.msg import Float32
+import scipy.signal
 
 
 class SafetyController(Node):
@@ -17,11 +18,11 @@ class SafetyController(Node):
         self.declare_parameter("output_topic", "/vesc/low_level/input/safety")
         self.declare_parameter("scan_topic", "/scan")
         self.declare_parameter("margin", 0.2)
-        self.declare_parameter("max_deceleration", 2.0)
+        self.declare_parameter("max_deceleration", 2.5)
         self.declare_parameter("car_width", 0.25)
         self.declare_parameter("wheelbase", 0.325)
         self.declare_parameter("lidar_offset", 0.12)  # Distance from lidar to front bumper
-        self.declare_parameter("visualize", True)
+        self.declare_parameter("visualize", False)
 
         self.DRIVE_TOPIC = self.get_parameter("drive_topic").get_parameter_value().string_value
         self.OUTPUT_TOPIC = self.get_parameter("output_topic").get_parameter_value().string_value
@@ -50,8 +51,6 @@ class SafetyController(Node):
         self.drive_command = None
         self.scan_cos_angles = None
         self.scan_sin_angles = None
-        self.collision_counter = 0 # Needed to account for salt and pepper LiDAR noise
-        self.DETECTION_THRESHOLD = 3 # Number of frames scan must remain in collision zone for stop to occur
 
     def drive_callback(self, msg):
         self.drive_command = msg
@@ -60,7 +59,8 @@ class SafetyController(Node):
 
     def scan_callback(self, msg):
         if (self.scan_cos_angles is None) or (self.scan_sin_angles is None): # Lazy initialization
-            angles = np.linspace(msg.angle_min, msg.angle_max, num=np.array(msg.ranges).shape[0])
+            ranges = scipy.signal.medfilt(msg.ranges, kernel_size=7)
+            angles = np.linspace(msg.angle_min, msg.angle_max, num=np.array(ranges).shape[0])
             self.scan_cos_angles = np.cos(angles)
             self.scan_sin_angles = np.sin(angles)
         
@@ -83,16 +83,17 @@ class SafetyController(Node):
             self.publish_safety_marker(delta, front_threshold)
 
         # Get Cartesian points
-        ranges = np.array(self.scan_data.ranges)
+        ranges = np.array(scipy.signal.medfilt(self.scan_data.ranges, kernel_size=7))
         px = ranges * self.scan_cos_angles
         py = ranges * self.scan_sin_angles
+
 
         # Publish distance from front bumper
         dist_x = px - self.LIDAR_OFFSET
         mask = (np.abs(py) < self.CAR_WIDTH/2) & (dist_x > 0)
         if np.any(mask):
             distance = Float32()
-            distance.data = float(np.median(dist_x[mask])) 
+            distance.data = float(np.percentile(dist_x[mask], 5)) 
             self.distance_pub.publish(distance)
 
         # Adjust for LIDAR offset (Move points to car's front bumper frame)
@@ -107,7 +108,7 @@ class SafetyController(Node):
             in_path = (px > collision_zone_start) & \
                     (px < collision_zone_end) & \
                     (np.abs(py) < self.CAR_WIDTH / 2)
-            self.is_collision = np.any(in_path)
+            self.is_collision = np.any(in_path) 
         else: # Curved Path (Bicycle Model)
             R = self.WHEELBASE / np.tan(delta) # Radius of car rotation, max and min account for front and back corner
             R_max = np.sqrt((self.WHEELBASE + self.LIDAR_OFFSET)**2 + (abs(R) + self.CAR_WIDTH/2)**2)
@@ -130,13 +131,7 @@ class SafetyController(Node):
             
             self.is_collision = np.any(in_path)
         
-        # Ignore salt and pepper LiDAR noise
         if self.is_collision:
-            self.collision_counter += 1
-        else:
-            self.collision_counter = 0
-
-        if self.collision_counter > self.DETECTION_THRESHOLD:
             safe_command = AckermannDriveStamped()
             safe_command.header.stamp = self.get_clock().now().to_msg()
             safe_command.drive.speed = 0.0
