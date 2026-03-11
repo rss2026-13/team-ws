@@ -1,0 +1,30 @@
+[2.167s] Invoking command in '/root/racecar_ws/src/visual_servoing/visual_servoing': PYTHONPATH=/root/racecar_ws/build/visual_servoing/prefix_override:/usr/lib/python3/dist-packages/colcon_core/task/python/colcon_distutils_commands:/root/racecar_ws/install/visual_servoing/lib/python3.10/site-packages:${PYTHONPATH} /usr/bin/python3 -W ignore:setup.py install is deprecated -W ignore:easy_install command is deprecated setup.py egg_info --egg-base ../../../build/visual_servoing build --build-base /root/racecar_ws/build/visual_servoing/build install --record /root/racecar_ws/build/visual_servoing/install.log --install-scripts $base/lib/visual_servoing --single-version-externally-managed install_data
+[2.836s] /usr/lib/python3/dist-packages/setuptools/dist.py:723: UserWarning: Usage of dash-separated 'script-dir' will not be supported in future versions. Please use the underscore name 'script_dir' instead
+[2.836s]   warnings.warn(
+[2.857s] running egg_info
+[2.858s] writing ../../../build/visual_servoing/visual_servoing.egg-info/PKG-INFO
+[2.859s] writing dependency_links to ../../../build/visual_servoing/visual_servoing.egg-info/dependency_links.txt
+[2.859s] writing entry points to ../../../build/visual_servoing/visual_servoing.egg-info/entry_points.txt
+[2.860s] writing requirements to ../../../build/visual_servoing/visual_servoing.egg-info/requires.txt
+[2.860s] writing top-level names to ../../../build/visual_servoing/visual_servoing.egg-info/top_level.txt
+[2.865s] reading manifest file '../../../build/visual_servoing/visual_servoing.egg-info/SOURCES.txt'
+[2.867s] writing manifest file '../../../build/visual_servoing/visual_servoing.egg-info/SOURCES.txt'
+[2.868s] running build
+[2.868s] running build_py
+[2.868s] copying visual_servoing/homography_transformer.py -> /root/racecar_ws/build/visual_servoing/build/lib/visual_servoing
+[2.869s] running install
+[2.870s] running install_lib
+[2.872s] copying /root/racecar_ws/build/visual_servoing/build/lib/visual_servoing/homography_transformer.py -> /root/racecar_ws/install/visual_servoing/lib/python3.10/site-packages/visual_servoing
+[2.875s] byte-compiling /root/racecar_ws/install/visual_servoing/lib/python3.10/site-packages/visual_servoing/homography_transformer.py to homography_transformer.cpython-310.pyc
+[2.877s] running install_data
+[2.878s] running install_egg_info
+[2.883s] removing '/root/racecar_ws/install/visual_servoing/lib/python3.10/site-packages/visual_servoing-0.0.0-py3.10.egg-info' (and everything under it)
+[2.884s] Copying ../../../build/visual_servoing/visual_servoing.egg-info to /root/racecar_ws/install/visual_servoing/lib/python3.10/site-packages/visual_servoing-0.0.0-py3.10.egg-info
+[2.886s] running install_scripts
+[2.938s] Installing cone_detector script to /root/racecar_ws/install/visual_servoing/lib/visual_servoing
+[2.938s] Installing cone_sim_marker script to /root/racecar_ws/install/visual_servoing/lib/visual_servoing
+[2.938s] Installing homography_transformer script to /root/racecar_ws/install/visual_servoing/lib/visual_servoing
+[2.938s] Installing parking_controller script to /root/racecar_ws/install/visual_servoing/lib/visual_servoing
+[2.939s] Installing yolo_annotator script to /root/racecar_ws/install/visual_servoing/lib/visual_servoing
+[2.941s] writing list of installed files to '/root/racecar_ws/build/visual_servoing/install.log'
+[3.026s] Invoked command in '/root/racecar_ws/src/visual_servoing/visual_servoing' returned '0': PYTHONPATH=/root/racecar_ws/build/visual_servoing/prefix_override:/usr/lib/python3/dist-packages/colcon_core/task/python/colcon_distutils_commands:/root/racecar_ws/install/visual_servoing/lib/python3.10/site-packages:${PYTHONPATH} /usr/bin/python3 -W ignore:setup.py install is deprecated -W ignore:easy_install command is deprecated setup.py egg_info --egg-base ../../../build/visual_servoing build --build-base /root/racecar_ws/build/visual_servoing/build install --record /root/racecar_ws/build/visual_servoing/install.log --install-scripts $base/lib/visual_servoing --single-version-externally-managed install_data

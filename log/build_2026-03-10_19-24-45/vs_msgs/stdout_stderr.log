@@ -1,0 +1,280 @@
+-- The C compiler identification is GNU 11.4.0
+-- The CXX compiler identification is GNU 11.4.0
+-- Detecting C compiler ABI info
+-- Detecting C compiler ABI info - done
+-- Check for working C compiler: /usr/bin/cc - skipped
+-- Detecting C compile features
+-- Detecting C compile features - done
+-- Detecting CXX compiler ABI info
+-- Detecting CXX compiler ABI info - done
+-- Check for working CXX compiler: /usr/bin/c++ - skipped
+-- Detecting CXX compile features
+-- Detecting CXX compile features - done
+-- Found ament_cmake: 1.3.12 (/opt/ros/humble/share/ament_cmake/cmake)
+-- Found Python3: /usr/bin/python3 (found version "3.10.12") found components: Interpreter 
+-- Found rosidl_default_generators: 1.2.0 (/opt/ros/humble/share/rosidl_default_generators/cmake)
+-- Using all available rosidl_typesupport_c: rosidl_typesupport_fastrtps_c;rosidl_typesupport_introspection_c
+-- Found rosidl_adapter: 3.1.8 (/opt/ros/humble/share/rosidl_adapter/cmake)
+-- Using all available rosidl_typesupport_cpp: rosidl_typesupport_fastrtps_cpp;rosidl_typesupport_introspection_cpp
+-- Found ament_cmake_ros: 0.10.0 (/opt/ros/humble/share/ament_cmake_ros/cmake)
+-- Using all available rosidl_typesupport_c: rosidl_typesupport_fastrtps_c;rosidl_typesupport_introspection_c
+-- Using all available rosidl_typesupport_cpp: rosidl_typesupport_fastrtps_cpp;rosidl_typesupport_introspection_cpp
+-- Found PythonInterp: /usr/bin/python3 (found suitable version "3.10.12", minimum required is "3.6") 
+-- Found python_cmake_module: 0.10.0 (/opt/ros/humble/share/python_cmake_module/cmake)
+-- Found PythonLibs: /usr/lib/aarch64-linux-gnu/libpython3.10.so (found suitable version "3.10.12", minimum required is "3.5") 
+-- Using PYTHON_EXECUTABLE: /usr/bin/python3
+-- Using PYTHON_INCLUDE_DIRS: /usr/include/python3.10
+-- Using PYTHON_LIBRARIES: /usr/lib/aarch64-linux-gnu/libpython3.10.so
+-- Found PythonExtra: .so  
+-- Found ament_lint_auto: 0.12.14 (/opt/ros/humble/share/ament_lint_auto/cmake)
+-- Added test 'copyright' to check source files copyright and LICENSE
+-- Added test 'lint_cmake' to check CMake code style
+-- Added test 'xmllint' to check XML markup files
+-- Configuring done
+-- Generating done
+-- Build files have been written to: /root/racecar_ws/build/vs_msgs
+[  2%] [34m[1mGenerating C code for ROS interfaces[0m
+[  4%] [34m[1mGenerating C++ code for ROS interfaces[0m
+[  4%] Built target ament_cmake_python_copy_vs_msgs
+running egg_info
+creating vs_msgs.egg-info
+writing vs_msgs.egg-info/PKG-INFO
+writing dependency_links to vs_msgs.egg-info/dependency_links.txt
+writing top-level names to vs_msgs.egg-info/top_level.txt
+writing manifest file 'vs_msgs.egg-info/SOURCES.txt'
+reading manifest file 'vs_msgs.egg-info/SOURCES.txt'
+writing manifest file 'vs_msgs.egg-info/SOURCES.txt'
+[  6%] [32mBuilding C object CMakeFiles/vs_msgs__rosidl_generator_c.dir/rosidl_generator_c/vs_msgs/msg/detail/cone_location__functions.c.o[0m
+[  8%] [32mBuilding C object CMakeFiles/vs_msgs__rosidl_generator_c.dir/rosidl_generator_c/vs_msgs/msg/detail/parking_error__functions.c.o[0m
+[ 10%] [32mBuilding C object CMakeFiles/vs_msgs__rosidl_generator_c.dir/rosidl_generator_c/vs_msgs/msg/detail/cone_location_pixel__functions.c.o[0m
+[ 10%] Built target ament_cmake_python_build_vs_msgs_egg
+[ 10%] Built target vs_msgs__cpp
+[ 12%] [34m[1mGenerating C++ type support for eProsima Fast-RTPS[0m
+[ 14%] [34m[1mGenerating C++ type support dispatch for ROS interfaces[0m
+[ 17%] [34m[1mGenerating C++ introspection for ROS interfaces[0m
+[ 19%] [32m[1mLinking C shared library libvs_msgs__rosidl_generator_c.so[0m
+[ 19%] Built target vs_msgs__rosidl_generator_c
+[ 23%] [34m[1mGenerating C type support for eProsima Fast-RTPS[0m
+[ 23%] [34m[1mGenerating C type support dispatch for ROS interfaces[0m
+[ 25%] [34m[1mGenerating C introspection for ROS interfaces[0m
+[ 27%] [32mBuilding CXX object CMakeFiles/vs_msgs__rosidl_typesupport_cpp.dir/rosidl_typesupport_cpp/vs_msgs/msg/cone_location__type_support.cpp.o[0m
+[ 29%] [32mBuilding CXX object CMakeFiles/vs_msgs__rosidl_typesupport_introspection_cpp.dir/rosidl_typesupport_introspection_cpp/vs_msgs/msg/detail/cone_location__type_support.cpp.o[0m
+[ 31%] [32mBuilding CXX object CMakeFiles/vs_msgs__rosidl_typesupport_fastrtps_cpp.dir/rosidl_typesupport_fastrtps_cpp/vs_msgs/msg/detail/dds_fastrtps/cone_location__type_support.cpp.o[0m
+[ 34%] [32mBuilding CXX object CMakeFiles/vs_msgs__rosidl_typesupport_c.dir/rosidl_typesupport_c/vs_msgs/msg/cone_location__type_support.cpp.o[0m
+[ 36%] [32mBuilding CXX object CMakeFiles/vs_msgs__rosidl_typesupport_fastrtps_c.dir/rosidl_typesupport_fastrtps_c/vs_msgs/msg/detail/cone_location__type_support_c.cpp.o[0m
+[ 38%] [32mBuilding CXX object CMakeFiles/vs_msgs__rosidl_typesupport_c.dir/rosidl_typesupport_c/vs_msgs/msg/cone_location_pixel__type_support.cpp.o[0m
+[ 40%] [32mBuilding C object CMakeFiles/vs_msgs__rosidl_typesupport_introspection_c.dir/rosidl_typesupport_introspection_c/vs_msgs/msg/detail/cone_location__type_support.c.o[0m
+[ 42%] [32mBuilding CXX object CMakeFiles/vs_msgs__rosidl_typesupport_c.dir/rosidl_typesupport_c/vs_msgs/msg/parking_error__type_support.cpp.o[0m
+[ 44%] [32mBuilding C object CMakeFiles/vs_msgs__rosidl_typesupport_introspection_c.dir/rosidl_typesupport_introspection_c/vs_msgs/msg/detail/cone_location_pixel__type_support.c.o[0m
+[ 46%] [32m[1mLinking CXX shared library libvs_msgs__rosidl_typesupport_c.so[0m
+[ 48%] [32mBuilding C object CMakeFiles/vs_msgs__rosidl_typesupport_introspection_c.dir/rosidl_typesupport_introspection_c/vs_msgs/msg/detail/parking_error__type_support.c.o[0m
+[ 48%] Built target vs_msgs__rosidl_typesupport_c
+[ 51%] [32mBuilding CXX object CMakeFiles/vs_msgs__rosidl_typesupport_cpp.dir/rosidl_typesupport_cpp/vs_msgs/msg/cone_location_pixel__type_support.cpp.o[0m
+[ 53%] [32mBuilding CXX object CMakeFiles/vs_msgs__rosidl_typesupport_cpp.dir/rosidl_typesupport_cpp/vs_msgs/msg/parking_error__type_support.cpp.o[0m
+[ 55%] [32m[1mLinking C shared library libvs_msgs__rosidl_typesupport_introspection_c.so[0m
+[ 55%] Built target vs_msgs__rosidl_typesupport_introspection_c
+[ 57%] [32mBuilding CXX object CMakeFiles/vs_msgs__rosidl_typesupport_fastrtps_c.dir/rosidl_typesupport_fastrtps_c/vs_msgs/msg/detail/cone_location_pixel__type_support_c.cpp.o[0m
+[ 59%] [32mBuilding CXX object CMakeFiles/vs_msgs__rosidl_typesupport_fastrtps_cpp.dir/rosidl_typesupport_fastrtps_cpp/vs_msgs/msg/detail/dds_fastrtps/cone_location_pixel__type_support.cpp.o[0m
+[ 61%] [32mBuilding CXX object CMakeFiles/vs_msgs__rosidl_typesupport_introspection_cpp.dir/rosidl_typesupport_introspection_cpp/vs_msgs/msg/detail/cone_location_pixel__type_support.cpp.o[0m
+[ 63%] [32mBuilding CXX object CMakeFiles/vs_msgs__rosidl_typesupport_introspection_cpp.dir/rosidl_typesupport_introspection_cpp/vs_msgs/msg/detail/parking_error__type_support.cpp.o[0m
+[ 65%] [32mBuilding CXX object CMakeFiles/vs_msgs__rosidl_typesupport_fastrtps_c.dir/rosidl_typesupport_fastrtps_c/vs_msgs/msg/detail/parking_error__type_support_c.cpp.o[0m
+[ 68%] [32m[1mLinking CXX shared library libvs_msgs__rosidl_typesupport_cpp.so[0m
+[ 68%] Built target vs_msgs__rosidl_typesupport_cpp
+[ 70%] [32mBuilding CXX object CMakeFiles/vs_msgs__rosidl_typesupport_fastrtps_cpp.dir/rosidl_typesupport_fastrtps_cpp/vs_msgs/msg/detail/dds_fastrtps/parking_error__type_support.cpp.o[0m
+[ 72%] [32m[1mLinking CXX shared library libvs_msgs__rosidl_typesupport_fastrtps_c.so[0m
+[ 72%] Built target vs_msgs__rosidl_typesupport_fastrtps_c
+[ 74%] [32m[1mLinking CXX shared library libvs_msgs__rosidl_typesupport_introspection_cpp.so[0m
+[ 74%] Built target vs_msgs__rosidl_typesupport_introspection_cpp
+[ 76%] [32m[1mLinking CXX shared library libvs_msgs__rosidl_typesupport_fastrtps_cpp.so[0m
+[ 76%] Built target vs_msgs__rosidl_typesupport_fastrtps_cpp
+[ 76%] Built target vs_msgs
+[ 78%] [34m[1mGenerating Python code for ROS interfaces[0m
+[ 78%] Built target vs_msgs__py
+[ 85%] [32mBuilding C object CMakeFiles/vs_msgs__rosidl_generator_py.dir/rosidl_generator_py/vs_msgs/msg/_parking_error_s.c.o[0m
+[ 85%] [32mBuilding C object CMakeFiles/vs_msgs__rosidl_generator_py.dir/rosidl_generator_py/vs_msgs/msg/_cone_location_pixel_s.c.o[0m
+[ 85%] [32mBuilding C object CMakeFiles/vs_msgs__rosidl_generator_py.dir/rosidl_generator_py/vs_msgs/msg/_cone_location_s.c.o[0m
+[ 87%] [32m[1mLinking C shared library rosidl_generator_py/vs_msgs/libvs_msgs__rosidl_generator_py.so[0m
+[ 87%] Built target vs_msgs__rosidl_generator_py
+[ 91%] [32mBuilding C object CMakeFiles/vs_msgs__rosidl_typesupport_introspection_c__pyext.dir/rosidl_generator_py/vs_msgs/_vs_msgs_s.ep.rosidl_typesupport_introspection_c.c.o[0m
+[ 91%] [32mBuilding C object CMakeFiles/vs_msgs__rosidl_typesupport_fastrtps_c__pyext.dir/rosidl_generator_py/vs_msgs/_vs_msgs_s.ep.rosidl_typesupport_fastrtps_c.c.o[0m
+[ 93%] [32mBuilding C object CMakeFiles/vs_msgs__rosidl_typesupport_c__pyext.dir/rosidl_generator_py/vs_msgs/_vs_msgs_s.ep.rosidl_typesupport_c.c.o[0m
+[ 97%] [32m[1mLinking C shared library rosidl_generator_py/vs_msgs/vs_msgs_s__rosidl_typesupport_c.cpython-310-aarch64-linux-gnu.so[0m
+[ 97%] [32m[1mLinking C shared library rosidl_generator_py/vs_msgs/vs_msgs_s__rosidl_typesupport_introspection_c.cpython-310-aarch64-linux-gnu.so[0m
+[100%] [32m[1mLinking C shared library rosidl_generator_py/vs_msgs/vs_msgs_s__rosidl_typesupport_fastrtps_c.cpython-310-aarch64-linux-gnu.so[0m
+[100%] Built target vs_msgs__rosidl_typesupport_c__pyext
+[100%] Built target vs_msgs__rosidl_typesupport_introspection_c__pyext
+[100%] Built target vs_msgs__rosidl_typesupport_fastrtps_c__pyext
+-- Install configuration: ""
+-- Installing: /root/racecar_ws/install/vs_msgs/share/ament_index/resource_index/rosidl_interfaces/vs_msgs
+-- Installing: /root/racecar_ws/install/vs_msgs/include/vs_msgs/vs_msgs
+-- Installing: /root/racecar_ws/install/vs_msgs/include/vs_msgs/vs_msgs/msg
+-- Installing: /root/racecar_ws/install/vs_msgs/include/vs_msgs/vs_msgs/msg/rosidl_generator_c__visibility_control.h
+-- Installing: /root/racecar_ws/install/vs_msgs/include/vs_msgs/vs_msgs/msg/cone_location_pixel.h
+-- Installing: /root/racecar_ws/install/vs_msgs/include/vs_msgs/vs_msgs/msg/detail
+-- Installing: /root/racecar_ws/install/vs_msgs/include/vs_msgs/vs_msgs/msg/detail/parking_error__type_support.h
+-- Installing: /root/racecar_ws/install/vs_msgs/include/vs_msgs/vs_msgs/msg/detail/cone_location__functions.c
+-- Installing: /root/racecar_ws/install/vs_msgs/include/vs_msgs/vs_msgs/msg/detail/cone_location_pixel__functions.c
+-- Installing: /root/racecar_ws/install/vs_msgs/include/vs_msgs/vs_msgs/msg/detail/parking_error__struct.h
+-- Installing: /root/racecar_ws/install/vs_msgs/include/vs_msgs/vs_msgs/msg/detail/cone_location__struct.h
+-- Installing: /root/racecar_ws/install/vs_msgs/include/vs_msgs/vs_msgs/msg/detail/cone_location_pixel__struct.h
+-- Installing: /root/racecar_ws/install/vs_msgs/include/vs_msgs/vs_msgs/msg/detail/cone_location_pixel__functions.h
+-- Installing: /root/racecar_ws/install/vs_msgs/include/vs_msgs/vs_msgs/msg/detail/cone_location_pixel__type_support.h
+-- Installing: /root/racecar_ws/install/vs_msgs/include/vs_msgs/vs_msgs/msg/detail/parking_error__functions.h
+-- Installing: /root/racecar_ws/install/vs_msgs/include/vs_msgs/vs_msgs/msg/detail/cone_location__type_support.h
+-- Installing: /root/racecar_ws/install/vs_msgs/include/vs_msgs/vs_msgs/msg/detail/cone_location__functions.h
+-- Installing: /root/racecar_ws/install/vs_msgs/include/vs_msgs/vs_msgs/msg/detail/parking_error__functions.c
+-- Installing: /root/racecar_ws/install/vs_msgs/include/vs_msgs/vs_msgs/msg/cone_location.h
+-- Installing: /root/racecar_ws/install/vs_msgs/include/vs_msgs/vs_msgs/msg/parking_error.h
+-- Installing: /root/racecar_ws/install/vs_msgs/share/vs_msgs/environment/library_path.sh
+-- Installing: /root/racecar_ws/install/vs_msgs/share/vs_msgs/environment/library_path.dsv
+-- Installing: /root/racecar_ws/install/vs_msgs/lib/libvs_msgs__rosidl_generator_c.so
+-- Set runtime path of "/root/racecar_ws/install/vs_msgs/lib/libvs_msgs__rosidl_generator_c.so" to ""
+-- Up-to-date: /root/racecar_ws/install/vs_msgs/include/vs_msgs/vs_msgs
+-- Up-to-date: /root/racecar_ws/install/vs_msgs/include/vs_msgs/vs_msgs/msg
+-- Up-to-date: /root/racecar_ws/install/vs_msgs/include/vs_msgs/vs_msgs/msg/detail
+-- Installing: /root/racecar_ws/install/vs_msgs/include/vs_msgs/vs_msgs/msg/detail/cone_location__rosidl_typesupport_fastrtps_c.h
+-- Installing: /root/racecar_ws/install/vs_msgs/include/vs_msgs/vs_msgs/msg/detail/cone_location_pixel__rosidl_typesupport_fastrtps_c.h
+-- Installing: /root/racecar_ws/install/vs_msgs/include/vs_msgs/vs_msgs/msg/detail/parking_error__rosidl_typesupport_fastrtps_c.h
+-- Installing: /root/racecar_ws/install/vs_msgs/include/vs_msgs/vs_msgs/msg/rosidl_typesupport_fastrtps_c__visibility_control.h
+-- Installing: /root/racecar_ws/install/vs_msgs/lib/libvs_msgs__rosidl_typesupport_fastrtps_c.so
+-- Set runtime path of "/root/racecar_ws/install/vs_msgs/lib/libvs_msgs__rosidl_typesupport_fastrtps_c.so" to ""
+-- Up-to-date: /root/racecar_ws/install/vs_msgs/include/vs_msgs/vs_msgs
+-- Up-to-date: /root/racecar_ws/install/vs_msgs/include/vs_msgs/vs_msgs/msg
+-- Up-to-date: /root/racecar_ws/install/vs_msgs/include/vs_msgs/vs_msgs/msg/detail
+-- Installing: /root/racecar_ws/install/vs_msgs/include/vs_msgs/vs_msgs/msg/detail/parking_error__rosidl_typesupport_introspection_c.h
+-- Installing: /root/racecar_ws/install/vs_msgs/include/vs_msgs/vs_msgs/msg/detail/cone_location_pixel__rosidl_typesupport_introspection_c.h
+-- Installing: /root/racecar_ws/install/vs_msgs/include/vs_msgs/vs_msgs/msg/detail/cone_location__rosidl_typesupport_introspection_c.h
+-- Installing: /root/racecar_ws/install/vs_msgs/include/vs_msgs/vs_msgs/msg/detail/cone_location_pixel__type_support.c
+-- Installing: /root/racecar_ws/install/vs_msgs/include/vs_msgs/vs_msgs/msg/detail/cone_location__type_support.c
+-- Installing: /root/racecar_ws/install/vs_msgs/include/vs_msgs/vs_msgs/msg/detail/parking_error__type_support.c
+-- Installing: /root/racecar_ws/install/vs_msgs/include/vs_msgs/vs_msgs/msg/rosidl_typesupport_introspection_c__visibility_control.h
+-- Installing: /root/racecar_ws/install/vs_msgs/lib/libvs_msgs__rosidl_typesupport_introspection_c.so
+-- Set runtime path of "/root/racecar_ws/install/vs_msgs/lib/libvs_msgs__rosidl_typesupport_introspection_c.so" to ""
+-- Installing: /root/racecar_ws/install/vs_msgs/lib/libvs_msgs__rosidl_typesupport_c.so
+-- Set runtime path of "/root/racecar_ws/install/vs_msgs/lib/libvs_msgs__rosidl_typesupport_c.so" to ""
+-- Up-to-date: /root/racecar_ws/install/vs_msgs/include/vs_msgs/vs_msgs
+-- Up-to-date: /root/racecar_ws/install/vs_msgs/include/vs_msgs/vs_msgs/msg
+-- Installing: /root/racecar_ws/install/vs_msgs/include/vs_msgs/vs_msgs/msg/cone_location_pixel.hpp
+-- Installing: /root/racecar_ws/install/vs_msgs/include/vs_msgs/vs_msgs/msg/rosidl_generator_cpp__visibility_control.hpp
+-- Up-to-date: /root/racecar_ws/install/vs_msgs/include/vs_msgs/vs_msgs/msg/detail
+-- Installing: /root/racecar_ws/install/vs_msgs/include/vs_msgs/vs_msgs/msg/detail/cone_location__struct.hpp
+-- Installing: /root/racecar_ws/install/vs_msgs/include/vs_msgs/vs_msgs/msg/detail/parking_error__type_support.hpp
+-- Installing: /root/racecar_ws/install/vs_msgs/include/vs_msgs/vs_msgs/msg/detail/parking_error__struct.hpp
+-- Installing: /root/racecar_ws/install/vs_msgs/include/vs_msgs/vs_msgs/msg/detail/cone_location__builder.hpp
+-- Installing: /root/racecar_ws/install/vs_msgs/include/vs_msgs/vs_msgs/msg/detail/cone_location_pixel__struct.hpp
+-- Installing: /root/racecar_ws/install/vs_msgs/include/vs_msgs/vs_msgs/msg/detail/cone_location__type_support.hpp
+-- Installing: /root/racecar_ws/install/vs_msgs/include/vs_msgs/vs_msgs/msg/detail/cone_location_pixel__traits.hpp
+-- Installing: /root/racecar_ws/install/vs_msgs/include/vs_msgs/vs_msgs/msg/detail/cone_location_pixel__builder.hpp
+-- Installing: /root/racecar_ws/install/vs_msgs/include/vs_msgs/vs_msgs/msg/detail/cone_location__traits.hpp
+-- Installing: /root/racecar_ws/install/vs_msgs/include/vs_msgs/vs_msgs/msg/detail/parking_error__builder.hpp
+-- Installing: /root/racecar_ws/install/vs_msgs/include/vs_msgs/vs_msgs/msg/detail/parking_error__traits.hpp
+-- Installing: /root/racecar_ws/install/vs_msgs/include/vs_msgs/vs_msgs/msg/detail/cone_location_pixel__type_support.hpp
+-- Installing: /root/racecar_ws/install/vs_msgs/include/vs_msgs/vs_msgs/msg/parking_error.hpp
+-- Installing: /root/racecar_ws/install/vs_msgs/include/vs_msgs/vs_msgs/msg/cone_location.hpp
+-- Up-to-date: /root/racecar_ws/install/vs_msgs/include/vs_msgs/vs_msgs
+-- Up-to-date: /root/racecar_ws/install/vs_msgs/include/vs_msgs/vs_msgs/msg
+-- Up-to-date: /root/racecar_ws/install/vs_msgs/include/vs_msgs/vs_msgs/msg/detail
+-- Installing: /root/racecar_ws/install/vs_msgs/include/vs_msgs/vs_msgs/msg/detail/dds_fastrtps
+-- Installing: /root/racecar_ws/install/vs_msgs/include/vs_msgs/vs_msgs/msg/detail/cone_location__rosidl_typesupport_fastrtps_cpp.hpp
+-- Installing: /root/racecar_ws/install/vs_msgs/include/vs_msgs/vs_msgs/msg/detail/parking_error__rosidl_typesupport_fastrtps_cpp.hpp
+-- Installing: /root/racecar_ws/install/vs_msgs/include/vs_msgs/vs_msgs/msg/detail/cone_location_pixel__rosidl_typesupport_fastrtps_cpp.hpp
+-- Installing: /root/racecar_ws/install/vs_msgs/include/vs_msgs/vs_msgs/msg/rosidl_typesupport_fastrtps_cpp__visibility_control.h
+-- Installing: /root/racecar_ws/install/vs_msgs/lib/libvs_msgs__rosidl_typesupport_fastrtps_cpp.so
+-- Set runtime path of "/root/racecar_ws/install/vs_msgs/lib/libvs_msgs__rosidl_typesupport_fastrtps_cpp.so" to ""
+-- Up-to-date: /root/racecar_ws/install/vs_msgs/include/vs_msgs/vs_msgs
+-- Up-to-date: /root/racecar_ws/install/vs_msgs/include/vs_msgs/vs_msgs/msg
+-- Up-to-date: /root/racecar_ws/install/vs_msgs/include/vs_msgs/vs_msgs/msg/detail
+-- Installing: /root/racecar_ws/install/vs_msgs/include/vs_msgs/vs_msgs/msg/detail/cone_location_pixel__type_support.cpp
+-- Installing: /root/racecar_ws/install/vs_msgs/include/vs_msgs/vs_msgs/msg/detail/cone_location_pixel__rosidl_typesupport_introspection_cpp.hpp
+-- Installing: /root/racecar_ws/install/vs_msgs/include/vs_msgs/vs_msgs/msg/detail/parking_error__rosidl_typesupport_introspection_cpp.hpp
+-- Installing: /root/racecar_ws/install/vs_msgs/include/vs_msgs/vs_msgs/msg/detail/cone_location__rosidl_typesupport_introspection_cpp.hpp
+-- Installing: /root/racecar_ws/install/vs_msgs/include/vs_msgs/vs_msgs/msg/detail/parking_error__type_support.cpp
+-- Installing: /root/racecar_ws/install/vs_msgs/include/vs_msgs/vs_msgs/msg/detail/cone_location__type_support.cpp
+-- Installing: /root/racecar_ws/install/vs_msgs/lib/libvs_msgs__rosidl_typesupport_introspection_cpp.so
+-- Set runtime path of "/root/racecar_ws/install/vs_msgs/lib/libvs_msgs__rosidl_typesupport_introspection_cpp.so" to ""
+-- Installing: /root/racecar_ws/install/vs_msgs/lib/libvs_msgs__rosidl_typesupport_cpp.so
+-- Set runtime path of "/root/racecar_ws/install/vs_msgs/lib/libvs_msgs__rosidl_typesupport_cpp.so" to ""
+-- Installing: /root/racecar_ws/install/vs_msgs/share/vs_msgs/environment/pythonpath.sh
+-- Installing: /root/racecar_ws/install/vs_msgs/share/vs_msgs/environment/pythonpath.dsv
+-- Installing: /root/racecar_ws/install/vs_msgs/local/lib/python3.10/dist-packages/vs_msgs-0.0.0-py3.10.egg-info
+-- Installing: /root/racecar_ws/install/vs_msgs/local/lib/python3.10/dist-packages/vs_msgs-0.0.0-py3.10.egg-info/top_level.txt
+-- Installing: /root/racecar_ws/install/vs_msgs/local/lib/python3.10/dist-packages/vs_msgs-0.0.0-py3.10.egg-info/SOURCES.txt
+-- Installing: /root/racecar_ws/install/vs_msgs/local/lib/python3.10/dist-packages/vs_msgs-0.0.0-py3.10.egg-info/PKG-INFO
+-- Installing: /root/racecar_ws/install/vs_msgs/local/lib/python3.10/dist-packages/vs_msgs-0.0.0-py3.10.egg-info/dependency_links.txt
+-- Installing: /root/racecar_ws/install/vs_msgs/local/lib/python3.10/dist-packages/vs_msgs
+-- Installing: /root/racecar_ws/install/vs_msgs/local/lib/python3.10/dist-packages/vs_msgs/libvs_msgs__rosidl_generator_py.so
+-- Installing: /root/racecar_ws/install/vs_msgs/local/lib/python3.10/dist-packages/vs_msgs/_vs_msgs_s.ep.rosidl_typesupport_introspection_c.c
+-- Installing: /root/racecar_ws/install/vs_msgs/local/lib/python3.10/dist-packages/vs_msgs/vs_msgs_s__rosidl_typesupport_introspection_c.cpython-310-aarch64-linux-gnu.so
+-- Installing: /root/racecar_ws/install/vs_msgs/local/lib/python3.10/dist-packages/vs_msgs/vs_msgs_s__rosidl_typesupport_fastrtps_c.cpython-310-aarch64-linux-gnu.so
+-- Installing: /root/racecar_ws/install/vs_msgs/local/lib/python3.10/dist-packages/vs_msgs/_vs_msgs_s.ep.rosidl_typesupport_c.c
+-- Installing: /root/racecar_ws/install/vs_msgs/local/lib/python3.10/dist-packages/vs_msgs/msg
+-- Installing: /root/racecar_ws/install/vs_msgs/local/lib/python3.10/dist-packages/vs_msgs/msg/_cone_location_pixel_s.c
+-- Installing: /root/racecar_ws/install/vs_msgs/local/lib/python3.10/dist-packages/vs_msgs/msg/_parking_error_s.c
+-- Installing: /root/racecar_ws/install/vs_msgs/local/lib/python3.10/dist-packages/vs_msgs/msg/_cone_location.py
+-- Installing: /root/racecar_ws/install/vs_msgs/local/lib/python3.10/dist-packages/vs_msgs/msg/_cone_location_pixel.py
+-- Installing: /root/racecar_ws/install/vs_msgs/local/lib/python3.10/dist-packages/vs_msgs/msg/_cone_location_s.c
+-- Installing: /root/racecar_ws/install/vs_msgs/local/lib/python3.10/dist-packages/vs_msgs/msg/__init__.py
+-- Installing: /root/racecar_ws/install/vs_msgs/local/lib/python3.10/dist-packages/vs_msgs/msg/_parking_error.py
+-- Installing: /root/racecar_ws/install/vs_msgs/local/lib/python3.10/dist-packages/vs_msgs/_vs_msgs_s.ep.rosidl_typesupport_fastrtps_c.c
+-- Installing: /root/racecar_ws/install/vs_msgs/local/lib/python3.10/dist-packages/vs_msgs/__init__.py
+-- Installing: /root/racecar_ws/install/vs_msgs/local/lib/python3.10/dist-packages/vs_msgs/vs_msgs_s__rosidl_typesupport_c.cpython-310-aarch64-linux-gnu.so
+Listing '/root/racecar_ws/install/vs_msgs/local/lib/python3.10/dist-packages/vs_msgs'...
+Compiling '/root/racecar_ws/install/vs_msgs/local/lib/python3.10/dist-packages/vs_msgs/__init__.py'...
+Listing '/root/racecar_ws/install/vs_msgs/local/lib/python3.10/dist-packages/vs_msgs/msg'...
+Compiling '/root/racecar_ws/install/vs_msgs/local/lib/python3.10/dist-packages/vs_msgs/msg/__init__.py'...
+Compiling '/root/racecar_ws/install/vs_msgs/local/lib/python3.10/dist-packages/vs_msgs/msg/_cone_location.py'...
+Compiling '/root/racecar_ws/install/vs_msgs/local/lib/python3.10/dist-packages/vs_msgs/msg/_cone_location_pixel.py'...
+Compiling '/root/racecar_ws/install/vs_msgs/local/lib/python3.10/dist-packages/vs_msgs/msg/_parking_error.py'...
+-- Installing: /root/racecar_ws/install/vs_msgs/local/lib/python3.10/dist-packages/vs_msgs/vs_msgs_s__rosidl_typesupport_fastrtps_c.cpython-310-aarch64-linux-gnu.so
+-- Set runtime path of "/root/racecar_ws/install/vs_msgs/local/lib/python3.10/dist-packages/vs_msgs/vs_msgs_s__rosidl_typesupport_fastrtps_c.cpython-310-aarch64-linux-gnu.so" to ""
+-- Installing: /root/racecar_ws/install/vs_msgs/local/lib/python3.10/dist-packages/vs_msgs/vs_msgs_s__rosidl_typesupport_introspection_c.cpython-310-aarch64-linux-gnu.so
+-- Set runtime path of "/root/racecar_ws/install/vs_msgs/local/lib/python3.10/dist-packages/vs_msgs/vs_msgs_s__rosidl_typesupport_introspection_c.cpython-310-aarch64-linux-gnu.so" to ""
+-- Installing: /root/racecar_ws/install/vs_msgs/local/lib/python3.10/dist-packages/vs_msgs/vs_msgs_s__rosidl_typesupport_c.cpython-310-aarch64-linux-gnu.so
+-- Set runtime path of "/root/racecar_ws/install/vs_msgs/local/lib/python3.10/dist-packages/vs_msgs/vs_msgs_s__rosidl_typesupport_c.cpython-310-aarch64-linux-gnu.so" to ""
+-- Installing: /root/racecar_ws/install/vs_msgs/lib/libvs_msgs__rosidl_generator_py.so
+-- Set runtime path of "/root/racecar_ws/install/vs_msgs/lib/libvs_msgs__rosidl_generator_py.so" to ""
+-- Installing: /root/racecar_ws/install/vs_msgs/share/vs_msgs/msg/ConeLocation.idl
+-- Installing: /root/racecar_ws/install/vs_msgs/share/vs_msgs/msg/ConeLocationPixel.idl
+-- Installing: /root/racecar_ws/install/vs_msgs/share/vs_msgs/msg/ParkingError.idl
+-- Installing: /root/racecar_ws/install/vs_msgs/share/vs_msgs/msg/ConeLocation.msg
+-- Installing: /root/racecar_ws/install/vs_msgs/share/vs_msgs/msg/ConeLocationPixel.msg
+-- Installing: /root/racecar_ws/install/vs_msgs/share/vs_msgs/msg/ParkingError.msg
+-- Installing: /root/racecar_ws/install/vs_msgs/share/ament_index/resource_index/package_run_dependencies/vs_msgs
+-- Installing: /root/racecar_ws/install/vs_msgs/share/ament_index/resource_index/parent_prefix_path/vs_msgs
+-- Installing: /root/racecar_ws/install/vs_msgs/share/vs_msgs/environment/ament_prefix_path.sh
+-- Installing: /root/racecar_ws/install/vs_msgs/share/vs_msgs/environment/ament_prefix_path.dsv
+-- Installing: /root/racecar_ws/install/vs_msgs/share/vs_msgs/environment/path.sh
+-- Installing: /root/racecar_ws/install/vs_msgs/share/vs_msgs/environment/path.dsv
+-- Installing: /root/racecar_ws/install/vs_msgs/share/vs_msgs/local_setup.bash
+-- Installing: /root/racecar_ws/install/vs_msgs/share/vs_msgs/local_setup.sh
+-- Installing: /root/racecar_ws/install/vs_msgs/share/vs_msgs/local_setup.zsh
+-- Installing: /root/racecar_ws/install/vs_msgs/share/vs_msgs/local_setup.dsv
+-- Installing: /root/racecar_ws/install/vs_msgs/share/vs_msgs/package.dsv
+-- Installing: /root/racecar_ws/install/vs_msgs/share/ament_index/resource_index/packages/vs_msgs
+-- Installing: /root/racecar_ws/install/vs_msgs/share/vs_msgs/cmake/export_vs_msgs__rosidl_generator_cExport.cmake
+-- Installing: /root/racecar_ws/install/vs_msgs/share/vs_msgs/cmake/export_vs_msgs__rosidl_generator_cExport-noconfig.cmake
+-- Installing: /root/racecar_ws/install/vs_msgs/share/vs_msgs/cmake/export_vs_msgs__rosidl_typesupport_fastrtps_cExport.cmake
+-- Installing: /root/racecar_ws/install/vs_msgs/share/vs_msgs/cmake/export_vs_msgs__rosidl_typesupport_fastrtps_cExport-noconfig.cmake
+-- Installing: /root/racecar_ws/install/vs_msgs/share/vs_msgs/cmake/vs_msgs__rosidl_typesupport_introspection_cExport.cmake
+-- Installing: /root/racecar_ws/install/vs_msgs/share/vs_msgs/cmake/vs_msgs__rosidl_typesupport_introspection_cExport-noconfig.cmake
+-- Installing: /root/racecar_ws/install/vs_msgs/share/vs_msgs/cmake/vs_msgs__rosidl_typesupport_cExport.cmake
+-- Installing: /root/racecar_ws/install/vs_msgs/share/vs_msgs/cmake/vs_msgs__rosidl_typesupport_cExport-noconfig.cmake
+-- Installing: /root/racecar_ws/install/vs_msgs/share/vs_msgs/cmake/export_vs_msgs__rosidl_generator_cppExport.cmake
+-- Installing: /root/racecar_ws/install/vs_msgs/share/vs_msgs/cmake/export_vs_msgs__rosidl_typesupport_fastrtps_cppExport.cmake
+-- Installing: /root/racecar_ws/install/vs_msgs/share/vs_msgs/cmake/export_vs_msgs__rosidl_typesupport_fastrtps_cppExport-noconfig.cmake
+-- Installing: /root/racecar_ws/install/vs_msgs/share/vs_msgs/cmake/vs_msgs__rosidl_typesupport_introspection_cppExport.cmake
+-- Installing: /root/racecar_ws/install/vs_msgs/share/vs_msgs/cmake/vs_msgs__rosidl_typesupport_introspection_cppExport-noconfig.cmake
+-- Installing: /root/racecar_ws/install/vs_msgs/share/vs_msgs/cmake/vs_msgs__rosidl_typesupport_cppExport.cmake
+-- Installing: /root/racecar_ws/install/vs_msgs/share/vs_msgs/cmake/vs_msgs__rosidl_typesupport_cppExport-noconfig.cmake
+-- Installing: /root/racecar_ws/install/vs_msgs/share/vs_msgs/cmake/export_vs_msgs__rosidl_generator_pyExport.cmake
+-- Installing: /root/racecar_ws/install/vs_msgs/share/vs_msgs/cmake/export_vs_msgs__rosidl_generator_pyExport-noconfig.cmake
+-- Installing: /root/racecar_ws/install/vs_msgs/share/vs_msgs/cmake/rosidl_cmake-extras.cmake
+-- Installing: /root/racecar_ws/install/vs_msgs/share/vs_msgs/cmake/ament_cmake_export_include_directories-extras.cmake
+-- Installing: /root/racecar_ws/install/vs_msgs/share/vs_msgs/cmake/ament_cmake_export_libraries-extras.cmake
+-- Installing: /root/racecar_ws/install/vs_msgs/share/vs_msgs/cmake/ament_cmake_export_targets-extras.cmake
+-- Installing: /root/racecar_ws/install/vs_msgs/share/vs_msgs/cmake/rosidl_cmake_export_typesupport_targets-extras.cmake
+-- Installing: /root/racecar_ws/install/vs_msgs/share/vs_msgs/cmake/ament_cmake_export_dependencies-extras.cmake
+-- Installing: /root/racecar_ws/install/vs_msgs/share/vs_msgs/cmake/rosidl_cmake_export_typesupport_libraries-extras.cmake
+-- Installing: /root/racecar_ws/install/vs_msgs/share/vs_msgs/cmake/vs_msgsConfig.cmake
+-- Installing: /root/racecar_ws/install/vs_msgs/share/vs_msgs/cmake/vs_msgsConfig-version.cmake
+-- Installing: /root/racecar_ws/install/vs_msgs/share/vs_msgs/package.xml

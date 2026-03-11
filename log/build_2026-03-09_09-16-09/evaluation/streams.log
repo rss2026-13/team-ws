@@ -1,0 +1,26 @@
+[3.110s] Invoking command in '/root/racecar_ws/build/evaluation': PYTHONPATH=/root/racecar_ws/build/evaluation/prefix_override:/usr/lib/python3/dist-packages/colcon_core/task/python/colcon_distutils_commands:/root/racecar_ws/install/evaluation/lib/python3.10/site-packages:${PYTHONPATH} /usr/bin/python3 -W ignore:setup.py install is deprecated -W ignore:easy_install command is deprecated setup.py develop --editable --build-directory /root/racecar_ws/build/evaluation/build --no-deps symlink_data
+[3.794s] running develop
+[3.960s] /usr/lib/python3/dist-packages/pkg_resources/__init__.py:116: PkgResourcesDeprecationWarning: 2.0.5-build-libtorrent-rasterbar-QyJODx-libtorrent-rasterbar-2.0.5-bindings-python is an invalid version and will not be supported in a future release
+[3.960s]   warnings.warn(
+[4.300s] running egg_info
+[4.300s] creating evaluation.egg-info
+[4.301s] writing evaluation.egg-info/PKG-INFO
+[4.301s] writing dependency_links to evaluation.egg-info/dependency_links.txt
+[4.302s] writing entry points to evaluation.egg-info/entry_points.txt
+[4.302s] writing requirements to evaluation.egg-info/requires.txt
+[4.302s] writing top-level names to evaluation.egg-info/top_level.txt
+[4.302s] writing manifest file 'evaluation.egg-info/SOURCES.txt'
+[4.306s] reading manifest file 'evaluation.egg-info/SOURCES.txt'
+[4.308s] writing manifest file 'evaluation.egg-info/SOURCES.txt'
+[4.405s] running build_ext
+[4.405s] Creating /root/racecar_ws/install/evaluation/lib/python3.10/site-packages/evaluation.egg-link (link to .)
+[4.407s] Installing evaluation script to /root/racecar_ws/install/evaluation/lib/evaluation
+[4.408s] 
+[4.408s] Installed /root/racecar_ws/build/evaluation
+[4.409s] running symlink_data
+[4.409s] creating /root/racecar_ws/install/evaluation/share/ament_index
+[4.409s] creating /root/racecar_ws/install/evaluation/share/ament_index/resource_index
+[4.409s] creating /root/racecar_ws/install/evaluation/share/ament_index/resource_index/packages
+[4.410s] symbolically linking /root/racecar_ws/build/evaluation/resource/evaluation -> /root/racecar_ws/install/evaluation/share/ament_index/resource_index/packages
+[4.410s] symbolically linking /root/racecar_ws/build/evaluation/package.xml -> /root/racecar_ws/install/evaluation/share/evaluation
+[4.532s] Invoked command in '/root/racecar_ws/build/evaluation' returned '0': PYTHONPATH=/root/racecar_ws/build/evaluation/prefix_override:/usr/lib/python3/dist-packages/colcon_core/task/python/colcon_distutils_commands:/root/racecar_ws/install/evaluation/lib/python3.10/site-packages:${PYTHONPATH} /usr/bin/python3 -W ignore:setup.py install is deprecated -W ignore:easy_install command is deprecated setup.py develop --editable --build-directory /root/racecar_ws/build/evaluation/build --no-deps symlink_data

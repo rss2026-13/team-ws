@@ -1,0 +1,3 @@
+/root/racecar_ws/build/vs_msgs/rosidl_adapter/vs_msgs:msg/ConeLocation.idl
+/root/racecar_ws/build/vs_msgs/rosidl_adapter/vs_msgs:msg/ConeLocationPixel.idl
+/root/racecar_ws/build/vs_msgs/rosidl_adapter/vs_msgs:msg/ParkingError.idl

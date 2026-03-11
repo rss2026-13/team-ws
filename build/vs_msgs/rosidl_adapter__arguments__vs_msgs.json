@@ -1,0 +1,8 @@
+{
+  "package_name": "vs_msgs",
+  "non_idl_tuples": [
+    "/root/racecar_ws/src/visual_servoing/vs_msgs:msg/ConeLocation.msg",
+    "/root/racecar_ws/src/visual_servoing/vs_msgs:msg/ConeLocationPixel.msg",
+    "/root/racecar_ws/src/visual_servoing/vs_msgs:msg/ParkingError.msg"
+  ]
+}

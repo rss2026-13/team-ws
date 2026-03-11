@@ -1,0 +1,25 @@
+[4.693s] Invoking command in '/root/racecar_ws/build/labc_test1': PYTHONPATH=/root/racecar_ws/build/labc_test1/prefix_override:/usr/lib/python3/dist-packages/colcon_core/task/python/colcon_distutils_commands:/root/racecar_ws/install/labc_test1/lib/python3.10/site-packages:${PYTHONPATH} /usr/bin/python3 -W ignore:setup.py install is deprecated -W ignore:easy_install command is deprecated setup.py develop --editable --build-directory /root/racecar_ws/build/labc_test1/build --no-deps symlink_data
+[6.186s] running develop
+[6.386s] /usr/lib/python3/dist-packages/pkg_resources/__init__.py:116: PkgResourcesDeprecationWarning: 2.0.5-build-libtorrent-rasterbar-QyJODx-libtorrent-rasterbar-2.0.5-bindings-python is an invalid version and will not be supported in a future release
+[6.386s]   warnings.warn(
+[6.860s] running egg_info
+[6.861s] creating labc_test1.egg-info
+[6.869s] writing labc_test1.egg-info/PKG-INFO
+[6.870s] writing dependency_links to labc_test1.egg-info/dependency_links.txt
+[6.870s] writing entry points to labc_test1.egg-info/entry_points.txt
+[6.870s] writing requirements to labc_test1.egg-info/requires.txt
+[6.870s] writing top-level names to labc_test1.egg-info/top_level.txt
+[6.871s] writing manifest file 'labc_test1.egg-info/SOURCES.txt'
+[6.875s] reading manifest file 'labc_test1.egg-info/SOURCES.txt'
+[6.894s] writing manifest file 'labc_test1.egg-info/SOURCES.txt'
+[7.168s] running build_ext
+[7.169s] Creating /root/racecar_ws/install/labc_test1/lib/python3.10/site-packages/labc-test1.egg-link (link to .)
+[7.178s] 
+[7.179s] Installed /root/racecar_ws/build/labc_test1
+[7.180s] running symlink_data
+[7.192s] creating /root/racecar_ws/install/labc_test1/share/ament_index
+[7.192s] creating /root/racecar_ws/install/labc_test1/share/ament_index/resource_index
+[7.193s] creating /root/racecar_ws/install/labc_test1/share/ament_index/resource_index/packages
+[7.194s] symbolically linking /root/racecar_ws/build/labc_test1/resource/labc_test1 -> /root/racecar_ws/install/labc_test1/share/ament_index/resource_index/packages
+[7.195s] symbolically linking /root/racecar_ws/build/labc_test1/package.xml -> /root/racecar_ws/install/labc_test1/share/labc_test1
+[7.365s] Invoked command in '/root/racecar_ws/build/labc_test1' returned '0': PYTHONPATH=/root/racecar_ws/build/labc_test1/prefix_override:/usr/lib/python3/dist-packages/colcon_core/task/python/colcon_distutils_commands:/root/racecar_ws/install/labc_test1/lib/python3.10/site-packages:${PYTHONPATH} /usr/bin/python3 -W ignore:setup.py install is deprecated -W ignore:easy_install command is deprecated setup.py develop --editable --build-directory /root/racecar_ws/build/labc_test1/build --no-deps symlink_data

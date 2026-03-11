@@ -1,0 +1,65 @@
+[1.782s] Invoking command in '/root/racecar_ws/src/visual_servoing/visual_servoing': PYTHONPATH=/root/racecar_ws/build/visual_servoing/prefix_override:/usr/lib/python3/dist-packages/colcon_core/task/python/colcon_distutils_commands:/root/racecar_ws/install/visual_servoing/lib/python3.10/site-packages:${PYTHONPATH} /usr/bin/python3 -W ignore:setup.py install is deprecated -W ignore:easy_install command is deprecated setup.py egg_info --egg-base ../../../build/visual_servoing build --build-base /root/racecar_ws/build/visual_servoing/build install --record /root/racecar_ws/build/visual_servoing/install.log --install-scripts $base/lib/visual_servoing --single-version-externally-managed install_data
+[2.415s] /usr/lib/python3/dist-packages/setuptools/dist.py:723: UserWarning: Usage of dash-separated 'script-dir' will not be supported in future versions. Please use the underscore name 'script_dir' instead
+[2.416s]   warnings.warn(
+[2.436s] running egg_info
+[2.437s] creating ../../../build/visual_servoing/visual_servoing.egg-info
+[2.437s] writing ../../../build/visual_servoing/visual_servoing.egg-info/PKG-INFO
+[2.438s] writing dependency_links to ../../../build/visual_servoing/visual_servoing.egg-info/dependency_links.txt
+[2.438s] writing entry points to ../../../build/visual_servoing/visual_servoing.egg-info/entry_points.txt
+[2.439s] writing requirements to ../../../build/visual_servoing/visual_servoing.egg-info/requires.txt
+[2.439s] writing top-level names to ../../../build/visual_servoing/visual_servoing.egg-info/top_level.txt
+[2.439s] writing manifest file '../../../build/visual_servoing/visual_servoing.egg-info/SOURCES.txt'
+[2.443s] reading manifest file '../../../build/visual_servoing/visual_servoing.egg-info/SOURCES.txt'
+[2.445s] writing manifest file '../../../build/visual_servoing/visual_servoing.egg-info/SOURCES.txt'
+[2.445s] running build
+[2.446s] running build_py
+[2.446s] creating /root/racecar_ws/build/visual_servoing/build
+[2.446s] creating /root/racecar_ws/build/visual_servoing/build/lib
+[2.447s] creating /root/racecar_ws/build/visual_servoing/build/lib/visual_servoing
+[2.447s] copying visual_servoing/homography_transformer.py -> /root/racecar_ws/build/visual_servoing/build/lib/visual_servoing
+[2.447s] copying visual_servoing/cone_sim_marker.py -> /root/racecar_ws/build/visual_servoing/build/lib/visual_servoing
+[2.448s] copying visual_servoing/parking_controller.py -> /root/racecar_ws/build/visual_servoing/build/lib/visual_servoing
+[2.448s] copying visual_servoing/cone_detector.py -> /root/racecar_ws/build/visual_servoing/build/lib/visual_servoing
+[2.448s] copying visual_servoing/yolo_annotator.py -> /root/racecar_ws/build/visual_servoing/build/lib/visual_servoing
+[2.449s] copying visual_servoing/__init__.py -> /root/racecar_ws/build/visual_servoing/build/lib/visual_servoing
+[2.449s] running install
+[2.450s] running install_lib
+[2.451s] creating /root/racecar_ws/install/visual_servoing/lib/python3.10/site-packages/visual_servoing
+[2.451s] copying /root/racecar_ws/build/visual_servoing/build/lib/visual_servoing/homography_transformer.py -> /root/racecar_ws/install/visual_servoing/lib/python3.10/site-packages/visual_servoing
+[2.451s] copying /root/racecar_ws/build/visual_servoing/build/lib/visual_servoing/cone_sim_marker.py -> /root/racecar_ws/install/visual_servoing/lib/python3.10/site-packages/visual_servoing
+[2.452s] copying /root/racecar_ws/build/visual_servoing/build/lib/visual_servoing/parking_controller.py -> /root/racecar_ws/install/visual_servoing/lib/python3.10/site-packages/visual_servoing
+[2.452s] copying /root/racecar_ws/build/visual_servoing/build/lib/visual_servoing/cone_detector.py -> /root/racecar_ws/install/visual_servoing/lib/python3.10/site-packages/visual_servoing
+[2.452s] copying /root/racecar_ws/build/visual_servoing/build/lib/visual_servoing/yolo_annotator.py -> /root/racecar_ws/install/visual_servoing/lib/python3.10/site-packages/visual_servoing
+[2.452s] copying /root/racecar_ws/build/visual_servoing/build/lib/visual_servoing/__init__.py -> /root/racecar_ws/install/visual_servoing/lib/python3.10/site-packages/visual_servoing
+[2.453s] byte-compiling /root/racecar_ws/install/visual_servoing/lib/python3.10/site-packages/visual_servoing/homography_transformer.py to homography_transformer.cpython-310.pyc
+[2.456s] byte-compiling /root/racecar_ws/install/visual_servoing/lib/python3.10/site-packages/visual_servoing/cone_sim_marker.py to cone_sim_marker.cpython-310.pyc
+[2.457s] byte-compiling /root/racecar_ws/install/visual_servoing/lib/python3.10/site-packages/visual_servoing/parking_controller.py to parking_controller.cpython-310.pyc
+[2.458s] byte-compiling /root/racecar_ws/install/visual_servoing/lib/python3.10/site-packages/visual_servoing/cone_detector.py to cone_detector.cpython-310.pyc
+[2.459s] byte-compiling /root/racecar_ws/install/visual_servoing/lib/python3.10/site-packages/visual_servoing/yolo_annotator.py to yolo_annotator.cpython-310.pyc
+[2.461s] byte-compiling /root/racecar_ws/install/visual_servoing/lib/python3.10/site-packages/visual_servoing/__init__.py to __init__.cpython-310.pyc
+[2.461s] running install_data
+[2.461s] creating /root/racecar_ws/install/visual_servoing/share/ament_index
+[2.462s] creating /root/racecar_ws/install/visual_servoing/share/ament_index/resource_index
+[2.462s] creating /root/racecar_ws/install/visual_servoing/share/ament_index/resource_index/packages
+[2.463s] copying resource/visual_servoing -> /root/racecar_ws/install/visual_servoing/share/ament_index/resource_index/packages
+[2.463s] copying package.xml -> /root/racecar_ws/install/visual_servoing/share/visual_servoing
+[2.464s] creating /root/racecar_ws/install/visual_servoing/lib/visual_servoing
+[2.464s] creating /root/racecar_ws/install/visual_servoing/lib/visual_servoing/computer_vision
+[2.464s] copying visual_servoing/computer_vision/cv_test.py -> /root/racecar_ws/install/visual_servoing/lib/visual_servoing/computer_vision
+[2.464s] copying visual_servoing/computer_vision/color_segmentation.py -> /root/racecar_ws/install/visual_servoing/lib/visual_servoing/computer_vision
+[2.465s] copying visual_servoing/computer_vision/sift_template.py -> /root/racecar_ws/install/visual_servoing/lib/visual_servoing/computer_vision
+[2.465s] copying visual_servoing/computer_vision/__init__.py -> /root/racecar_ws/install/visual_servoing/lib/visual_servoing/computer_vision
+[2.465s] creating /root/racecar_ws/install/visual_servoing/share/visual_servoing/launch
+[2.465s] copying launch/parking_sim.launch.xml -> /root/racecar_ws/install/visual_servoing/share/visual_servoing/launch
+[2.466s] copying launch/parking_deploy.launch.xml -> /root/racecar_ws/install/visual_servoing/share/visual_servoing/launch
+[2.466s] copying launch/yolo_annotator.launch.xml -> /root/racecar_ws/install/visual_servoing/share/visual_servoing/launch
+[2.466s] running install_egg_info
+[2.469s] Copying ../../../build/visual_servoing/visual_servoing.egg-info to /root/racecar_ws/install/visual_servoing/lib/python3.10/site-packages/visual_servoing-0.0.0-py3.10.egg-info
+[2.471s] running install_scripts
+[2.519s] Installing cone_detector script to /root/racecar_ws/install/visual_servoing/lib/visual_servoing
+[2.519s] Installing cone_sim_marker script to /root/racecar_ws/install/visual_servoing/lib/visual_servoing
+[2.520s] Installing homography_transformer script to /root/racecar_ws/install/visual_servoing/lib/visual_servoing
+[2.520s] Installing parking_controller script to /root/racecar_ws/install/visual_servoing/lib/visual_servoing
+[2.521s] Installing yolo_annotator script to /root/racecar_ws/install/visual_servoing/lib/visual_servoing
+[2.521s] writing list of installed files to '/root/racecar_ws/build/visual_servoing/install.log'
+[2.594s] Invoked command in '/root/racecar_ws/src/visual_servoing/visual_servoing' returned '0': PYTHONPATH=/root/racecar_ws/build/visual_servoing/prefix_override:/usr/lib/python3/dist-packages/colcon_core/task/python/colcon_distutils_commands:/root/racecar_ws/install/visual_servoing/lib/python3.10/site-packages:${PYTHONPATH} /usr/bin/python3 -W ignore:setup.py install is deprecated -W ignore:easy_install command is deprecated setup.py egg_info --egg-base ../../../build/visual_servoing build --build-base /root/racecar_ws/build/visual_servoing/build install --record /root/racecar_ws/build/visual_servoing/install.log --install-scripts $base/lib/visual_servoing --single-version-externally-managed install_data

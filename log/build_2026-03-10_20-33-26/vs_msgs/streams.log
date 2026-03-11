@@ -1,0 +1,34 @@
+[0.033s] Invoking command in '/root/racecar_ws/build/vs_msgs': CMAKE_PREFIX_PATH=${CMAKE_PREFIX_PATH}:/root/racecar_ws/install/wall_follower:/root/racecar_ws/install/visual_servoing:/root/racecar_ws/install/safety_controller:/root/racecar_ws/install/evaluation:/root/ros2_ws/install/racecar:/opt/ros/humble /usr/bin/cmake /root/racecar_ws/src/visual_servoing/vs_msgs -DCMAKE_INSTALL_PREFIX=/root/racecar_ws/install/vs_msgs
+[0.060s] -- Found ament_cmake: 1.3.12 (/opt/ros/humble/share/ament_cmake/cmake)
+[0.408s] -- Override CMake install command with custom implementation using symlinks instead of copying resources
+[0.439s] -- Found rosidl_default_generators: 1.2.0 (/opt/ros/humble/share/rosidl_default_generators/cmake)
+[0.452s] -- Using all available rosidl_typesupport_c: rosidl_typesupport_fastrtps_c;rosidl_typesupport_introspection_c
+[0.462s] -- Found rosidl_adapter: 3.1.8 (/opt/ros/humble/share/rosidl_adapter/cmake)
+[0.544s] -- Using all available rosidl_typesupport_cpp: rosidl_typesupport_fastrtps_cpp;rosidl_typesupport_introspection_cpp
+[1.326s] -- Found ament_cmake_ros: 0.10.0 (/opt/ros/humble/share/ament_cmake_ros/cmake)
+[1.905s] -- Using all available rosidl_typesupport_c: rosidl_typesupport_fastrtps_c;rosidl_typesupport_introspection_c
+[2.646s] -- Using all available rosidl_typesupport_cpp: rosidl_typesupport_fastrtps_cpp;rosidl_typesupport_introspection_cpp
+[2.723s] -- Found python_cmake_module: 0.10.0 (/opt/ros/humble/share/python_cmake_module/cmake)
+[2.793s] -- Using PYTHON_EXECUTABLE: /usr/bin/python3
+[2.793s] -- Using PYTHON_INCLUDE_DIRS: /usr/include/python3.10
+[2.794s] -- Using PYTHON_LIBRARIES: /usr/lib/aarch64-linux-gnu/libpython3.10.so
+[2.873s] -- Found ament_lint_auto: 0.12.14 (/opt/ros/humble/share/ament_lint_auto/cmake)
+[2.900s] -- Added test 'copyright' to check source files copyright and LICENSE
+[2.903s] -- Added test 'lint_cmake' to check CMake code style
+[2.905s] -- Added test 'xmllint' to check XML markup files
+[2.911s] -- Configuring done
+[2.992s] -- Generating done
+[3.018s] -- Build files have been written to: /root/racecar_ws/build/vs_msgs
+[3.040s] Invoked command in '/root/racecar_ws/build/vs_msgs' returned '0': CMAKE_PREFIX_PATH=${CMAKE_PREFIX_PATH}:/root/racecar_ws/install/wall_follower:/root/racecar_ws/install/visual_servoing:/root/racecar_ws/install/safety_controller:/root/racecar_ws/install/evaluation:/root/ros2_ws/install/racecar:/opt/ros/humble /usr/bin/cmake /root/racecar_ws/src/visual_servoing/vs_msgs -DCMAKE_INSTALL_PREFIX=/root/racecar_ws/install/vs_msgs
+[3.045s] Invoking command in '/root/racecar_ws/build/vs_msgs': CMAKE_PREFIX_PATH=${CMAKE_PREFIX_PATH}:/root/racecar_ws/install/wall_follower:/root/racecar_ws/install/visual_servoing:/root/racecar_ws/install/safety_controller:/root/racecar_ws/install/evaluation:/root/ros2_ws/install/racecar:/opt/ros/humble /usr/bin/cmake --build /root/racecar_ws/build/vs_msgs -- -j6 -l6
+[3.161s] [35m[1mConsolidate compiler generated dependencies of target vs_msgs__rosidl_generator_c[0m
+[3.190s] [  2%] Built target vs_msgs__cpp
+[3.191s] failed to create symbolic link '/root/racecar_ws/build/vs_msgs/ament_cmake_python/vs_msgs/vs_msgs' because existing path cannot be removed: Is a directory
+[3.193s] gmake[2]: *** [CMakeFiles/ament_cmake_python_symlink_vs_msgs.dir/build.make:70: CMakeFiles/ament_cmake_python_symlink_vs_msgs] Error 1
+[3.194s] gmake[1]: *** [CMakeFiles/Makefile2:421: CMakeFiles/ament_cmake_python_symlink_vs_msgs.dir/all] Error 2
+[3.195s] gmake[1]: *** Waiting for unfinished jobs....
+[3.198s] [ 12%] Built target vs_msgs__rosidl_generator_c
+[3.219s] [35m[1mConsolidate compiler generated dependencies of target vs_msgs__rosidl_typesupport_fastrtps_cpp[0m
+[3.261s] [ 23%] Built target vs_msgs__rosidl_typesupport_fastrtps_cpp
+[3.266s] gmake: *** [Makefile:146: all] Error 2
+[3.276s] Invoked command in '/root/racecar_ws/build/vs_msgs' returned '2': CMAKE_PREFIX_PATH=${CMAKE_PREFIX_PATH}:/root/racecar_ws/install/wall_follower:/root/racecar_ws/install/visual_servoing:/root/racecar_ws/install/safety_controller:/root/racecar_ws/install/evaluation:/root/ros2_ws/install/racecar:/opt/ros/humble /usr/bin/cmake --build /root/racecar_ws/build/vs_msgs -- -j6 -l6

@@ -1,0 +1,27 @@
+[4.949s] Invoking command in '/root/racecar_ws/build/py_pubsub': PYTHONPATH=/root/racecar_ws/build/py_pubsub/prefix_override:/usr/lib/python3/dist-packages/colcon_core/task/python/colcon_distutils_commands:/root/racecar_ws/install/py_pubsub/lib/python3.10/site-packages:${PYTHONPATH} /usr/bin/python3 -W ignore:setup.py install is deprecated -W ignore:easy_install command is deprecated setup.py develop --editable --build-directory /root/racecar_ws/build/py_pubsub/build --no-deps symlink_data
+[7.340s] running develop
+[7.340s] running egg_info
+[7.341s] creating py_pubsub.egg-info
+[7.341s] writing py_pubsub.egg-info/PKG-INFO
+[7.341s] writing dependency_links to py_pubsub.egg-info/dependency_links.txt
+[7.341s] writing entry points to py_pubsub.egg-info/entry_points.txt
+[7.341s] writing requirements to py_pubsub.egg-info/requires.txt
+[7.341s] writing top-level names to py_pubsub.egg-info/top_level.txt
+[7.341s] writing manifest file 'py_pubsub.egg-info/SOURCES.txt'
+[7.341s] reading manifest file 'py_pubsub.egg-info/SOURCES.txt'
+[7.342s] writing manifest file 'py_pubsub.egg-info/SOURCES.txt'
+[7.348s] /usr/lib/python3/dist-packages/pkg_resources/__init__.py:116: PkgResourcesDeprecationWarning: 2.0.5-build-libtorrent-rasterbar-QyJODx-libtorrent-rasterbar-2.0.5-bindings-python is an invalid version and will not be supported in a future release
+[7.348s]   warnings.warn(
+[7.423s] running build_ext
+[7.423s] Creating /root/racecar_ws/install/py_pubsub/lib/python3.10/site-packages/py-pubsub.egg-link (link to .)
+[7.431s] Installing listener script to /root/racecar_ws/install/py_pubsub/lib/py_pubsub
+[7.455s] Installing talker script to /root/racecar_ws/install/py_pubsub/lib/py_pubsub
+[7.455s] 
+[7.456s] Installed /root/racecar_ws/build/py_pubsub
+[7.456s] running symlink_data
+[7.456s] creating /root/racecar_ws/install/py_pubsub/share/ament_index
+[7.456s] creating /root/racecar_ws/install/py_pubsub/share/ament_index/resource_index
+[7.456s] creating /root/racecar_ws/install/py_pubsub/share/ament_index/resource_index/packages
+[7.456s] symbolically linking /root/racecar_ws/build/py_pubsub/resource/py_pubsub -> /root/racecar_ws/install/py_pubsub/share/ament_index/resource_index/packages
+[7.456s] symbolically linking /root/racecar_ws/build/py_pubsub/package.xml -> /root/racecar_ws/install/py_pubsub/share/py_pubsub
+[9.012s] Invoked command in '/root/racecar_ws/build/py_pubsub' returned '0': PYTHONPATH=/root/racecar_ws/build/py_pubsub/prefix_override:/usr/lib/python3/dist-packages/colcon_core/task/python/colcon_distutils_commands:/root/racecar_ws/install/py_pubsub/lib/python3.10/site-packages:${PYTHONPATH} /usr/bin/python3 -W ignore:setup.py install is deprecated -W ignore:easy_install command is deprecated setup.py develop --editable --build-directory /root/racecar_ws/build/py_pubsub/build --no-deps symlink_data

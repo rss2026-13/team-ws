@@ -1,0 +1,14 @@
+{
+	"backtraceGraph" : 
+	{
+		"commands" : [],
+		"files" : [],
+		"nodes" : []
+	},
+	"installers" : [],
+	"paths" : 
+	{
+		"build" : "vs_msgs__py",
+		"source" : "/root/racecar_ws/build/vs_msgs/vs_msgs__py"
+	}
+}

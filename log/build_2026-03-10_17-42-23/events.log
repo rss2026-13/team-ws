@@ -1,0 +1,99 @@
+[0.000000] (-) TimerEvent: {}
+[0.000562] (-) JobUnselected: {'identifier': 'evaluation'}
+[0.000655] (-) JobUnselected: {'identifier': 'wall_follower'}
+[0.000799] (safety_controller) JobQueued: {'identifier': 'safety_controller', 'dependencies': OrderedDict()}
+[0.000874] (safety_controller) JobStarted: {'identifier': 'safety_controller'}
+[0.087900] (-) TimerEvent: {}
+[0.188646] (-) TimerEvent: {}
+[0.289727] (-) TimerEvent: {}
+[0.391096] (-) TimerEvent: {}
+[0.491672] (-) TimerEvent: {}
+[0.592556] (-) TimerEvent: {}
+[0.693186] (-) TimerEvent: {}
+[0.794752] (-) TimerEvent: {}
+[0.897829] (-) TimerEvent: {}
+[0.998586] (-) TimerEvent: {}
+[1.100112] (-) TimerEvent: {}
+[1.201583] (-) TimerEvent: {}
+[1.302203] (-) TimerEvent: {}
+[1.402945] (-) TimerEvent: {}
+[1.504505] (-) TimerEvent: {}
+[1.605242] (-) TimerEvent: {}
+[1.705985] (-) TimerEvent: {}
+[1.806582] (-) TimerEvent: {}
+[1.908115] (-) TimerEvent: {}
+[2.008829] (-) TimerEvent: {}
+[2.108487] (safety_controller) Command: {'cmd': ['/usr/bin/python3', '-W', 'ignore:setup.py install is deprecated', '-W', 'ignore:easy_install command is deprecated', 'setup.py', 'develop', '--uninstall', '--editable', '--build-directory', '/root/racecar_ws/build/safety_controller/build'], 'cwd': '/root/racecar_ws/build/safety_controller', 'env': {'LESSOPEN': '| /usr/bin/lesspipe %s', 'HOSTNAME': 'racecar-desktop', 'SCANNER_TYPE': 'hokuyo', 'SHLVL': '1', 'LD_LIBRARY_PATH': '/root/ros2_ws/install/zed_components/lib:/root/ros2_ws/install/vesc_driver/lib:/root/ros2_ws/install/vesc_ackermann/lib:/root/ros2_ws/install/vesc_msgs/lib:/root/ros2_ws/install/urg_node2/lib:/root/ros2_ws/install/udp_driver/lib:/root/ros2_ws/install/serial_driver/lib:/root/ros2_ws/install/io_context/lib:/root/ros2_ws/install/ackermann_cmd_mux/lib:/opt/ros/humble/opt/rviz_ogre_vendor/lib:/opt/ros/humble/lib/aarch64-linux-gnu:/opt/ros/humble/lib:/usr/lib/aarch64-linux-gnu/tegra:', 'HOME': '/root', 'OLDPWD': '/root', 'ROS_PYTHON_VERSION': '3', 'PS1': '\\[\x1b[38;5;214m\\]🏎️ \\[\x1b[38;5;39m\\]racer\\[\x1b[38;5;11m\\]@\\[\x1b[38;5;39m\\]mit\\[\x1b[38;5;11m\\]:\\[\x1b[38;5;83m\\]\\w\\[\x1b[38;5;11m\\]$ \\[\x1b[0m\\]', 'COLCON_PREFIX_PATH': '/root/ros2_ws/install', 'ROS_DISTRO': 'humble', '_': '/usr/bin/colcon', 'ROS_VERSION': '2', 'NVIDIA_DRIVER_CAPABILITIES': 'all', 'TORCH_INSTALL': '/tmp/torch-2.3.0-cp310-cp310-linux_aarch64.whl', 'TERM': 'xterm-256color', 'ROS_LOCALHOST_ONLY': '0', 'PATH': '/root/.local/bin:/opt/ros/humble/bin:/usr/local/cuda/bin:/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin', 'TORCHVISION_INSTALL': '/tmp/torchvision-0.18.0a0+6043bc2-cp310-cp310-linux_aarch64.whl', 'XDG_RUNTIME_DIR': '/tmp/runtime-root', 'DISPLAY': '', 'LANG': 'en_US.UTF-8', 'LS_COLORS': 'rs=0:di=01;34:ln=01;36:mh=00:pi=40;33:so=01;35:do=01;35:bd=40;33;01:cd=40;33;01:or=40;31;01:mi=00:su=37;41:sg=30;43:ca=30;41:tw=30;42:ow=34;42:st=37;44:ex=01;32:*.tar=01;31:*.tgz=01;31:*.arc=01;31:*.arj=01;31:*.taz=01;31:*.lha=01;31:*.lz4=01;31:*.lzh=01;31:*.lzma=01;31:*.tlz=01;31:*.txz=01;31:*.tzo=01;31:*.t7z=01;31:*.zip=01;31:*.z=01;31:*.dz=01;31:*.gz=01;31:*.lrz=01;31:*.lz=01;31:*.lzo=01;31:*.xz=01;31:*.zst=01;31:*.tzst=01;31:*.bz2=01;31:*.bz=01;31:*.tbz=01;31:*.tbz2=01;31:*.tz=01;31:*.deb=01;31:*.rpm=01;31:*.jar=01;31:*.war=01;31:*.ear=01;31:*.sar=01;31:*.rar=01;31:*.alz=01;31:*.ace=01;31:*.zoo=01;31:*.cpio=01;31:*.7z=01;31:*.rz=01;31:*.cab=01;31:*.wim=01;31:*.swm=01;31:*.dwm=01;31:*.esd=01;31:*.jpg=01;35:*.jpeg=01;35:*.mjpg=01;35:*.mjpeg=01;35:*.gif=01;35:*.bmp=01;35:*.pbm=01;35:*.pgm=01;35:*.ppm=01;35:*.tga=01;35:*.xbm=01;35:*.xpm=01;35:*.tif=01;35:*.tiff=01;35:*.png=01;35:*.svg=01;35:*.svgz=01;35:*.mng=01;35:*.pcx=01;35:*.mov=01;35:*.mpg=01;35:*.mpeg=01;35:*.m2v=01;35:*.mkv=01;35:*.webm=01;35:*.webp=01;35:*.ogm=01;35:*.mp4=01;35:*.m4v=01;35:*.mp4v=01;35:*.vob=01;35:*.qt=01;35:*.nuv=01;35:*.wmv=01;35:*.asf=01;35:*.rm=01;35:*.rmvb=01;35:*.flc=01;35:*.avi=01;35:*.fli=01;35:*.flv=01;35:*.gl=01;35:*.dl=01;35:*.xcf=01;35:*.xwd=01;35:*.yuv=01;35:*.cgm=01;35:*.emf=01;35:*.ogv=01;35:*.ogx=01;35:*.aac=00;36:*.au=00;36:*.flac=00;36:*.m4a=00;36:*.mid=00;36:*.midi=00;36:*.mka=00;36:*.mp3=00;36:*.mpc=00;36:*.ogg=00;36:*.ra=00;36:*.wav=00;36:*.oga=00;36:*.opus=00;36:*.spx=00;36:*.xspf=00;36:', 'AMENT_PREFIX_PATH': '/root/ros2_ws/install/zed_ros2:/root/ros2_ws/install/zed_wrapper:/root/ros2_ws/install/zed_components:/root/ros2_ws/install/vesc:/root/ros2_ws/install/vesc_driver:/root/ros2_ws/install/vesc_ackermann:/root/ros2_ws/install/vesc_msgs:/root/ros2_ws/install/urg_node2:/root/ros2_ws/install/udp_driver:/root/ros2_ws/install/serial_driver:/root/ros2_ws/install/racecar:/root/ros2_ws/install/io_context:/root/ros2_ws/install/asio_cmake_module:/root/ros2_ws/install/ackermann_cmd_mux:/opt/ros/humble', 'LESSCLOSE': '/usr/bin/lesspipe %s %s', 'PWD': '/root/racecar_ws/build/safety_controller', 'LC_ALL': 'en_US.UTF-8', 'CUDA_HOME': '/usr/local/cuda', 'PYTHONPATH': '/root/racecar_ws/build/safety_controller/prefix_override:/usr/lib/python3/dist-packages/colcon_core/task/python/colcon_distutils_commands:/root/racecar_ws/install/safety_controller/lib/python3.10/site-packages:/root/ros2_ws/install/vesc_msgs/local/lib/python3.10/dist-packages:/root/ros2_ws/build/racecar:/root/ros2_ws/install/racecar/lib/python3.10/site-packages:/opt/ros/humble/lib/python3.10/site-packages:/opt/ros/humble/local/lib/python3.10/dist-packages', 'NVIDIA_VISIBLE_DEVICES': 'all', 'TZ': 'America/New_York', 'COLCON': '1', 'CMAKE_PREFIX_PATH': '/root/ros2_ws/install/zed_ros2:/root/ros2_ws/install/zed_wrapper:/root/ros2_ws/install/zed_components:/root/ros2_ws/install/vesc:/root/ros2_ws/install/vesc_driver:/root/ros2_ws/install/vesc_ackermann:/root/ros2_ws/install/vesc_msgs:/root/ros2_ws/install/urg_node2:/root/ros2_ws/install/udp_driver:/root/ros2_ws/install/serial_driver:/root/ros2_ws/install/io_context:/root/ros2_ws/install/asio_cmake_module:/root/ros2_ws/install/ackermann_cmd_mux'}, 'shell': False}
+[2.117976] (-) TimerEvent: {}
+[2.218392] (-) TimerEvent: {}
+[2.318976] (-) TimerEvent: {}
+[2.419542] (-) TimerEvent: {}
+[2.520103] (-) TimerEvent: {}
+[2.620713] (-) TimerEvent: {}
+[2.721291] (-) TimerEvent: {}
+[2.821874] (-) TimerEvent: {}
+[2.922490] (-) TimerEvent: {}
+[2.946380] (safety_controller) StdoutLine: {'line': b'running develop\n'}
+[3.022636] (-) TimerEvent: {}
+[3.123197] (-) TimerEvent: {}
+[3.155403] (safety_controller) StderrLine: {'line': b'/usr/lib/python3/dist-packages/pkg_resources/__init__.py:116: PkgResourcesDeprecationWarning: 2.0.5-build-libtorrent-rasterbar-QyJODx-libtorrent-rasterbar-2.0.5-bindings-python is an invalid version and will not be supported in a future release\n'}
+[3.155985] (safety_controller) StderrLine: {'line': b'  warnings.warn(\n'}
+[3.223267] (-) TimerEvent: {}
+[3.323664] (-) TimerEvent: {}
+[3.424097] (-) TimerEvent: {}
+[3.524530] (-) TimerEvent: {}
+[3.600997] (safety_controller) StdoutLine: {'line': b'Removing /root/racecar_ws/install/safety_controller/lib/python3.10/site-packages/safety-controller.egg-link (link to .)\n'}
+[3.624628] (-) TimerEvent: {}
+[3.693473] (safety_controller) CommandEnded: {'returncode': 0}
+[3.695809] (safety_controller) Command: {'cmd': ['/usr/bin/python3', '-W', 'ignore:setup.py install is deprecated', '-W', 'ignore:easy_install command is deprecated', 'setup.py', 'egg_info', '--egg-base', '../../build/safety_controller', 'build', '--build-base', '/root/racecar_ws/build/safety_controller/build', 'install', '--record', '/root/racecar_ws/build/safety_controller/install.log', '--single-version-externally-managed', 'install_data', '--force'], 'cwd': '/root/racecar_ws/src/safety_controller', 'env': {'LESSOPEN': '| /usr/bin/lesspipe %s', 'HOSTNAME': 'racecar-desktop', 'SCANNER_TYPE': 'hokuyo', 'SHLVL': '1', 'LD_LIBRARY_PATH': '/root/ros2_ws/install/zed_components/lib:/root/ros2_ws/install/vesc_driver/lib:/root/ros2_ws/install/vesc_ackermann/lib:/root/ros2_ws/install/vesc_msgs/lib:/root/ros2_ws/install/urg_node2/lib:/root/ros2_ws/install/udp_driver/lib:/root/ros2_ws/install/serial_driver/lib:/root/ros2_ws/install/io_context/lib:/root/ros2_ws/install/ackermann_cmd_mux/lib:/opt/ros/humble/opt/rviz_ogre_vendor/lib:/opt/ros/humble/lib/aarch64-linux-gnu:/opt/ros/humble/lib:/usr/lib/aarch64-linux-gnu/tegra:', 'HOME': '/root', 'OLDPWD': '/root', 'ROS_PYTHON_VERSION': '3', 'PS1': '\\[\x1b[38;5;214m\\]🏎️ \\[\x1b[38;5;39m\\]racer\\[\x1b[38;5;11m\\]@\\[\x1b[38;5;39m\\]mit\\[\x1b[38;5;11m\\]:\\[\x1b[38;5;83m\\]\\w\\[\x1b[38;5;11m\\]$ \\[\x1b[0m\\]', 'COLCON_PREFIX_PATH': '/root/ros2_ws/install', 'ROS_DISTRO': 'humble', '_': '/usr/bin/colcon', 'ROS_VERSION': '2', 'NVIDIA_DRIVER_CAPABILITIES': 'all', 'TORCH_INSTALL': '/tmp/torch-2.3.0-cp310-cp310-linux_aarch64.whl', 'TERM': 'xterm-256color', 'ROS_LOCALHOST_ONLY': '0', 'PATH': '/root/.local/bin:/opt/ros/humble/bin:/usr/local/cuda/bin:/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin', 'TORCHVISION_INSTALL': '/tmp/torchvision-0.18.0a0+6043bc2-cp310-cp310-linux_aarch64.whl', 'XDG_RUNTIME_DIR': '/tmp/runtime-root', 'DISPLAY': '', 'LANG': 'en_US.UTF-8', 'LS_COLORS': 'rs=0:di=01;34:ln=01;36:mh=00:pi=40;33:so=01;35:do=01;35:bd=40;33;01:cd=40;33;01:or=40;31;01:mi=00:su=37;41:sg=30;43:ca=30;41:tw=30;42:ow=34;42:st=37;44:ex=01;32:*.tar=01;31:*.tgz=01;31:*.arc=01;31:*.arj=01;31:*.taz=01;31:*.lha=01;31:*.lz4=01;31:*.lzh=01;31:*.lzma=01;31:*.tlz=01;31:*.txz=01;31:*.tzo=01;31:*.t7z=01;31:*.zip=01;31:*.z=01;31:*.dz=01;31:*.gz=01;31:*.lrz=01;31:*.lz=01;31:*.lzo=01;31:*.xz=01;31:*.zst=01;31:*.tzst=01;31:*.bz2=01;31:*.bz=01;31:*.tbz=01;31:*.tbz2=01;31:*.tz=01;31:*.deb=01;31:*.rpm=01;31:*.jar=01;31:*.war=01;31:*.ear=01;31:*.sar=01;31:*.rar=01;31:*.alz=01;31:*.ace=01;31:*.zoo=01;31:*.cpio=01;31:*.7z=01;31:*.rz=01;31:*.cab=01;31:*.wim=01;31:*.swm=01;31:*.dwm=01;31:*.esd=01;31:*.jpg=01;35:*.jpeg=01;35:*.mjpg=01;35:*.mjpeg=01;35:*.gif=01;35:*.bmp=01;35:*.pbm=01;35:*.pgm=01;35:*.ppm=01;35:*.tga=01;35:*.xbm=01;35:*.xpm=01;35:*.tif=01;35:*.tiff=01;35:*.png=01;35:*.svg=01;35:*.svgz=01;35:*.mng=01;35:*.pcx=01;35:*.mov=01;35:*.mpg=01;35:*.mpeg=01;35:*.m2v=01;35:*.mkv=01;35:*.webm=01;35:*.webp=01;35:*.ogm=01;35:*.mp4=01;35:*.m4v=01;35:*.mp4v=01;35:*.vob=01;35:*.qt=01;35:*.nuv=01;35:*.wmv=01;35:*.asf=01;35:*.rm=01;35:*.rmvb=01;35:*.flc=01;35:*.avi=01;35:*.fli=01;35:*.flv=01;35:*.gl=01;35:*.dl=01;35:*.xcf=01;35:*.xwd=01;35:*.yuv=01;35:*.cgm=01;35:*.emf=01;35:*.ogv=01;35:*.ogx=01;35:*.aac=00;36:*.au=00;36:*.flac=00;36:*.m4a=00;36:*.mid=00;36:*.midi=00;36:*.mka=00;36:*.mp3=00;36:*.mpc=00;36:*.ogg=00;36:*.ra=00;36:*.wav=00;36:*.oga=00;36:*.opus=00;36:*.spx=00;36:*.xspf=00;36:', 'AMENT_PREFIX_PATH': '/root/ros2_ws/install/zed_ros2:/root/ros2_ws/install/zed_wrapper:/root/ros2_ws/install/zed_components:/root/ros2_ws/install/vesc:/root/ros2_ws/install/vesc_driver:/root/ros2_ws/install/vesc_ackermann:/root/ros2_ws/install/vesc_msgs:/root/ros2_ws/install/urg_node2:/root/ros2_ws/install/udp_driver:/root/ros2_ws/install/serial_driver:/root/ros2_ws/install/racecar:/root/ros2_ws/install/io_context:/root/ros2_ws/install/asio_cmake_module:/root/ros2_ws/install/ackermann_cmd_mux:/opt/ros/humble', 'LESSCLOSE': '/usr/bin/lesspipe %s %s', 'PWD': '/root/racecar_ws/build/safety_controller', 'LC_ALL': 'en_US.UTF-8', 'CUDA_HOME': '/usr/local/cuda', 'PYTHONPATH': '/root/racecar_ws/build/safety_controller/prefix_override:/usr/lib/python3/dist-packages/colcon_core/task/python/colcon_distutils_commands:/root/racecar_ws/install/safety_controller/lib/python3.10/site-packages:/root/ros2_ws/install/vesc_msgs/local/lib/python3.10/dist-packages:/root/ros2_ws/build/racecar:/root/ros2_ws/install/racecar/lib/python3.10/site-packages:/opt/ros/humble/lib/python3.10/site-packages:/opt/ros/humble/local/lib/python3.10/dist-packages', 'NVIDIA_VISIBLE_DEVICES': 'all', 'TZ': 'America/New_York', 'COLCON': '1', 'CMAKE_PREFIX_PATH': '/root/ros2_ws/install/zed_ros2:/root/ros2_ws/install/zed_wrapper:/root/ros2_ws/install/zed_components:/root/ros2_ws/install/vesc:/root/ros2_ws/install/vesc_driver:/root/ros2_ws/install/vesc_ackermann:/root/ros2_ws/install/vesc_msgs:/root/ros2_ws/install/urg_node2:/root/ros2_ws/install/udp_driver:/root/ros2_ws/install/serial_driver:/root/ros2_ws/install/io_context:/root/ros2_ws/install/asio_cmake_module:/root/ros2_ws/install/ackermann_cmd_mux'}, 'shell': False}
+[3.724729] (-) TimerEvent: {}
+[3.825214] (-) TimerEvent: {}
+[3.925732] (-) TimerEvent: {}
+[4.026266] (-) TimerEvent: {}
+[4.126743] (-) TimerEvent: {}
+[4.227233] (-) TimerEvent: {}
+[4.327739] (-) TimerEvent: {}
+[4.428164] (-) TimerEvent: {}
+[4.528565] (-) TimerEvent: {}
+[4.628941] (-) TimerEvent: {}
+[4.659335] (safety_controller) StdoutLine: {'line': b'running egg_info\n'}
+[4.661247] (safety_controller) StdoutLine: {'line': b'writing ../../build/safety_controller/safety_controller.egg-info/PKG-INFO\n'}
+[4.676397] (safety_controller) StdoutLine: {'line': b'writing dependency_links to ../../build/safety_controller/safety_controller.egg-info/dependency_links.txt\n'}
+[4.677261] (safety_controller) StdoutLine: {'line': b'writing entry points to ../../build/safety_controller/safety_controller.egg-info/entry_points.txt\n'}
+[4.677784] (safety_controller) StdoutLine: {'line': b'writing requirements to ../../build/safety_controller/safety_controller.egg-info/requires.txt\n'}
+[4.678038] (safety_controller) StdoutLine: {'line': b'writing top-level names to ../../build/safety_controller/safety_controller.egg-info/top_level.txt\n'}
+[4.682819] (safety_controller) StdoutLine: {'line': b"reading manifest file '../../build/safety_controller/safety_controller.egg-info/SOURCES.txt'\n"}
+[4.684762] (safety_controller) StdoutLine: {'line': b"writing manifest file '../../build/safety_controller/safety_controller.egg-info/SOURCES.txt'\n"}
+[4.685071] (safety_controller) StdoutLine: {'line': b'running build\n'}
+[4.685219] (safety_controller) StdoutLine: {'line': b'running build_py\n'}
+[4.685455] (safety_controller) StdoutLine: {'line': b'creating /root/racecar_ws/build/safety_controller/build\n'}
+[4.685654] (safety_controller) StdoutLine: {'line': b'creating /root/racecar_ws/build/safety_controller/build/lib\n'}
+[4.685844] (safety_controller) StdoutLine: {'line': b'creating /root/racecar_ws/build/safety_controller/build/lib/safety_controller\n'}
+[4.686029] (safety_controller) StdoutLine: {'line': b'copying safety_controller/safety_controller.py -> /root/racecar_ws/build/safety_controller/build/lib/safety_controller\n'}
+[4.690926] (safety_controller) StdoutLine: {'line': b'copying safety_controller/safety_controller_new.py -> /root/racecar_ws/build/safety_controller/build/lib/safety_controller\n'}
+[4.692870] (safety_controller) StdoutLine: {'line': b'copying safety_controller/__init__.py -> /root/racecar_ws/build/safety_controller/build/lib/safety_controller\n'}
+[4.693340] (safety_controller) StdoutLine: {'line': b'running install\n'}
+[4.694105] (safety_controller) StdoutLine: {'line': b'running install_lib\n'}
+[4.695890] (safety_controller) StdoutLine: {'line': b'creating /root/racecar_ws/install/safety_controller/lib/python3.10/site-packages/safety_controller\n'}
+[4.696118] (safety_controller) StdoutLine: {'line': b'copying /root/racecar_ws/build/safety_controller/build/lib/safety_controller/safety_controller.py -> /root/racecar_ws/install/safety_controller/lib/python3.10/site-packages/safety_controller\n'}
+[4.696453] (safety_controller) StdoutLine: {'line': b'copying /root/racecar_ws/build/safety_controller/build/lib/safety_controller/safety_controller_new.py -> /root/racecar_ws/install/safety_controller/lib/python3.10/site-packages/safety_controller\n'}
+[4.696702] (safety_controller) StdoutLine: {'line': b'copying /root/racecar_ws/build/safety_controller/build/lib/safety_controller/__init__.py -> /root/racecar_ws/install/safety_controller/lib/python3.10/site-packages/safety_controller\n'}
+[4.698002] (safety_controller) StdoutLine: {'line': b'byte-compiling /root/racecar_ws/install/safety_controller/lib/python3.10/site-packages/safety_controller/safety_controller.py to safety_controller.cpython-310.pyc\n'}
+[4.701736] (safety_controller) StdoutLine: {'line': b'byte-compiling /root/racecar_ws/install/safety_controller/lib/python3.10/site-packages/safety_controller/safety_controller_new.py to safety_controller_new.cpython-310.pyc\n'}
+[4.704717] (safety_controller) StdoutLine: {'line': b'byte-compiling /root/racecar_ws/install/safety_controller/lib/python3.10/site-packages/safety_controller/__init__.py to __init__.cpython-310.pyc\n'}
+[4.705130] (safety_controller) StdoutLine: {'line': b'running install_data\n'}
+[4.705383] (safety_controller) StdoutLine: {'line': b'copying resource/safety_controller -> /root/racecar_ws/install/safety_controller/share/ament_index/resource_index/packages\n'}
+[4.705764] (safety_controller) StdoutLine: {'line': b'copying package.xml -> /root/racecar_ws/install/safety_controller/share/safety_controller\n'}
+[4.706012] (safety_controller) StdoutLine: {'line': b'copying safety_controller/params.yaml -> /root/racecar_ws/install/safety_controller/share/safety_controller\n'}
+[4.716753] (safety_controller) StdoutLine: {'line': b'copying launch/safety_controller.launch.xml -> /root/racecar_ws/install/safety_controller/share/safety_controller/launch\n'}
+[4.717864] (safety_controller) StdoutLine: {'line': b'running install_egg_info\n'}
+[4.722756] (safety_controller) StdoutLine: {'line': b'Copying ../../build/safety_controller/safety_controller.egg-info to /root/racecar_ws/install/safety_controller/lib/python3.10/site-packages/safety_controller-0.0.0-py3.10.egg-info\n'}
+[4.729010] (-) TimerEvent: {}
+[4.730897] (safety_controller) StdoutLine: {'line': b'running install_scripts\n'}
+[4.829113] (-) TimerEvent: {}
+[4.846233] (safety_controller) StdoutLine: {'line': b'Installing safety_controller script to /root/racecar_ws/install/safety_controller/lib/safety_controller\n'}
+[4.850579] (safety_controller) StdoutLine: {'line': b"writing list of installed files to '/root/racecar_ws/build/safety_controller/install.log'\n"}
+[4.929222] (-) TimerEvent: {}
+[4.939285] (safety_controller) CommandEnded: {'returncode': 0}
+[4.963817] (safety_controller) JobEnded: {'identifier': 'safety_controller', 'rc': 0}
+[4.972028] (-) EventReactorShutdown: {}

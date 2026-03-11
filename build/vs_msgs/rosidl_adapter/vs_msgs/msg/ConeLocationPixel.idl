@@ -1,0 +1,14 @@
+// generated from rosidl_adapter/resource/msg.idl.em
+// with input from vs_msgs/msg/ConeLocationPixel.msg
+// generated code does not contain a copyright notice
+
+
+module vs_msgs {
+  module msg {
+    struct ConeLocationPixel {
+      float u;
+
+      float v;
+    };
+  };
+};

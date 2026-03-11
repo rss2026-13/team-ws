@@ -1,0 +1,12 @@
+package.xml
+setup.cfg
+setup.py
+labc_test1/__init__.py
+labc_test1.egg-info/PKG-INFO
+labc_test1.egg-info/SOURCES.txt
+labc_test1.egg-info/dependency_links.txt
+labc_test1.egg-info/entry_points.txt
+labc_test1.egg-info/requires.txt
+labc_test1.egg-info/top_level.txt
+labc_test1.egg-info/zip-safe
+resource/labc_test1

@@ -1,0 +1,21 @@
+running develop
+running egg_info
+creating labc_test1.egg-info
+writing labc_test1.egg-info/PKG-INFO
+writing dependency_links to labc_test1.egg-info/dependency_links.txt
+writing entry points to labc_test1.egg-info/entry_points.txt
+writing requirements to labc_test1.egg-info/requires.txt
+writing top-level names to labc_test1.egg-info/top_level.txt
+writing manifest file 'labc_test1.egg-info/SOURCES.txt'
+reading manifest file 'labc_test1.egg-info/SOURCES.txt'
+writing manifest file 'labc_test1.egg-info/SOURCES.txt'
+running build_ext
+Creating /root/racecar_ws/install/labc_test1/lib/python3.10/site-packages/labc-test1.egg-link (link to .)
+
+Installed /root/racecar_ws/build/labc_test1
+running symlink_data
+creating /root/racecar_ws/install/labc_test1/share/ament_index
+creating /root/racecar_ws/install/labc_test1/share/ament_index/resource_index
+creating /root/racecar_ws/install/labc_test1/share/ament_index/resource_index/packages
+symbolically linking /root/racecar_ws/build/labc_test1/resource/labc_test1 -> /root/racecar_ws/install/labc_test1/share/ament_index/resource_index/packages
+symbolically linking /root/racecar_ws/build/labc_test1/package.xml -> /root/racecar_ws/install/labc_test1/share/labc_test1

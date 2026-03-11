@@ -1,0 +1,450 @@
+[0.000000] (-) TimerEvent: {}
+[0.000750] (-) JobUnselected: {'identifier': 'custom_msgs'}
+[0.001332] (-) JobUnselected: {'identifier': 'labc_test1'}
+[0.001650] (-) JobUnselected: {'identifier': 'py_pubsub'}
+[0.001909] (-) JobUnselected: {'identifier': 'ros_exercises'}
+[0.002021] (-) JobUnselected: {'identifier': 'wall_follower'}
+[0.002226] (visual_servoing) JobQueued: {'identifier': 'visual_servoing', 'dependencies': OrderedDict()}
+[0.002336] (vs_msgs) JobQueued: {'identifier': 'vs_msgs', 'dependencies': OrderedDict()}
+[0.002395] (visual_servoing) JobStarted: {'identifier': 'visual_servoing'}
+[0.025503] (vs_msgs) JobStarted: {'identifier': 'vs_msgs'}
+[0.099351] (-) TimerEvent: {}
+[0.200217] (-) TimerEvent: {}
+[0.300815] (-) TimerEvent: {}
+[0.401465] (-) TimerEvent: {}
+[0.502245] (-) TimerEvent: {}
+[0.602974] (-) TimerEvent: {}
+[0.703733] (-) TimerEvent: {}
+[0.770476] (vs_msgs) JobProgress: {'identifier': 'vs_msgs', 'progress': 'cmake'}
+[0.772245] (vs_msgs) Command: {'cmd': ['/usr/bin/cmake', '/root/racecar_ws/src/visual_servoing/vs_msgs', '-DCMAKE_INSTALL_PREFIX=/root/racecar_ws/install/vs_msgs'], 'cwd': '/root/racecar_ws/build/vs_msgs', 'env': OrderedDict([('VNCDESKTOP', 'racecar-desktop:10 (root)'), ('LESSOPEN', '| /usr/bin/lesspipe %s'), ('HOSTNAME', 'racecar-desktop'), ('XDG_SESSION_TYPE', 'x11'), ('SCANNER_TYPE', 'hokuyo'), ('SHLVL', '2'), ('LD_LIBRARY_PATH', '/root/ros2_ws/install/zed_components/lib:/root/ros2_ws/install/vesc_driver/lib:/root/ros2_ws/install/vesc_ackermann/lib:/root/ros2_ws/install/vesc_msgs/lib:/root/ros2_ws/install/urg_node2/lib:/root/ros2_ws/install/udp_driver/lib:/root/ros2_ws/install/serial_driver/lib:/root/ros2_ws/install/io_context/lib:/root/ros2_ws/install/ackermann_cmd_mux/lib:/opt/ros/humble/opt/rviz_ogre_vendor/lib:/opt/ros/humble/lib/aarch64-linux-gnu:/opt/ros/humble/lib:/usr/lib/aarch64-linux-gnu/tegra:'), ('HOME', '/root'), ('OLDPWD', '/root/racecar_ws'), ('DESKTOP_SESSION', 'LXDE'), ('ROS_PYTHON_VERSION', '3'), ('PS1', '\\[\x1b[38;5;214m\\]🏎️ \\[\x1b[38;5;39m\\]racer\\[\x1b[38;5;11m\\]@\\[\x1b[38;5;39m\\]mit\\[\x1b[38;5;11m\\]:\\[\x1b[38;5;83m\\]\\w\\[\x1b[38;5;11m\\]$ \\[\x1b[0m\\]'), ('COLORTERM', 'truecolor'), ('COLCON_PREFIX_PATH', '/root/racecar_ws/install:/root/ros2_ws/install'), ('ROS_DISTRO', 'humble'), ('_', '/usr/bin/colcon'), ('ROS_VERSION', '2'), ('NVIDIA_DRIVER_CAPABILITIES', 'all'), ('XDG_SESSION_CLASS', 'user'), ('TORCH_INSTALL', '/tmp/torch-2.3.0-cp310-cp310-linux_aarch64.whl'), ('TERM', 'xterm-256color'), ('ROS_LOCALHOST_ONLY', '0'), ('SAL_USE_VCLPLUGIN', 'gtk'), ('PATH', '/root/.local/bin:/opt/ros/humble/bin:/usr/local/cuda/bin:/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin'), ('TORCHVISION_INSTALL', '/tmp/torchvision-0.18.0a0+6043bc2-cp310-cp310-linux_aarch64.whl'), ('XDG_MENU_PREFIX', 'lxde-'), ('XDG_RUNTIME_DIR', '/tmp/runtime-root'), ('DISPLAY', ':10'), ('LANG', 'en_US.UTF-8'), ('XDG_CURRENT_DESKTOP', 'LXDE'), ('XDG_DATA_HOME', '/root/.local/share'), ('XDG_CONFIG_HOME', '/root/.config'), ('LS_COLORS', 'rs=0:di=01;34:ln=01;36:mh=00:pi=40;33:so=01;35:do=01;35:bd=40;33;01:cd=40;33;01:or=40;31;01:mi=00:su=37;41:sg=30;43:ca=30;41:tw=30;42:ow=34;42:st=37;44:ex=01;32:*.tar=01;31:*.tgz=01;31:*.arc=01;31:*.arj=01;31:*.taz=01;31:*.lha=01;31:*.lz4=01;31:*.lzh=01;31:*.lzma=01;31:*.tlz=01;31:*.txz=01;31:*.tzo=01;31:*.t7z=01;31:*.zip=01;31:*.z=01;31:*.dz=01;31:*.gz=01;31:*.lrz=01;31:*.lz=01;31:*.lzo=01;31:*.xz=01;31:*.zst=01;31:*.tzst=01;31:*.bz2=01;31:*.bz=01;31:*.tbz=01;31:*.tbz2=01;31:*.tz=01;31:*.deb=01;31:*.rpm=01;31:*.jar=01;31:*.war=01;31:*.ear=01;31:*.sar=01;31:*.rar=01;31:*.alz=01;31:*.ace=01;31:*.zoo=01;31:*.cpio=01;31:*.7z=01;31:*.rz=01;31:*.cab=01;31:*.wim=01;31:*.swm=01;31:*.dwm=01;31:*.esd=01;31:*.jpg=01;35:*.jpeg=01;35:*.mjpg=01;35:*.mjpeg=01;35:*.gif=01;35:*.bmp=01;35:*.pbm=01;35:*.pgm=01;35:*.ppm=01;35:*.tga=01;35:*.xbm=01;35:*.xpm=01;35:*.tif=01;35:*.tiff=01;35:*.png=01;35:*.svg=01;35:*.svgz=01;35:*.mng=01;35:*.pcx=01;35:*.mov=01;35:*.mpg=01;35:*.mpeg=01;35:*.m2v=01;35:*.mkv=01;35:*.webm=01;35:*.webp=01;35:*.ogm=01;35:*.mp4=01;35:*.m4v=01;35:*.mp4v=01;35:*.vob=01;35:*.qt=01;35:*.nuv=01;35:*.wmv=01;35:*.asf=01;35:*.rm=01;35:*.rmvb=01;35:*.flc=01;35:*.avi=01;35:*.fli=01;35:*.flv=01;35:*.gl=01;35:*.dl=01;35:*.xcf=01;35:*.xwd=01;35:*.yuv=01;35:*.cgm=01;35:*.emf=01;35:*.ogv=01;35:*.ogx=01;35:*.aac=00;36:*.au=00;36:*.flac=00;36:*.m4a=00;36:*.mid=00;36:*.midi=00;36:*.mka=00;36:*.mp3=00;36:*.mpc=00;36:*.ogg=00;36:*.ra=00;36:*.wav=00;36:*.oga=00;36:*.opus=00;36:*.spx=00;36:*.xspf=00;36:'), ('AMENT_PREFIX_PATH', '/root/racecar_ws/install/wall_follower:/root/racecar_ws/install/visual_servoing:/root/racecar_ws/install/safety_controller:/root/racecar_ws/install/evaluation:/root/ros2_ws/install/zed_ros2:/root/ros2_ws/install/zed_wrapper:/root/ros2_ws/install/zed_components:/root/ros2_ws/install/vesc:/root/ros2_ws/install/vesc_driver:/root/ros2_ws/install/vesc_ackermann:/root/ros2_ws/install/vesc_msgs:/root/ros2_ws/install/urg_node2:/root/ros2_ws/install/udp_driver:/root/ros2_ws/install/serial_driver:/root/ros2_ws/install/racecar:/root/ros2_ws/install/io_context:/root/ros2_ws/install/asio_cmake_module:/root/ros2_ws/install/ackermann_cmd_mux:/opt/ros/humble'), ('LESSCLOSE', '/usr/bin/lesspipe %s %s'), ('_LXSESSION_PID', '40'), ('PWD', '/root/racecar_ws/build/vs_msgs'), ('LC_ALL', 'en_US.UTF-8'), ('CUDA_HOME', '/usr/local/cuda'), ('XDG_CONFIG_DIRS', '/etc/xdg'), ('XDG_DATA_DIRS', '/usr/local/share:/usr/share:/usr/share/gdm:/var/lib/menu-xdg:/usr/local/share/:/usr/share/:/usr/share/gdm/:/var/lib/menu-xdg/'), ('PYTHONPATH', '/root/racecar_ws/build/wall_follower:/root/racecar_ws/install/wall_follower/lib/python3.10/site-packages:/root/racecar_ws/install/visual_servoing/lib/python3.10/site-packages:/root/racecar_ws/install/safety_controller/lib/python3.10/site-packages:/root/racecar_ws/build/evaluation:/root/racecar_ws/install/evaluation/lib/python3.10/site-packages:/root/ros2_ws/install/vesc_msgs/local/lib/python3.10/dist-packages:/root/ros2_ws/build/racecar:/root/ros2_ws/install/racecar/lib/python3.10/site-packages:/opt/ros/humble/lib/python3.10/site-packages:/opt/ros/humble/local/lib/python3.10/dist-packages'), ('NVIDIA_VISIBLE_DEVICES', 'void'), ('TZ', 'America/New_York'), ('COLCON', '1'), ('VTE_VERSION', '6800'), ('CMAKE_PREFIX_PATH', '/root/ros2_ws/install/zed_ros2:/root/ros2_ws/install/zed_wrapper:/root/ros2_ws/install/zed_components:/root/ros2_ws/install/vesc:/root/ros2_ws/install/vesc_driver:/root/ros2_ws/install/vesc_ackermann:/root/ros2_ws/install/vesc_msgs:/root/ros2_ws/install/urg_node2:/root/ros2_ws/install/udp_driver:/root/ros2_ws/install/serial_driver:/root/ros2_ws/install/io_context:/root/ros2_ws/install/asio_cmake_module:/root/ros2_ws/install/ackermann_cmd_mux:/root/racecar_ws/install/wall_follower:/root/racecar_ws/install/visual_servoing:/root/racecar_ws/install/safety_controller:/root/racecar_ws/install/evaluation:/root/ros2_ws/install/racecar:/opt/ros/humble')]), 'shell': False}
+[0.803828] (-) TimerEvent: {}
+[0.904509] (-) TimerEvent: {}
+[0.911143] (vs_msgs) StdoutLine: {'line': b'-- The C compiler identification is GNU 11.4.0\n'}
+[1.004670] (-) TimerEvent: {}
+[1.038962] (vs_msgs) StdoutLine: {'line': b'-- The CXX compiler identification is GNU 11.4.0\n'}
+[1.067068] (vs_msgs) StdoutLine: {'line': b'-- Detecting C compiler ABI info\n'}
+[1.104833] (-) TimerEvent: {}
+[1.205556] (-) TimerEvent: {}
+[1.248203] (vs_msgs) StdoutLine: {'line': b'-- Detecting C compiler ABI info - done\n'}
+[1.271629] (vs_msgs) StdoutLine: {'line': b'-- Check for working C compiler: /usr/bin/cc - skipped\n'}
+[1.272480] (vs_msgs) StdoutLine: {'line': b'-- Detecting C compile features\n'}
+[1.273876] (vs_msgs) StdoutLine: {'line': b'-- Detecting C compile features - done\n'}
+[1.285408] (vs_msgs) StdoutLine: {'line': b'-- Detecting CXX compiler ABI info\n'}
+[1.305692] (-) TimerEvent: {}
+[1.406302] (-) TimerEvent: {}
+[1.480730] (vs_msgs) StdoutLine: {'line': b'-- Detecting CXX compiler ABI info - done\n'}
+[1.506488] (-) TimerEvent: {}
+[1.509607] (vs_msgs) StdoutLine: {'line': b'-- Check for working CXX compiler: /usr/bin/c++ - skipped\n'}
+[1.510755] (vs_msgs) StdoutLine: {'line': b'-- Detecting CXX compile features\n'}
+[1.512617] (vs_msgs) StdoutLine: {'line': b'-- Detecting CXX compile features - done\n'}
+[1.526336] (vs_msgs) StdoutLine: {'line': b'-- Found ament_cmake: 1.3.12 (/opt/ros/humble/share/ament_cmake/cmake)\n'}
+[1.606625] (-) TimerEvent: {}
+[1.707224] (-) TimerEvent: {}
+[1.793412] (visual_servoing) Command: {'cmd': ['/usr/bin/python3', '-W', 'ignore:setup.py install is deprecated', '-W', 'ignore:easy_install command is deprecated', 'setup.py', 'egg_info', '--egg-base', '../../../build/visual_servoing', 'build', '--build-base', '/root/racecar_ws/build/visual_servoing/build', 'install', '--record', '/root/racecar_ws/build/visual_servoing/install.log', '--install-scripts', '$base/lib/visual_servoing', '--single-version-externally-managed', 'install_data'], 'cwd': '/root/racecar_ws/src/visual_servoing/visual_servoing', 'env': {'VNCDESKTOP': 'racecar-desktop:10 (root)', 'LESSOPEN': '| /usr/bin/lesspipe %s', 'HOSTNAME': 'racecar-desktop', 'XDG_SESSION_TYPE': 'x11', 'SCANNER_TYPE': 'hokuyo', 'SHLVL': '2', 'LD_LIBRARY_PATH': '/root/ros2_ws/install/zed_components/lib:/root/ros2_ws/install/vesc_driver/lib:/root/ros2_ws/install/vesc_ackermann/lib:/root/ros2_ws/install/vesc_msgs/lib:/root/ros2_ws/install/urg_node2/lib:/root/ros2_ws/install/udp_driver/lib:/root/ros2_ws/install/serial_driver/lib:/root/ros2_ws/install/io_context/lib:/root/ros2_ws/install/ackermann_cmd_mux/lib:/opt/ros/humble/opt/rviz_ogre_vendor/lib:/opt/ros/humble/lib/aarch64-linux-gnu:/opt/ros/humble/lib:/usr/lib/aarch64-linux-gnu/tegra:', 'HOME': '/root', 'OLDPWD': '/root/racecar_ws', 'DESKTOP_SESSION': 'LXDE', 'ROS_PYTHON_VERSION': '3', 'PS1': '\\[\x1b[38;5;214m\\]🏎️ \\[\x1b[38;5;39m\\]racer\\[\x1b[38;5;11m\\]@\\[\x1b[38;5;39m\\]mit\\[\x1b[38;5;11m\\]:\\[\x1b[38;5;83m\\]\\w\\[\x1b[38;5;11m\\]$ \\[\x1b[0m\\]', 'COLORTERM': 'truecolor', 'COLCON_PREFIX_PATH': '/root/racecar_ws/install:/root/ros2_ws/install', 'ROS_DISTRO': 'humble', '_': '/usr/bin/colcon', 'ROS_VERSION': '2', 'NVIDIA_DRIVER_CAPABILITIES': 'all', 'XDG_SESSION_CLASS': 'user', 'TORCH_INSTALL': '/tmp/torch-2.3.0-cp310-cp310-linux_aarch64.whl', 'TERM': 'xterm-256color', 'ROS_LOCALHOST_ONLY': '0', 'SAL_USE_VCLPLUGIN': 'gtk', 'PATH': '/root/.local/bin:/opt/ros/humble/bin:/usr/local/cuda/bin:/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin', 'TORCHVISION_INSTALL': '/tmp/torchvision-0.18.0a0+6043bc2-cp310-cp310-linux_aarch64.whl', 'XDG_MENU_PREFIX': 'lxde-', 'XDG_RUNTIME_DIR': '/tmp/runtime-root', 'DISPLAY': ':10', 'LANG': 'en_US.UTF-8', 'XDG_CURRENT_DESKTOP': 'LXDE', 'XDG_DATA_HOME': '/root/.local/share', 'XDG_CONFIG_HOME': '/root/.config', 'LS_COLORS': 'rs=0:di=01;34:ln=01;36:mh=00:pi=40;33:so=01;35:do=01;35:bd=40;33;01:cd=40;33;01:or=40;31;01:mi=00:su=37;41:sg=30;43:ca=30;41:tw=30;42:ow=34;42:st=37;44:ex=01;32:*.tar=01;31:*.tgz=01;31:*.arc=01;31:*.arj=01;31:*.taz=01;31:*.lha=01;31:*.lz4=01;31:*.lzh=01;31:*.lzma=01;31:*.tlz=01;31:*.txz=01;31:*.tzo=01;31:*.t7z=01;31:*.zip=01;31:*.z=01;31:*.dz=01;31:*.gz=01;31:*.lrz=01;31:*.lz=01;31:*.lzo=01;31:*.xz=01;31:*.zst=01;31:*.tzst=01;31:*.bz2=01;31:*.bz=01;31:*.tbz=01;31:*.tbz2=01;31:*.tz=01;31:*.deb=01;31:*.rpm=01;31:*.jar=01;31:*.war=01;31:*.ear=01;31:*.sar=01;31:*.rar=01;31:*.alz=01;31:*.ace=01;31:*.zoo=01;31:*.cpio=01;31:*.7z=01;31:*.rz=01;31:*.cab=01;31:*.wim=01;31:*.swm=01;31:*.dwm=01;31:*.esd=01;31:*.jpg=01;35:*.jpeg=01;35:*.mjpg=01;35:*.mjpeg=01;35:*.gif=01;35:*.bmp=01;35:*.pbm=01;35:*.pgm=01;35:*.ppm=01;35:*.tga=01;35:*.xbm=01;35:*.xpm=01;35:*.tif=01;35:*.tiff=01;35:*.png=01;35:*.svg=01;35:*.svgz=01;35:*.mng=01;35:*.pcx=01;35:*.mov=01;35:*.mpg=01;35:*.mpeg=01;35:*.m2v=01;35:*.mkv=01;35:*.webm=01;35:*.webp=01;35:*.ogm=01;35:*.mp4=01;35:*.m4v=01;35:*.mp4v=01;35:*.vob=01;35:*.qt=01;35:*.nuv=01;35:*.wmv=01;35:*.asf=01;35:*.rm=01;35:*.rmvb=01;35:*.flc=01;35:*.avi=01;35:*.fli=01;35:*.flv=01;35:*.gl=01;35:*.dl=01;35:*.xcf=01;35:*.xwd=01;35:*.yuv=01;35:*.cgm=01;35:*.emf=01;35:*.ogv=01;35:*.ogx=01;35:*.aac=00;36:*.au=00;36:*.flac=00;36:*.m4a=00;36:*.mid=00;36:*.midi=00;36:*.mka=00;36:*.mp3=00;36:*.mpc=00;36:*.ogg=00;36:*.ra=00;36:*.wav=00;36:*.oga=00;36:*.opus=00;36:*.spx=00;36:*.xspf=00;36:', 'AMENT_PREFIX_PATH': '/root/racecar_ws/install/wall_follower:/root/racecar_ws/install/visual_servoing:/root/racecar_ws/install/safety_controller:/root/racecar_ws/install/evaluation:/root/ros2_ws/install/zed_ros2:/root/ros2_ws/install/zed_wrapper:/root/ros2_ws/install/zed_components:/root/ros2_ws/install/vesc:/root/ros2_ws/install/vesc_driver:/root/ros2_ws/install/vesc_ackermann:/root/ros2_ws/install/vesc_msgs:/root/ros2_ws/install/urg_node2:/root/ros2_ws/install/udp_driver:/root/ros2_ws/install/serial_driver:/root/ros2_ws/install/racecar:/root/ros2_ws/install/io_context:/root/ros2_ws/install/asio_cmake_module:/root/ros2_ws/install/ackermann_cmd_mux:/opt/ros/humble', 'LESSCLOSE': '/usr/bin/lesspipe %s %s', '_LXSESSION_PID': '40', 'PWD': '/root/racecar_ws/build/visual_servoing', 'LC_ALL': 'en_US.UTF-8', 'CUDA_HOME': '/usr/local/cuda', 'XDG_CONFIG_DIRS': '/etc/xdg', 'XDG_DATA_DIRS': '/usr/local/share:/usr/share:/usr/share/gdm:/var/lib/menu-xdg:/usr/local/share/:/usr/share/:/usr/share/gdm/:/var/lib/menu-xdg/', 'PYTHONPATH': '/root/racecar_ws/build/visual_servoing/prefix_override:/usr/lib/python3/dist-packages/colcon_core/task/python/colcon_distutils_commands:/root/racecar_ws/install/visual_servoing/lib/python3.10/site-packages:/root/racecar_ws/build/wall_follower:/root/racecar_ws/install/wall_follower/lib/python3.10/site-packages:/root/racecar_ws/install/visual_servoing/lib/python3.10/site-packages:/root/racecar_ws/install/safety_controller/lib/python3.10/site-packages:/root/racecar_ws/build/evaluation:/root/racecar_ws/install/evaluation/lib/python3.10/site-packages:/root/ros2_ws/install/vesc_msgs/local/lib/python3.10/dist-packages:/root/ros2_ws/build/racecar:/root/ros2_ws/install/racecar/lib/python3.10/site-packages:/opt/ros/humble/lib/python3.10/site-packages:/opt/ros/humble/local/lib/python3.10/dist-packages', 'NVIDIA_VISIBLE_DEVICES': 'void', 'TZ': 'America/New_York', 'COLCON': '1', 'VTE_VERSION': '6800', 'CMAKE_PREFIX_PATH': '/root/ros2_ws/install/zed_ros2:/root/ros2_ws/install/zed_wrapper:/root/ros2_ws/install/zed_components:/root/ros2_ws/install/vesc:/root/ros2_ws/install/vesc_driver:/root/ros2_ws/install/vesc_ackermann:/root/ros2_ws/install/vesc_msgs:/root/ros2_ws/install/urg_node2:/root/ros2_ws/install/udp_driver:/root/ros2_ws/install/serial_driver:/root/ros2_ws/install/io_context:/root/ros2_ws/install/asio_cmake_module:/root/ros2_ws/install/ackermann_cmd_mux'}, 'shell': False}
+[1.807321] (-) TimerEvent: {}
+[1.907936] (-) TimerEvent: {}
+[1.983634] (vs_msgs) StdoutLine: {'line': b'-- Found Python3: /usr/bin/python3 (found version "3.10.12") found components: Interpreter \n'}
+[2.008051] (-) TimerEvent: {}
+[2.108659] (-) TimerEvent: {}
+[2.209280] (-) TimerEvent: {}
+[2.309913] (-) TimerEvent: {}
+[2.327342] (vs_msgs) StdoutLine: {'line': b'-- Found rosidl_default_generators: 1.2.0 (/opt/ros/humble/share/rosidl_default_generators/cmake)\n'}
+[2.346548] (vs_msgs) StdoutLine: {'line': b'-- Using all available rosidl_typesupport_c: rosidl_typesupport_fastrtps_c;rosidl_typesupport_introspection_c\n'}
+[2.380292] (vs_msgs) StdoutLine: {'line': b'-- Found rosidl_adapter: 3.1.8 (/opt/ros/humble/share/rosidl_adapter/cmake)\n'}
+[2.410067] (-) TimerEvent: {}
+[2.442159] (visual_servoing) StderrLine: {'line': b"/usr/lib/python3/dist-packages/setuptools/dist.py:723: UserWarning: Usage of dash-separated 'script-dir' will not be supported in future versions. Please use the underscore name 'script_dir' instead\n"}
+[2.442836] (visual_servoing) StderrLine: {'line': b'  warnings.warn(\n'}
+[2.463768] (visual_servoing) StdoutLine: {'line': b'running egg_info\n'}
+[2.465406] (visual_servoing) StdoutLine: {'line': b'writing ../../../build/visual_servoing/visual_servoing.egg-info/PKG-INFO\n'}
+[2.466088] (visual_servoing) StdoutLine: {'line': b'writing dependency_links to ../../../build/visual_servoing/visual_servoing.egg-info/dependency_links.txt\n'}
+[2.466543] (visual_servoing) StdoutLine: {'line': b'writing entry points to ../../../build/visual_servoing/visual_servoing.egg-info/entry_points.txt\n'}
+[2.467126] (visual_servoing) StdoutLine: {'line': b'writing requirements to ../../../build/visual_servoing/visual_servoing.egg-info/requires.txt\n'}
+[2.467450] (visual_servoing) StdoutLine: {'line': b'writing top-level names to ../../../build/visual_servoing/visual_servoing.egg-info/top_level.txt\n'}
+[2.471876] (visual_servoing) StdoutLine: {'line': b"reading manifest file '../../../build/visual_servoing/visual_servoing.egg-info/SOURCES.txt'\n"}
+[2.474327] (visual_servoing) StdoutLine: {'line': b"writing manifest file '../../../build/visual_servoing/visual_servoing.egg-info/SOURCES.txt'\n"}
+[2.474820] (visual_servoing) StdoutLine: {'line': b'running build\n'}
+[2.475113] (visual_servoing) StdoutLine: {'line': b'running build_py\n'}
+[2.475780] (visual_servoing) StdoutLine: {'line': b'running install\n'}
+[2.476441] (visual_servoing) StdoutLine: {'line': b'running install_lib\n'}
+[2.479802] (visual_servoing) StdoutLine: {'line': b'running install_data\n'}
+[2.480446] (visual_servoing) StdoutLine: {'line': b'running install_egg_info\n'}
+[2.484759] (visual_servoing) StdoutLine: {'line': b"removing '/root/racecar_ws/install/visual_servoing/lib/python3.10/site-packages/visual_servoing-0.0.0-py3.10.egg-info' (and everything under it)\n"}
+[2.485577] (visual_servoing) StdoutLine: {'line': b'Copying ../../../build/visual_servoing/visual_servoing.egg-info to /root/racecar_ws/install/visual_servoing/lib/python3.10/site-packages/visual_servoing-0.0.0-py3.10.egg-info\n'}
+[2.487670] (visual_servoing) StdoutLine: {'line': b'running install_scripts\n'}
+[2.510276] (-) TimerEvent: {}
+[2.536399] (vs_msgs) StdoutLine: {'line': b'-- Using all available rosidl_typesupport_cpp: rosidl_typesupport_fastrtps_cpp;rosidl_typesupport_introspection_cpp\n'}
+[2.537595] (visual_servoing) StdoutLine: {'line': b'Installing cone_detector script to /root/racecar_ws/install/visual_servoing/lib/visual_servoing\n'}
+[2.538161] (visual_servoing) StdoutLine: {'line': b'Installing cone_sim_marker script to /root/racecar_ws/install/visual_servoing/lib/visual_servoing\n'}
+[2.538573] (visual_servoing) StdoutLine: {'line': b'Installing homography_transformer script to /root/racecar_ws/install/visual_servoing/lib/visual_servoing\n'}
+[2.538897] (visual_servoing) StdoutLine: {'line': b'Installing parking_controller script to /root/racecar_ws/install/visual_servoing/lib/visual_servoing\n'}
+[2.539300] (visual_servoing) StdoutLine: {'line': b'Installing yolo_annotator script to /root/racecar_ws/install/visual_servoing/lib/visual_servoing\n'}
+[2.540299] (visual_servoing) StdoutLine: {'line': b"writing list of installed files to '/root/racecar_ws/build/visual_servoing/install.log'\n"}
+[2.610493] (-) TimerEvent: {}
+[2.621452] (visual_servoing) CommandEnded: {'returncode': 0}
+[2.663956] (visual_servoing) JobEnded: {'identifier': 'visual_servoing', 'rc': 0}
+[2.710606] (-) TimerEvent: {}
+[2.811450] (-) TimerEvent: {}
+[2.912483] (-) TimerEvent: {}
+[3.013209] (-) TimerEvent: {}
+[3.113815] (-) TimerEvent: {}
+[3.214496] (-) TimerEvent: {}
+[3.315412] (-) TimerEvent: {}
+[3.375330] (vs_msgs) StdoutLine: {'line': b'-- Found ament_cmake_ros: 0.10.0 (/opt/ros/humble/share/ament_cmake_ros/cmake)\n'}
+[3.415677] (-) TimerEvent: {}
+[3.516859] (-) TimerEvent: {}
+[3.617674] (-) TimerEvent: {}
+[3.718756] (-) TimerEvent: {}
+[3.819888] (-) TimerEvent: {}
+[3.920832] (-) TimerEvent: {}
+[3.969377] (vs_msgs) StdoutLine: {'line': b'-- Using all available rosidl_typesupport_c: rosidl_typesupport_fastrtps_c;rosidl_typesupport_introspection_c\n'}
+[4.021080] (-) TimerEvent: {}
+[4.122030] (-) TimerEvent: {}
+[4.223050] (-) TimerEvent: {}
+[4.323645] (-) TimerEvent: {}
+[4.424237] (-) TimerEvent: {}
+[4.524903] (-) TimerEvent: {}
+[4.625511] (-) TimerEvent: {}
+[4.699883] (vs_msgs) StdoutLine: {'line': b'-- Using all available rosidl_typesupport_cpp: rosidl_typesupport_fastrtps_cpp;rosidl_typesupport_introspection_cpp\n'}
+[4.725824] (-) TimerEvent: {}
+[4.776055] (vs_msgs) StdoutLine: {'line': b'-- Found PythonInterp: /usr/bin/python3 (found suitable version "3.10.12", minimum required is "3.6") \n'}
+[4.796655] (vs_msgs) StdoutLine: {'line': b'-- Found python_cmake_module: 0.10.0 (/opt/ros/humble/share/python_cmake_module/cmake)\n'}
+[4.826035] (-) TimerEvent: {}
+[4.887330] (vs_msgs) StdoutLine: {'line': b'-- Found PythonLibs: /usr/lib/aarch64-linux-gnu/libpython3.10.so (found suitable version "3.10.12", minimum required is "3.5") \n'}
+[4.888334] (vs_msgs) StdoutLine: {'line': b'-- Using PYTHON_EXECUTABLE: /usr/bin/python3\n'}
+[4.888654] (vs_msgs) StdoutLine: {'line': b'-- Using PYTHON_INCLUDE_DIRS: /usr/include/python3.10\n'}
+[4.888988] (vs_msgs) StdoutLine: {'line': b'-- Using PYTHON_LIBRARIES: /usr/lib/aarch64-linux-gnu/libpython3.10.so\n'}
+[4.926148] (-) TimerEvent: {}
+[4.953041] (vs_msgs) StdoutLine: {'line': b'-- Found PythonExtra: .so  \n'}
+[5.026335] (-) TimerEvent: {}
+[5.096925] (vs_msgs) StdoutLine: {'line': b'-- Found ament_lint_auto: 0.12.14 (/opt/ros/humble/share/ament_lint_auto/cmake)\n'}
+[5.126511] (-) TimerEvent: {}
+[5.214942] (vs_msgs) StdoutLine: {'line': b"-- Added test 'copyright' to check source files copyright and LICENSE\n"}
+[5.220975] (vs_msgs) StdoutLine: {'line': b"-- Added test 'lint_cmake' to check CMake code style\n"}
+[5.226037] (vs_msgs) StdoutLine: {'line': b"-- Added test 'xmllint' to check XML markup files\n"}
+[5.226576] (-) TimerEvent: {}
+[5.235963] (vs_msgs) StdoutLine: {'line': b'-- Configuring done\n'}
+[5.315325] (vs_msgs) StdoutLine: {'line': b'-- Generating done\n'}
+[5.326767] (-) TimerEvent: {}
+[5.338328] (vs_msgs) StdoutLine: {'line': b'-- Build files have been written to: /root/racecar_ws/build/vs_msgs\n'}
+[5.358010] (vs_msgs) CommandEnded: {'returncode': 0}
+[5.359962] (vs_msgs) JobProgress: {'identifier': 'vs_msgs', 'progress': 'build'}
+[5.362401] (vs_msgs) Command: {'cmd': ['/usr/bin/cmake', '--build', '/root/racecar_ws/build/vs_msgs', '--', '-j6', '-l6'], 'cwd': '/root/racecar_ws/build/vs_msgs', 'env': OrderedDict([('VNCDESKTOP', 'racecar-desktop:10 (root)'), ('LESSOPEN', '| /usr/bin/lesspipe %s'), ('HOSTNAME', 'racecar-desktop'), ('XDG_SESSION_TYPE', 'x11'), ('SCANNER_TYPE', 'hokuyo'), ('SHLVL', '2'), ('LD_LIBRARY_PATH', '/root/ros2_ws/install/zed_components/lib:/root/ros2_ws/install/vesc_driver/lib:/root/ros2_ws/install/vesc_ackermann/lib:/root/ros2_ws/install/vesc_msgs/lib:/root/ros2_ws/install/urg_node2/lib:/root/ros2_ws/install/udp_driver/lib:/root/ros2_ws/install/serial_driver/lib:/root/ros2_ws/install/io_context/lib:/root/ros2_ws/install/ackermann_cmd_mux/lib:/opt/ros/humble/opt/rviz_ogre_vendor/lib:/opt/ros/humble/lib/aarch64-linux-gnu:/opt/ros/humble/lib:/usr/lib/aarch64-linux-gnu/tegra:'), ('HOME', '/root'), ('OLDPWD', '/root/racecar_ws'), ('DESKTOP_SESSION', 'LXDE'), ('ROS_PYTHON_VERSION', '3'), ('PS1', '\\[\x1b[38;5;214m\\]🏎️ \\[\x1b[38;5;39m\\]racer\\[\x1b[38;5;11m\\]@\\[\x1b[38;5;39m\\]mit\\[\x1b[38;5;11m\\]:\\[\x1b[38;5;83m\\]\\w\\[\x1b[38;5;11m\\]$ \\[\x1b[0m\\]'), ('COLORTERM', 'truecolor'), ('COLCON_PREFIX_PATH', '/root/racecar_ws/install:/root/ros2_ws/install'), ('ROS_DISTRO', 'humble'), ('_', '/usr/bin/colcon'), ('ROS_VERSION', '2'), ('NVIDIA_DRIVER_CAPABILITIES', 'all'), ('XDG_SESSION_CLASS', 'user'), ('TORCH_INSTALL', '/tmp/torch-2.3.0-cp310-cp310-linux_aarch64.whl'), ('TERM', 'xterm-256color'), ('ROS_LOCALHOST_ONLY', '0'), ('SAL_USE_VCLPLUGIN', 'gtk'), ('PATH', '/root/.local/bin:/opt/ros/humble/bin:/usr/local/cuda/bin:/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin'), ('TORCHVISION_INSTALL', '/tmp/torchvision-0.18.0a0+6043bc2-cp310-cp310-linux_aarch64.whl'), ('XDG_MENU_PREFIX', 'lxde-'), ('XDG_RUNTIME_DIR', '/tmp/runtime-root'), ('DISPLAY', ':10'), ('LANG', 'en_US.UTF-8'), ('XDG_CURRENT_DESKTOP', 'LXDE'), ('XDG_DATA_HOME', '/root/.local/share'), ('XDG_CONFIG_HOME', '/root/.config'), ('LS_COLORS', 'rs=0:di=01;34:ln=01;36:mh=00:pi=40;33:so=01;35:do=01;35:bd=40;33;01:cd=40;33;01:or=40;31;01:mi=00:su=37;41:sg=30;43:ca=30;41:tw=30;42:ow=34;42:st=37;44:ex=01;32:*.tar=01;31:*.tgz=01;31:*.arc=01;31:*.arj=01;31:*.taz=01;31:*.lha=01;31:*.lz4=01;31:*.lzh=01;31:*.lzma=01;31:*.tlz=01;31:*.txz=01;31:*.tzo=01;31:*.t7z=01;31:*.zip=01;31:*.z=01;31:*.dz=01;31:*.gz=01;31:*.lrz=01;31:*.lz=01;31:*.lzo=01;31:*.xz=01;31:*.zst=01;31:*.tzst=01;31:*.bz2=01;31:*.bz=01;31:*.tbz=01;31:*.tbz2=01;31:*.tz=01;31:*.deb=01;31:*.rpm=01;31:*.jar=01;31:*.war=01;31:*.ear=01;31:*.sar=01;31:*.rar=01;31:*.alz=01;31:*.ace=01;31:*.zoo=01;31:*.cpio=01;31:*.7z=01;31:*.rz=01;31:*.cab=01;31:*.wim=01;31:*.swm=01;31:*.dwm=01;31:*.esd=01;31:*.jpg=01;35:*.jpeg=01;35:*.mjpg=01;35:*.mjpeg=01;35:*.gif=01;35:*.bmp=01;35:*.pbm=01;35:*.pgm=01;35:*.ppm=01;35:*.tga=01;35:*.xbm=01;35:*.xpm=01;35:*.tif=01;35:*.tiff=01;35:*.png=01;35:*.svg=01;35:*.svgz=01;35:*.mng=01;35:*.pcx=01;35:*.mov=01;35:*.mpg=01;35:*.mpeg=01;35:*.m2v=01;35:*.mkv=01;35:*.webm=01;35:*.webp=01;35:*.ogm=01;35:*.mp4=01;35:*.m4v=01;35:*.mp4v=01;35:*.vob=01;35:*.qt=01;35:*.nuv=01;35:*.wmv=01;35:*.asf=01;35:*.rm=01;35:*.rmvb=01;35:*.flc=01;35:*.avi=01;35:*.fli=01;35:*.flv=01;35:*.gl=01;35:*.dl=01;35:*.xcf=01;35:*.xwd=01;35:*.yuv=01;35:*.cgm=01;35:*.emf=01;35:*.ogv=01;35:*.ogx=01;35:*.aac=00;36:*.au=00;36:*.flac=00;36:*.m4a=00;36:*.mid=00;36:*.midi=00;36:*.mka=00;36:*.mp3=00;36:*.mpc=00;36:*.ogg=00;36:*.ra=00;36:*.wav=00;36:*.oga=00;36:*.opus=00;36:*.spx=00;36:*.xspf=00;36:'), ('AMENT_PREFIX_PATH', '/root/racecar_ws/install/wall_follower:/root/racecar_ws/install/visual_servoing:/root/racecar_ws/install/safety_controller:/root/racecar_ws/install/evaluation:/root/ros2_ws/install/zed_ros2:/root/ros2_ws/install/zed_wrapper:/root/ros2_ws/install/zed_components:/root/ros2_ws/install/vesc:/root/ros2_ws/install/vesc_driver:/root/ros2_ws/install/vesc_ackermann:/root/ros2_ws/install/vesc_msgs:/root/ros2_ws/install/urg_node2:/root/ros2_ws/install/udp_driver:/root/ros2_ws/install/serial_driver:/root/ros2_ws/install/racecar:/root/ros2_ws/install/io_context:/root/ros2_ws/install/asio_cmake_module:/root/ros2_ws/install/ackermann_cmd_mux:/opt/ros/humble'), ('LESSCLOSE', '/usr/bin/lesspipe %s %s'), ('_LXSESSION_PID', '40'), ('PWD', '/root/racecar_ws/build/vs_msgs'), ('LC_ALL', 'en_US.UTF-8'), ('CUDA_HOME', '/usr/local/cuda'), ('XDG_CONFIG_DIRS', '/etc/xdg'), ('XDG_DATA_DIRS', '/usr/local/share:/usr/share:/usr/share/gdm:/var/lib/menu-xdg:/usr/local/share/:/usr/share/:/usr/share/gdm/:/var/lib/menu-xdg/'), ('PYTHONPATH', '/root/racecar_ws/build/wall_follower:/root/racecar_ws/install/wall_follower/lib/python3.10/site-packages:/root/racecar_ws/install/visual_servoing/lib/python3.10/site-packages:/root/racecar_ws/install/safety_controller/lib/python3.10/site-packages:/root/racecar_ws/build/evaluation:/root/racecar_ws/install/evaluation/lib/python3.10/site-packages:/root/ros2_ws/install/vesc_msgs/local/lib/python3.10/dist-packages:/root/ros2_ws/build/racecar:/root/ros2_ws/install/racecar/lib/python3.10/site-packages:/opt/ros/humble/lib/python3.10/site-packages:/opt/ros/humble/local/lib/python3.10/dist-packages'), ('NVIDIA_VISIBLE_DEVICES', 'void'), ('TZ', 'America/New_York'), ('COLCON', '1'), ('VTE_VERSION', '6800'), ('CMAKE_PREFIX_PATH', '/root/ros2_ws/install/zed_ros2:/root/ros2_ws/install/zed_wrapper:/root/ros2_ws/install/zed_components:/root/ros2_ws/install/vesc:/root/ros2_ws/install/vesc_driver:/root/ros2_ws/install/vesc_ackermann:/root/ros2_ws/install/vesc_msgs:/root/ros2_ws/install/urg_node2:/root/ros2_ws/install/udp_driver:/root/ros2_ws/install/serial_driver:/root/ros2_ws/install/io_context:/root/ros2_ws/install/asio_cmake_module:/root/ros2_ws/install/ackermann_cmd_mux:/root/racecar_ws/install/wall_follower:/root/racecar_ws/install/visual_servoing:/root/racecar_ws/install/safety_controller:/root/racecar_ws/install/evaluation:/root/ros2_ws/install/racecar:/opt/ros/humble')]), 'shell': False}
+[5.426983] (-) TimerEvent: {}
+[5.492794] (vs_msgs) StdoutLine: {'line': b'[  2%] \x1b[34m\x1b[1mGenerating C code for ROS interfaces\x1b[0m\n'}
+[5.521040] (vs_msgs) StdoutLine: {'line': b'[  4%] \x1b[34m\x1b[1mGenerating C++ code for ROS interfaces\x1b[0m\n'}
+[5.527123] (-) TimerEvent: {}
+[5.541225] (vs_msgs) StdoutLine: {'line': b'[  4%] Built target ament_cmake_python_copy_vs_msgs\n'}
+[5.627282] (-) TimerEvent: {}
+[5.728040] (-) TimerEvent: {}
+[5.828682] (-) TimerEvent: {}
+[5.929400] (-) TimerEvent: {}
+[6.029952] (-) TimerEvent: {}
+[6.130504] (-) TimerEvent: {}
+[6.228654] (vs_msgs) StdoutLine: {'line': b'running egg_info\n'}
+[6.230236] (vs_msgs) StdoutLine: {'line': b'creating vs_msgs.egg-info\n'}
+[6.230517] (-) TimerEvent: {}
+[6.231180] (vs_msgs) StdoutLine: {'line': b'writing vs_msgs.egg-info/PKG-INFO\n'}
+[6.231561] (vs_msgs) StdoutLine: {'line': b'writing dependency_links to vs_msgs.egg-info/dependency_links.txt\n'}
+[6.232225] (vs_msgs) StdoutLine: {'line': b'writing top-level names to vs_msgs.egg-info/top_level.txt\n'}
+[6.232781] (vs_msgs) StdoutLine: {'line': b"writing manifest file 'vs_msgs.egg-info/SOURCES.txt'\n"}
+[6.238638] (vs_msgs) StdoutLine: {'line': b"reading manifest file 'vs_msgs.egg-info/SOURCES.txt'\n"}
+[6.239780] (vs_msgs) StdoutLine: {'line': b"writing manifest file 'vs_msgs.egg-info/SOURCES.txt'\n"}
+[6.319201] (vs_msgs) StdoutLine: {'line': b'[  6%] \x1b[32mBuilding C object CMakeFiles/vs_msgs__rosidl_generator_c.dir/rosidl_generator_c/vs_msgs/msg/detail/cone_location__functions.c.o\x1b[0m\n'}
+[6.330785] (-) TimerEvent: {}
+[6.331794] (vs_msgs) StdoutLine: {'line': b'[  8%] \x1b[32mBuilding C object CMakeFiles/vs_msgs__rosidl_generator_c.dir/rosidl_generator_c/vs_msgs/msg/detail/parking_error__functions.c.o\x1b[0m\n'}
+[6.332396] (vs_msgs) StdoutLine: {'line': b'[ 10%] \x1b[32mBuilding C object CMakeFiles/vs_msgs__rosidl_generator_c.dir/rosidl_generator_c/vs_msgs/msg/detail/cone_location_pixel__functions.c.o\x1b[0m\n'}
+[6.337397] (vs_msgs) StdoutLine: {'line': b'[ 10%] Built target ament_cmake_python_build_vs_msgs_egg\n'}
+[6.337827] (vs_msgs) StdoutLine: {'line': b'[ 10%] Built target vs_msgs__cpp\n'}
+[6.364550] (vs_msgs) StdoutLine: {'line': b'[ 12%] \x1b[34m\x1b[1mGenerating C++ type support for eProsima Fast-RTPS\x1b[0m\n'}
+[6.375797] (vs_msgs) StdoutLine: {'line': b'[ 14%] \x1b[34m\x1b[1mGenerating C++ type support dispatch for ROS interfaces\x1b[0m\n'}
+[6.377115] (vs_msgs) StdoutLine: {'line': b'[ 17%] \x1b[34m\x1b[1mGenerating C++ introspection for ROS interfaces\x1b[0m\n'}
+[6.430945] (-) TimerEvent: {}
+[6.481468] (vs_msgs) StdoutLine: {'line': b'[ 19%] \x1b[32m\x1b[1mLinking C shared library libvs_msgs__rosidl_generator_c.so\x1b[0m\n'}
+[6.531135] (-) TimerEvent: {}
+[6.573061] (vs_msgs) StdoutLine: {'line': b'[ 19%] Built target vs_msgs__rosidl_generator_c\n'}
+[6.601060] (vs_msgs) StdoutLine: {'line': b'[ 23%] \x1b[34m\x1b[1mGenerating C type support for eProsima Fast-RTPS\x1b[0m\n'}
+[6.601710] (vs_msgs) StdoutLine: {'line': b'[ 23%] \x1b[34m\x1b[1mGenerating C type support dispatch for ROS interfaces\x1b[0m\n'}
+[6.612732] (vs_msgs) StdoutLine: {'line': b'[ 25%] \x1b[34m\x1b[1mGenerating C introspection for ROS interfaces\x1b[0m\n'}
+[6.631293] (-) TimerEvent: {}
+[6.732188] (-) TimerEvent: {}
+[6.833096] (-) TimerEvent: {}
+[6.934118] (-) TimerEvent: {}
+[7.035205] (-) TimerEvent: {}
+[7.046756] (vs_msgs) StdoutLine: {'line': b'[ 27%] \x1b[32mBuilding CXX object CMakeFiles/vs_msgs__rosidl_typesupport_cpp.dir/rosidl_typesupport_cpp/vs_msgs/msg/cone_location__type_support.cpp.o\x1b[0m\n'}
+[7.135380] (-) TimerEvent: {}
+[7.159740] (vs_msgs) StdoutLine: {'line': b'[ 29%] \x1b[32mBuilding CXX object CMakeFiles/vs_msgs__rosidl_typesupport_introspection_cpp.dir/rosidl_typesupport_introspection_cpp/vs_msgs/msg/detail/cone_location__type_support.cpp.o\x1b[0m\n'}
+[7.168556] (vs_msgs) StdoutLine: {'line': b'[ 31%] \x1b[32mBuilding CXX object CMakeFiles/vs_msgs__rosidl_typesupport_fastrtps_cpp.dir/rosidl_typesupport_fastrtps_cpp/vs_msgs/msg/detail/dds_fastrtps/cone_location__type_support.cpp.o\x1b[0m\n'}
+[7.235609] (-) TimerEvent: {}
+[7.337081] (-) TimerEvent: {}
+[7.425237] (vs_msgs) StdoutLine: {'line': b'[ 34%] \x1b[32mBuilding CXX object CMakeFiles/vs_msgs__rosidl_typesupport_c.dir/rosidl_typesupport_c/vs_msgs/msg/cone_location__type_support.cpp.o\x1b[0m\n'}
+[7.437274] (-) TimerEvent: {}
+[7.494539] (vs_msgs) StdoutLine: {'line': b'[ 36%] \x1b[32mBuilding CXX object CMakeFiles/vs_msgs__rosidl_typesupport_fastrtps_c.dir/rosidl_typesupport_fastrtps_c/vs_msgs/msg/detail/cone_location__type_support_c.cpp.o\x1b[0m\n'}
+[7.511430] (vs_msgs) StdoutLine: {'line': b'[ 38%] \x1b[32mBuilding CXX object CMakeFiles/vs_msgs__rosidl_typesupport_c.dir/rosidl_typesupport_c/vs_msgs/msg/cone_location_pixel__type_support.cpp.o\x1b[0m\n'}
+[7.537466] (-) TimerEvent: {}
+[7.538469] (vs_msgs) StdoutLine: {'line': b'[ 40%] \x1b[32mBuilding C object CMakeFiles/vs_msgs__rosidl_typesupport_introspection_c.dir/rosidl_typesupport_introspection_c/vs_msgs/msg/detail/cone_location__type_support.c.o\x1b[0m\n'}
+[7.620781] (vs_msgs) StdoutLine: {'line': b'[ 42%] \x1b[32mBuilding CXX object CMakeFiles/vs_msgs__rosidl_typesupport_c.dir/rosidl_typesupport_c/vs_msgs/msg/parking_error__type_support.cpp.o\x1b[0m\n'}
+[7.634981] (vs_msgs) StdoutLine: {'line': b'[ 44%] \x1b[32mBuilding C object CMakeFiles/vs_msgs__rosidl_typesupport_introspection_c.dir/rosidl_typesupport_introspection_c/vs_msgs/msg/detail/cone_location_pixel__type_support.c.o\x1b[0m\n'}
+[7.637597] (-) TimerEvent: {}
+[7.706277] (vs_msgs) StdoutLine: {'line': b'[ 46%] \x1b[32m\x1b[1mLinking CXX shared library libvs_msgs__rosidl_typesupport_c.so\x1b[0m\n'}
+[7.737811] (-) TimerEvent: {}
+[7.748227] (vs_msgs) StdoutLine: {'line': b'[ 48%] \x1b[32mBuilding C object CMakeFiles/vs_msgs__rosidl_typesupport_introspection_c.dir/rosidl_typesupport_introspection_c/vs_msgs/msg/detail/parking_error__type_support.c.o\x1b[0m\n'}
+[7.802525] (vs_msgs) StdoutLine: {'line': b'[ 48%] Built target vs_msgs__rosidl_typesupport_c\n'}
+[7.826171] (vs_msgs) StdoutLine: {'line': b'[ 51%] \x1b[32mBuilding CXX object CMakeFiles/vs_msgs__rosidl_typesupport_cpp.dir/rosidl_typesupport_cpp/vs_msgs/msg/cone_location_pixel__type_support.cpp.o\x1b[0m\n'}
+[7.829284] (vs_msgs) StdoutLine: {'line': b'[ 53%] \x1b[32mBuilding CXX object CMakeFiles/vs_msgs__rosidl_typesupport_cpp.dir/rosidl_typesupport_cpp/vs_msgs/msg/parking_error__type_support.cpp.o\x1b[0m\n'}
+[7.835670] (vs_msgs) StdoutLine: {'line': b'[ 55%] \x1b[32m\x1b[1mLinking C shared library libvs_msgs__rosidl_typesupport_introspection_c.so\x1b[0m\n'}
+[7.837952] (-) TimerEvent: {}
+[7.910455] (vs_msgs) StdoutLine: {'line': b'[ 55%] Built target vs_msgs__rosidl_typesupport_introspection_c\n'}
+[7.932749] (vs_msgs) StdoutLine: {'line': b'[ 57%] \x1b[32mBuilding CXX object CMakeFiles/vs_msgs__rosidl_typesupport_fastrtps_c.dir/rosidl_typesupport_fastrtps_c/vs_msgs/msg/detail/cone_location_pixel__type_support_c.cpp.o\x1b[0m\n'}
+[7.938145] (-) TimerEvent: {}
+[8.038904] (-) TimerEvent: {}
+[8.113611] (vs_msgs) StdoutLine: {'line': b'[ 59%] \x1b[32mBuilding CXX object CMakeFiles/vs_msgs__rosidl_typesupport_fastrtps_cpp.dir/rosidl_typesupport_fastrtps_cpp/vs_msgs/msg/detail/dds_fastrtps/cone_location_pixel__type_support.cpp.o\x1b[0m\n'}
+[8.139125] (-) TimerEvent: {}
+[8.230584] (vs_msgs) StdoutLine: {'line': b'[ 61%] \x1b[32mBuilding CXX object CMakeFiles/vs_msgs__rosidl_typesupport_introspection_cpp.dir/rosidl_typesupport_introspection_cpp/vs_msgs/msg/detail/cone_location_pixel__type_support.cpp.o\x1b[0m\n'}
+[8.239315] (-) TimerEvent: {}
+[8.339998] (-) TimerEvent: {}
+[8.440701] (-) TimerEvent: {}
+[8.521448] (vs_msgs) StdoutLine: {'line': b'[ 63%] \x1b[32mBuilding CXX object CMakeFiles/vs_msgs__rosidl_typesupport_introspection_cpp.dir/rosidl_typesupport_introspection_cpp/vs_msgs/msg/detail/parking_error__type_support.cpp.o\x1b[0m\n'}
+[8.533344] (vs_msgs) StdoutLine: {'line': b'[ 65%] \x1b[32mBuilding CXX object CMakeFiles/vs_msgs__rosidl_typesupport_fastrtps_c.dir/rosidl_typesupport_fastrtps_c/vs_msgs/msg/detail/parking_error__type_support_c.cpp.o\x1b[0m\n'}
+[8.541360] (-) TimerEvent: {}
+[8.637298] (vs_msgs) StdoutLine: {'line': b'[ 68%] \x1b[32m\x1b[1mLinking CXX shared library libvs_msgs__rosidl_typesupport_cpp.so\x1b[0m\n'}
+[8.641544] (-) TimerEvent: {}
+[8.742550] (-) TimerEvent: {}
+[8.769025] (vs_msgs) StdoutLine: {'line': b'[ 68%] Built target vs_msgs__rosidl_typesupport_cpp\n'}
+[8.798073] (vs_msgs) StdoutLine: {'line': b'[ 70%] \x1b[32mBuilding CXX object CMakeFiles/vs_msgs__rosidl_typesupport_fastrtps_cpp.dir/rosidl_typesupport_fastrtps_cpp/vs_msgs/msg/detail/dds_fastrtps/parking_error__type_support.cpp.o\x1b[0m\n'}
+[8.842872] (-) TimerEvent: {}
+[8.944001] (-) TimerEvent: {}
+[9.045028] (-) TimerEvent: {}
+[9.145999] (-) TimerEvent: {}
+[9.246946] (-) TimerEvent: {}
+[9.290909] (vs_msgs) StdoutLine: {'line': b'[ 72%] \x1b[32m\x1b[1mLinking CXX shared library libvs_msgs__rosidl_typesupport_fastrtps_c.so\x1b[0m\n'}
+[9.347116] (-) TimerEvent: {}
+[9.448121] (-) TimerEvent: {}
+[9.471186] (vs_msgs) StdoutLine: {'line': b'[ 72%] Built target vs_msgs__rosidl_typesupport_fastrtps_c\n'}
+[9.498617] (vs_msgs) StdoutLine: {'line': b'[ 74%] \x1b[32m\x1b[1mLinking CXX shared library libvs_msgs__rosidl_typesupport_introspection_cpp.so\x1b[0m\n'}
+[9.548301] (-) TimerEvent: {}
+[9.593068] (vs_msgs) StdoutLine: {'line': b'[ 74%] Built target vs_msgs__rosidl_typesupport_introspection_cpp\n'}
+[9.648513] (-) TimerEvent: {}
+[9.749422] (-) TimerEvent: {}
+[9.795518] (vs_msgs) StdoutLine: {'line': b'[ 76%] \x1b[32m\x1b[1mLinking CXX shared library libvs_msgs__rosidl_typesupport_fastrtps_cpp.so\x1b[0m\n'}
+[9.849706] (-) TimerEvent: {}
+[9.950920] (-) TimerEvent: {}
+[9.979439] (vs_msgs) StdoutLine: {'line': b'[ 76%] Built target vs_msgs__rosidl_typesupport_fastrtps_cpp\n'}
+[10.048424] (vs_msgs) StdoutLine: {'line': b'[ 76%] Built target vs_msgs\n'}
+[10.051083] (-) TimerEvent: {}
+[10.108097] (vs_msgs) StdoutLine: {'line': b'[ 78%] \x1b[34m\x1b[1mGenerating Python code for ROS interfaces\x1b[0m\n'}
+[10.151359] (-) TimerEvent: {}
+[10.252374] (-) TimerEvent: {}
+[10.353036] (-) TimerEvent: {}
+[10.453688] (-) TimerEvent: {}
+[10.554317] (-) TimerEvent: {}
+[10.654907] (-) TimerEvent: {}
+[10.755525] (-) TimerEvent: {}
+[10.856240] (-) TimerEvent: {}
+[10.957153] (-) TimerEvent: {}
+[11.058057] (-) TimerEvent: {}
+[11.059478] (vs_msgs) StdoutLine: {'line': b'[ 78%] Built target vs_msgs__py\n'}
+[11.127732] (vs_msgs) StdoutLine: {'line': b'[ 85%] \x1b[32mBuilding C object CMakeFiles/vs_msgs__rosidl_generator_py.dir/rosidl_generator_py/vs_msgs/msg/_parking_error_s.c.o\x1b[0m\n'}
+[11.128248] (vs_msgs) StdoutLine: {'line': b'[ 85%] \x1b[32mBuilding C object CMakeFiles/vs_msgs__rosidl_generator_py.dir/rosidl_generator_py/vs_msgs/msg/_cone_location_pixel_s.c.o\x1b[0m\n'}
+[11.128470] (vs_msgs) StdoutLine: {'line': b'[ 85%] \x1b[32mBuilding C object CMakeFiles/vs_msgs__rosidl_generator_py.dir/rosidl_generator_py/vs_msgs/msg/_cone_location_s.c.o\x1b[0m\n'}
+[11.158221] (-) TimerEvent: {}
+[11.258908] (-) TimerEvent: {}
+[11.359623] (-) TimerEvent: {}
+[11.400173] (vs_msgs) StdoutLine: {'line': b'[ 87%] \x1b[32m\x1b[1mLinking C shared library rosidl_generator_py/vs_msgs/libvs_msgs__rosidl_generator_py.so\x1b[0m\n'}
+[11.459788] (-) TimerEvent: {}
+[11.506598] (vs_msgs) StdoutLine: {'line': b'[ 87%] Built target vs_msgs__rosidl_generator_py\n'}
+[11.559977] (-) TimerEvent: {}
+[11.562056] (vs_msgs) StdoutLine: {'line': b'[ 91%] \x1b[32mBuilding C object CMakeFiles/vs_msgs__rosidl_typesupport_introspection_c__pyext.dir/rosidl_generator_py/vs_msgs/_vs_msgs_s.ep.rosidl_typesupport_introspection_c.c.o\x1b[0m\n'}
+[11.562532] (vs_msgs) StdoutLine: {'line': b'[ 91%] \x1b[32mBuilding C object CMakeFiles/vs_msgs__rosidl_typesupport_fastrtps_c__pyext.dir/rosidl_generator_py/vs_msgs/_vs_msgs_s.ep.rosidl_typesupport_fastrtps_c.c.o\x1b[0m\n'}
+[11.562841] (vs_msgs) StdoutLine: {'line': b'[ 93%] \x1b[32mBuilding C object CMakeFiles/vs_msgs__rosidl_typesupport_c__pyext.dir/rosidl_generator_py/vs_msgs/_vs_msgs_s.ep.rosidl_typesupport_c.c.o\x1b[0m\n'}
+[11.660158] (-) TimerEvent: {}
+[11.760994] (-) TimerEvent: {}
+[11.786020] (vs_msgs) StdoutLine: {'line': b'[ 97%] \x1b[32m\x1b[1mLinking C shared library rosidl_generator_py/vs_msgs/vs_msgs_s__rosidl_typesupport_c.cpython-310-aarch64-linux-gnu.so\x1b[0m\n'}
+[11.786536] (vs_msgs) StdoutLine: {'line': b'[ 97%] \x1b[32m\x1b[1mLinking C shared library rosidl_generator_py/vs_msgs/vs_msgs_s__rosidl_typesupport_introspection_c.cpython-310-aarch64-linux-gnu.so\x1b[0m\n'}
+[11.807013] (vs_msgs) StdoutLine: {'line': b'[100%] \x1b[32m\x1b[1mLinking C shared library rosidl_generator_py/vs_msgs/vs_msgs_s__rosidl_typesupport_fastrtps_c.cpython-310-aarch64-linux-gnu.so\x1b[0m\n'}
+[11.861358] (-) TimerEvent: {}
+[11.873039] (vs_msgs) StdoutLine: {'line': b'[100%] Built target vs_msgs__rosidl_typesupport_c__pyext\n'}
+[11.876415] (vs_msgs) StdoutLine: {'line': b'[100%] Built target vs_msgs__rosidl_typesupport_introspection_c__pyext\n'}
+[11.900516] (vs_msgs) StdoutLine: {'line': b'[100%] Built target vs_msgs__rosidl_typesupport_fastrtps_c__pyext\n'}
+[11.937318] (vs_msgs) CommandEnded: {'returncode': 0}
+[11.939899] (vs_msgs) JobProgress: {'identifier': 'vs_msgs', 'progress': 'install'}
+[11.961429] (-) TimerEvent: {}
+[11.973993] (vs_msgs) Command: {'cmd': ['/usr/bin/cmake', '--install', '/root/racecar_ws/build/vs_msgs'], 'cwd': '/root/racecar_ws/build/vs_msgs', 'env': OrderedDict([('VNCDESKTOP', 'racecar-desktop:10 (root)'), ('LESSOPEN', '| /usr/bin/lesspipe %s'), ('HOSTNAME', 'racecar-desktop'), ('XDG_SESSION_TYPE', 'x11'), ('SCANNER_TYPE', 'hokuyo'), ('SHLVL', '2'), ('LD_LIBRARY_PATH', '/root/ros2_ws/install/zed_components/lib:/root/ros2_ws/install/vesc_driver/lib:/root/ros2_ws/install/vesc_ackermann/lib:/root/ros2_ws/install/vesc_msgs/lib:/root/ros2_ws/install/urg_node2/lib:/root/ros2_ws/install/udp_driver/lib:/root/ros2_ws/install/serial_driver/lib:/root/ros2_ws/install/io_context/lib:/root/ros2_ws/install/ackermann_cmd_mux/lib:/opt/ros/humble/opt/rviz_ogre_vendor/lib:/opt/ros/humble/lib/aarch64-linux-gnu:/opt/ros/humble/lib:/usr/lib/aarch64-linux-gnu/tegra:'), ('HOME', '/root'), ('OLDPWD', '/root/racecar_ws'), ('DESKTOP_SESSION', 'LXDE'), ('ROS_PYTHON_VERSION', '3'), ('PS1', '\\[\x1b[38;5;214m\\]🏎️ \\[\x1b[38;5;39m\\]racer\\[\x1b[38;5;11m\\]@\\[\x1b[38;5;39m\\]mit\\[\x1b[38;5;11m\\]:\\[\x1b[38;5;83m\\]\\w\\[\x1b[38;5;11m\\]$ \\[\x1b[0m\\]'), ('COLORTERM', 'truecolor'), ('COLCON_PREFIX_PATH', '/root/racecar_ws/install:/root/ros2_ws/install'), ('ROS_DISTRO', 'humble'), ('_', '/usr/bin/colcon'), ('ROS_VERSION', '2'), ('NVIDIA_DRIVER_CAPABILITIES', 'all'), ('XDG_SESSION_CLASS', 'user'), ('TORCH_INSTALL', '/tmp/torch-2.3.0-cp310-cp310-linux_aarch64.whl'), ('TERM', 'xterm-256color'), ('ROS_LOCALHOST_ONLY', '0'), ('SAL_USE_VCLPLUGIN', 'gtk'), ('PATH', '/root/.local/bin:/opt/ros/humble/bin:/usr/local/cuda/bin:/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin'), ('TORCHVISION_INSTALL', '/tmp/torchvision-0.18.0a0+6043bc2-cp310-cp310-linux_aarch64.whl'), ('XDG_MENU_PREFIX', 'lxde-'), ('XDG_RUNTIME_DIR', '/tmp/runtime-root'), ('DISPLAY', ':10'), ('LANG', 'en_US.UTF-8'), ('XDG_CURRENT_DESKTOP', 'LXDE'), ('XDG_DATA_HOME', '/root/.local/share'), ('XDG_CONFIG_HOME', '/root/.config'), ('LS_COLORS', 'rs=0:di=01;34:ln=01;36:mh=00:pi=40;33:so=01;35:do=01;35:bd=40;33;01:cd=40;33;01:or=40;31;01:mi=00:su=37;41:sg=30;43:ca=30;41:tw=30;42:ow=34;42:st=37;44:ex=01;32:*.tar=01;31:*.tgz=01;31:*.arc=01;31:*.arj=01;31:*.taz=01;31:*.lha=01;31:*.lz4=01;31:*.lzh=01;31:*.lzma=01;31:*.tlz=01;31:*.txz=01;31:*.tzo=01;31:*.t7z=01;31:*.zip=01;31:*.z=01;31:*.dz=01;31:*.gz=01;31:*.lrz=01;31:*.lz=01;31:*.lzo=01;31:*.xz=01;31:*.zst=01;31:*.tzst=01;31:*.bz2=01;31:*.bz=01;31:*.tbz=01;31:*.tbz2=01;31:*.tz=01;31:*.deb=01;31:*.rpm=01;31:*.jar=01;31:*.war=01;31:*.ear=01;31:*.sar=01;31:*.rar=01;31:*.alz=01;31:*.ace=01;31:*.zoo=01;31:*.cpio=01;31:*.7z=01;31:*.rz=01;31:*.cab=01;31:*.wim=01;31:*.swm=01;31:*.dwm=01;31:*.esd=01;31:*.jpg=01;35:*.jpeg=01;35:*.mjpg=01;35:*.mjpeg=01;35:*.gif=01;35:*.bmp=01;35:*.pbm=01;35:*.pgm=01;35:*.ppm=01;35:*.tga=01;35:*.xbm=01;35:*.xpm=01;35:*.tif=01;35:*.tiff=01;35:*.png=01;35:*.svg=01;35:*.svgz=01;35:*.mng=01;35:*.pcx=01;35:*.mov=01;35:*.mpg=01;35:*.mpeg=01;35:*.m2v=01;35:*.mkv=01;35:*.webm=01;35:*.webp=01;35:*.ogm=01;35:*.mp4=01;35:*.m4v=01;35:*.mp4v=01;35:*.vob=01;35:*.qt=01;35:*.nuv=01;35:*.wmv=01;35:*.asf=01;35:*.rm=01;35:*.rmvb=01;35:*.flc=01;35:*.avi=01;35:*.fli=01;35:*.flv=01;35:*.gl=01;35:*.dl=01;35:*.xcf=01;35:*.xwd=01;35:*.yuv=01;35:*.cgm=01;35:*.emf=01;35:*.ogv=01;35:*.ogx=01;35:*.aac=00;36:*.au=00;36:*.flac=00;36:*.m4a=00;36:*.mid=00;36:*.midi=00;36:*.mka=00;36:*.mp3=00;36:*.mpc=00;36:*.ogg=00;36:*.ra=00;36:*.wav=00;36:*.oga=00;36:*.opus=00;36:*.spx=00;36:*.xspf=00;36:'), ('AMENT_PREFIX_PATH', '/root/racecar_ws/install/wall_follower:/root/racecar_ws/install/visual_servoing:/root/racecar_ws/install/safety_controller:/root/racecar_ws/install/evaluation:/root/ros2_ws/install/zed_ros2:/root/ros2_ws/install/zed_wrapper:/root/ros2_ws/install/zed_components:/root/ros2_ws/install/vesc:/root/ros2_ws/install/vesc_driver:/root/ros2_ws/install/vesc_ackermann:/root/ros2_ws/install/vesc_msgs:/root/ros2_ws/install/urg_node2:/root/ros2_ws/install/udp_driver:/root/ros2_ws/install/serial_driver:/root/ros2_ws/install/racecar:/root/ros2_ws/install/io_context:/root/ros2_ws/install/asio_cmake_module:/root/ros2_ws/install/ackermann_cmd_mux:/opt/ros/humble'), ('LESSCLOSE', '/usr/bin/lesspipe %s %s'), ('_LXSESSION_PID', '40'), ('PWD', '/root/racecar_ws/build/vs_msgs'), ('LC_ALL', 'en_US.UTF-8'), ('CUDA_HOME', '/usr/local/cuda'), ('XDG_CONFIG_DIRS', '/etc/xdg'), ('XDG_DATA_DIRS', '/usr/local/share:/usr/share:/usr/share/gdm:/var/lib/menu-xdg:/usr/local/share/:/usr/share/:/usr/share/gdm/:/var/lib/menu-xdg/'), ('PYTHONPATH', '/root/racecar_ws/build/wall_follower:/root/racecar_ws/install/wall_follower/lib/python3.10/site-packages:/root/racecar_ws/install/visual_servoing/lib/python3.10/site-packages:/root/racecar_ws/install/safety_controller/lib/python3.10/site-packages:/root/racecar_ws/build/evaluation:/root/racecar_ws/install/evaluation/lib/python3.10/site-packages:/root/ros2_ws/install/vesc_msgs/local/lib/python3.10/dist-packages:/root/ros2_ws/build/racecar:/root/ros2_ws/install/racecar/lib/python3.10/site-packages:/opt/ros/humble/lib/python3.10/site-packages:/opt/ros/humble/local/lib/python3.10/dist-packages'), ('NVIDIA_VISIBLE_DEVICES', 'void'), ('TZ', 'America/New_York'), ('COLCON', '1'), ('VTE_VERSION', '6800'), ('CMAKE_PREFIX_PATH', '/root/ros2_ws/install/zed_ros2:/root/ros2_ws/install/zed_wrapper:/root/ros2_ws/install/zed_components:/root/ros2_ws/install/vesc:/root/ros2_ws/install/vesc_driver:/root/ros2_ws/install/vesc_ackermann:/root/ros2_ws/install/vesc_msgs:/root/ros2_ws/install/urg_node2:/root/ros2_ws/install/udp_driver:/root/ros2_ws/install/serial_driver:/root/ros2_ws/install/io_context:/root/ros2_ws/install/asio_cmake_module:/root/ros2_ws/install/ackermann_cmd_mux:/root/racecar_ws/install/wall_follower:/root/racecar_ws/install/visual_servoing:/root/racecar_ws/install/safety_controller:/root/racecar_ws/install/evaluation:/root/ros2_ws/install/racecar:/opt/ros/humble')]), 'shell': False}
+[12.003562] (vs_msgs) StdoutLine: {'line': b'-- Install configuration: ""\n'}
+[12.004254] (vs_msgs) StdoutLine: {'line': b'-- Installing: /root/racecar_ws/install/vs_msgs/share/ament_index/resource_index/rosidl_interfaces/vs_msgs\n'}
+[12.004826] (vs_msgs) StdoutLine: {'line': b'-- Installing: /root/racecar_ws/install/vs_msgs/include/vs_msgs/vs_msgs\n'}
+[12.005342] (vs_msgs) StdoutLine: {'line': b'-- Installing: /root/racecar_ws/install/vs_msgs/include/vs_msgs/vs_msgs/msg\n'}
+[12.005765] (vs_msgs) StdoutLine: {'line': b'-- Installing: /root/racecar_ws/install/vs_msgs/include/vs_msgs/vs_msgs/msg/rosidl_generator_c__visibility_control.h\n'}
+[12.006160] (vs_msgs) StdoutLine: {'line': b'-- Installing: /root/racecar_ws/install/vs_msgs/include/vs_msgs/vs_msgs/msg/cone_location_pixel.h\n'}
+[12.006599] (vs_msgs) StdoutLine: {'line': b'-- Installing: /root/racecar_ws/install/vs_msgs/include/vs_msgs/vs_msgs/msg/detail\n'}
+[12.006944] (vs_msgs) StdoutLine: {'line': b'-- Installing: /root/racecar_ws/install/vs_msgs/include/vs_msgs/vs_msgs/msg/detail/parking_error__type_support.h\n'}
+[12.007313] (vs_msgs) StdoutLine: {'line': b'-- Installing: /root/racecar_ws/install/vs_msgs/include/vs_msgs/vs_msgs/msg/detail/cone_location__functions.c\n'}
+[12.007690] (vs_msgs) StdoutLine: {'line': b'-- Installing: /root/racecar_ws/install/vs_msgs/include/vs_msgs/vs_msgs/msg/detail/cone_location_pixel__functions.c\n'}
+[12.008065] (vs_msgs) StdoutLine: {'line': b'-- Installing: /root/racecar_ws/install/vs_msgs/include/vs_msgs/vs_msgs/msg/detail/parking_error__struct.h\n'}
+[12.008377] (vs_msgs) StdoutLine: {'line': b'-- Installing: /root/racecar_ws/install/vs_msgs/include/vs_msgs/vs_msgs/msg/detail/cone_location__struct.h\n'}
+[12.008709] (vs_msgs) StdoutLine: {'line': b'-- Installing: /root/racecar_ws/install/vs_msgs/include/vs_msgs/vs_msgs/msg/detail/cone_location_pixel__struct.h\n'}
+[12.009077] (vs_msgs) StdoutLine: {'line': b'-- Installing: /root/racecar_ws/install/vs_msgs/include/vs_msgs/vs_msgs/msg/detail/cone_location_pixel__functions.h\n'}
+[12.009382] (vs_msgs) StdoutLine: {'line': b'-- Installing: /root/racecar_ws/install/vs_msgs/include/vs_msgs/vs_msgs/msg/detail/cone_location_pixel__type_support.h\n'}
+[12.009690] (vs_msgs) StdoutLine: {'line': b'-- Installing: /root/racecar_ws/install/vs_msgs/include/vs_msgs/vs_msgs/msg/detail/parking_error__functions.h\n'}
+[12.009920] (vs_msgs) StdoutLine: {'line': b'-- Installing: /root/racecar_ws/install/vs_msgs/include/vs_msgs/vs_msgs/msg/detail/cone_location__type_support.h\n'}
+[12.010204] (vs_msgs) StdoutLine: {'line': b'-- Installing: /root/racecar_ws/install/vs_msgs/include/vs_msgs/vs_msgs/msg/detail/cone_location__functions.h\n'}
+[12.010478] (vs_msgs) StdoutLine: {'line': b'-- Installing: /root/racecar_ws/install/vs_msgs/include/vs_msgs/vs_msgs/msg/detail/parking_error__functions.c\n'}
+[12.010759] (vs_msgs) StdoutLine: {'line': b'-- Installing: /root/racecar_ws/install/vs_msgs/include/vs_msgs/vs_msgs/msg/cone_location.h\n'}
+[12.010986] (vs_msgs) StdoutLine: {'line': b'-- Installing: /root/racecar_ws/install/vs_msgs/include/vs_msgs/vs_msgs/msg/parking_error.h\n'}
+[12.011200] (vs_msgs) StdoutLine: {'line': b'-- Installing: /root/racecar_ws/install/vs_msgs/share/vs_msgs/environment/library_path.sh\n'}
+[12.011574] (vs_msgs) StdoutLine: {'line': b'-- Installing: /root/racecar_ws/install/vs_msgs/share/vs_msgs/environment/library_path.dsv\n'}
+[12.011889] (vs_msgs) StdoutLine: {'line': b'-- Installing: /root/racecar_ws/install/vs_msgs/lib/libvs_msgs__rosidl_generator_c.so\n'}
+[12.012175] (vs_msgs) StdoutLine: {'line': b'-- Set runtime path of "/root/racecar_ws/install/vs_msgs/lib/libvs_msgs__rosidl_generator_c.so" to ""\n'}
+[12.012450] (vs_msgs) StdoutLine: {'line': b'-- Up-to-date: /root/racecar_ws/install/vs_msgs/include/vs_msgs/vs_msgs\n'}
+[12.012733] (vs_msgs) StdoutLine: {'line': b'-- Up-to-date: /root/racecar_ws/install/vs_msgs/include/vs_msgs/vs_msgs/msg\n'}
+[12.013044] (vs_msgs) StdoutLine: {'line': b'-- Up-to-date: /root/racecar_ws/install/vs_msgs/include/vs_msgs/vs_msgs/msg/detail\n'}
+[12.013410] (vs_msgs) StdoutLine: {'line': b'-- Installing: /root/racecar_ws/install/vs_msgs/include/vs_msgs/vs_msgs/msg/detail/cone_location__rosidl_typesupport_fastrtps_c.h\n'}
+[12.013702] (vs_msgs) StdoutLine: {'line': b'-- Installing: /root/racecar_ws/install/vs_msgs/include/vs_msgs/vs_msgs/msg/detail/cone_location_pixel__rosidl_typesupport_fastrtps_c.h\n'}
+[12.014031] (vs_msgs) StdoutLine: {'line': b'-- Installing: /root/racecar_ws/install/vs_msgs/include/vs_msgs/vs_msgs/msg/detail/parking_error__rosidl_typesupport_fastrtps_c.h\n'}
+[12.014320] (vs_msgs) StdoutLine: {'line': b'-- Installing: /root/racecar_ws/install/vs_msgs/include/vs_msgs/vs_msgs/msg/rosidl_typesupport_fastrtps_c__visibility_control.h\n'}
+[12.014644] (vs_msgs) StdoutLine: {'line': b'-- Installing: /root/racecar_ws/install/vs_msgs/lib/libvs_msgs__rosidl_typesupport_fastrtps_c.so\n'}
+[12.014933] (vs_msgs) StdoutLine: {'line': b'-- Set runtime path of "/root/racecar_ws/install/vs_msgs/lib/libvs_msgs__rosidl_typesupport_fastrtps_c.so" to ""\n'}
+[12.015246] (vs_msgs) StdoutLine: {'line': b'-- Up-to-date: /root/racecar_ws/install/vs_msgs/include/vs_msgs/vs_msgs\n'}
+[12.015482] (vs_msgs) StdoutLine: {'line': b'-- Up-to-date: /root/racecar_ws/install/vs_msgs/include/vs_msgs/vs_msgs/msg\n'}
+[12.015810] (vs_msgs) StdoutLine: {'line': b'-- Up-to-date: /root/racecar_ws/install/vs_msgs/include/vs_msgs/vs_msgs/msg/detail\n'}
+[12.016039] (vs_msgs) StdoutLine: {'line': b'-- Installing: /root/racecar_ws/install/vs_msgs/include/vs_msgs/vs_msgs/msg/detail/parking_error__rosidl_typesupport_introspection_c.h\n'}
+[12.016382] (vs_msgs) StdoutLine: {'line': b'-- Installing: /root/racecar_ws/install/vs_msgs/include/vs_msgs/vs_msgs/msg/detail/cone_location_pixel__rosidl_typesupport_introspection_c.h\n'}
+[12.016716] (vs_msgs) StdoutLine: {'line': b'-- Installing: /root/racecar_ws/install/vs_msgs/include/vs_msgs/vs_msgs/msg/detail/cone_location__rosidl_typesupport_introspection_c.h\n'}
+[12.017069] (vs_msgs) StdoutLine: {'line': b'-- Installing: /root/racecar_ws/install/vs_msgs/include/vs_msgs/vs_msgs/msg/detail/cone_location_pixel__type_support.c\n'}
+[12.017385] (vs_msgs) StdoutLine: {'line': b'-- Installing: /root/racecar_ws/install/vs_msgs/include/vs_msgs/vs_msgs/msg/detail/cone_location__type_support.c\n'}
+[12.017678] (vs_msgs) StdoutLine: {'line': b'-- Installing: /root/racecar_ws/install/vs_msgs/include/vs_msgs/vs_msgs/msg/detail/parking_error__type_support.c\n'}
+[12.017995] (vs_msgs) StdoutLine: {'line': b'-- Installing: /root/racecar_ws/install/vs_msgs/include/vs_msgs/vs_msgs/msg/rosidl_typesupport_introspection_c__visibility_control.h\n'}
+[12.018283] (vs_msgs) StdoutLine: {'line': b'-- Installing: /root/racecar_ws/install/vs_msgs/lib/libvs_msgs__rosidl_typesupport_introspection_c.so\n'}
+[12.018659] (vs_msgs) StdoutLine: {'line': b'-- Set runtime path of "/root/racecar_ws/install/vs_msgs/lib/libvs_msgs__rosidl_typesupport_introspection_c.so" to ""\n'}
+[12.018984] (vs_msgs) StdoutLine: {'line': b'-- Installing: /root/racecar_ws/install/vs_msgs/lib/libvs_msgs__rosidl_typesupport_c.so\n'}
+[12.019277] (vs_msgs) StdoutLine: {'line': b'-- Set runtime path of "/root/racecar_ws/install/vs_msgs/lib/libvs_msgs__rosidl_typesupport_c.so" to ""\n'}
+[12.019618] (vs_msgs) StdoutLine: {'line': b'-- Up-to-date: /root/racecar_ws/install/vs_msgs/include/vs_msgs/vs_msgs\n'}
+[12.019997] (vs_msgs) StdoutLine: {'line': b'-- Up-to-date: /root/racecar_ws/install/vs_msgs/include/vs_msgs/vs_msgs/msg\n'}
+[12.020287] (vs_msgs) StdoutLine: {'line': b'-- Installing: /root/racecar_ws/install/vs_msgs/include/vs_msgs/vs_msgs/msg/cone_location_pixel.hpp\n'}
+[12.020601] (vs_msgs) StdoutLine: {'line': b'-- Installing: /root/racecar_ws/install/vs_msgs/include/vs_msgs/vs_msgs/msg/rosidl_generator_cpp__visibility_control.hpp\n'}
+[12.020908] (vs_msgs) StdoutLine: {'line': b'-- Up-to-date: /root/racecar_ws/install/vs_msgs/include/vs_msgs/vs_msgs/msg/detail\n'}
+[12.021153] (vs_msgs) StdoutLine: {'line': b'-- Installing: /root/racecar_ws/install/vs_msgs/include/vs_msgs/vs_msgs/msg/detail/cone_location__struct.hpp\n'}
+[12.021372] (vs_msgs) StdoutLine: {'line': b'-- Installing: /root/racecar_ws/install/vs_msgs/include/vs_msgs/vs_msgs/msg/detail/parking_error__type_support.hpp\n'}
+[12.021587] (vs_msgs) StdoutLine: {'line': b'-- Installing: /root/racecar_ws/install/vs_msgs/include/vs_msgs/vs_msgs/msg/detail/parking_error__struct.hpp\n'}
+[12.021800] (vs_msgs) StdoutLine: {'line': b'-- Installing: /root/racecar_ws/install/vs_msgs/include/vs_msgs/vs_msgs/msg/detail/cone_location__builder.hpp\n'}
+[12.022128] (vs_msgs) StdoutLine: {'line': b'-- Installing: /root/racecar_ws/install/vs_msgs/include/vs_msgs/vs_msgs/msg/detail/cone_location_pixel__struct.hpp\n'}
+[12.022350] (vs_msgs) StdoutLine: {'line': b'-- Installing: /root/racecar_ws/install/vs_msgs/include/vs_msgs/vs_msgs/msg/detail/cone_location__type_support.hpp\n'}
+[12.022568] (vs_msgs) StdoutLine: {'line': b'-- Installing: /root/racecar_ws/install/vs_msgs/include/vs_msgs/vs_msgs/msg/detail/cone_location_pixel__traits.hpp\n'}
+[12.022782] (vs_msgs) StdoutLine: {'line': b'-- Installing: /root/racecar_ws/install/vs_msgs/include/vs_msgs/vs_msgs/msg/detail/cone_location_pixel__builder.hpp\n'}
+[12.023147] (vs_msgs) StdoutLine: {'line': b'-- Installing: /root/racecar_ws/install/vs_msgs/include/vs_msgs/vs_msgs/msg/detail/cone_location__traits.hpp\n'}
+[12.023376] (vs_msgs) StdoutLine: {'line': b'-- Installing: /root/racecar_ws/install/vs_msgs/include/vs_msgs/vs_msgs/msg/detail/parking_error__builder.hpp\n'}
+[12.023755] (vs_msgs) StdoutLine: {'line': b'-- Installing: /root/racecar_ws/install/vs_msgs/include/vs_msgs/vs_msgs/msg/detail/parking_error__traits.hpp\n'}
+[12.024094] (vs_msgs) StdoutLine: {'line': b'-- Installing: /root/racecar_ws/install/vs_msgs/include/vs_msgs/vs_msgs/msg/detail/cone_location_pixel__type_support.hpp\n'}
+[12.024442] (vs_msgs) StdoutLine: {'line': b'-- Installing: /root/racecar_ws/install/vs_msgs/include/vs_msgs/vs_msgs/msg/parking_error.hpp\n'}
+[12.024668] (vs_msgs) StdoutLine: {'line': b'-- Installing: /root/racecar_ws/install/vs_msgs/include/vs_msgs/vs_msgs/msg/cone_location.hpp\n'}
+[12.024956] (vs_msgs) StdoutLine: {'line': b'-- Up-to-date: /root/racecar_ws/install/vs_msgs/include/vs_msgs/vs_msgs\n'}
+[12.025255] (vs_msgs) StdoutLine: {'line': b'-- Up-to-date: /root/racecar_ws/install/vs_msgs/include/vs_msgs/vs_msgs/msg\n'}
+[12.025478] (vs_msgs) StdoutLine: {'line': b'-- Up-to-date: /root/racecar_ws/install/vs_msgs/include/vs_msgs/vs_msgs/msg/detail\n'}
+[12.025820] (vs_msgs) StdoutLine: {'line': b'-- Installing: /root/racecar_ws/install/vs_msgs/include/vs_msgs/vs_msgs/msg/detail/dds_fastrtps\n'}
+[12.026117] (vs_msgs) StdoutLine: {'line': b'-- Installing: /root/racecar_ws/install/vs_msgs/include/vs_msgs/vs_msgs/msg/detail/cone_location__rosidl_typesupport_fastrtps_cpp.hpp\n'}
+[12.026397] (vs_msgs) StdoutLine: {'line': b'-- Installing: /root/racecar_ws/install/vs_msgs/include/vs_msgs/vs_msgs/msg/detail/parking_error__rosidl_typesupport_fastrtps_cpp.hpp\n'}
+[12.026682] (vs_msgs) StdoutLine: {'line': b'-- Installing: /root/racecar_ws/install/vs_msgs/include/vs_msgs/vs_msgs/msg/detail/cone_location_pixel__rosidl_typesupport_fastrtps_cpp.hpp\n'}
+[12.027000] (vs_msgs) StdoutLine: {'line': b'-- Installing: /root/racecar_ws/install/vs_msgs/include/vs_msgs/vs_msgs/msg/rosidl_typesupport_fastrtps_cpp__visibility_control.h\n'}
+[12.027304] (vs_msgs) StdoutLine: {'line': b'-- Installing: /root/racecar_ws/install/vs_msgs/lib/libvs_msgs__rosidl_typesupport_fastrtps_cpp.so\n'}
+[12.027774] (vs_msgs) StdoutLine: {'line': b'-- Set runtime path of "/root/racecar_ws/install/vs_msgs/lib/libvs_msgs__rosidl_typesupport_fastrtps_cpp.so" to ""\n'}
+[12.028188] (vs_msgs) StdoutLine: {'line': b'-- Up-to-date: /root/racecar_ws/install/vs_msgs/include/vs_msgs/vs_msgs\n'}
+[12.028615] (vs_msgs) StdoutLine: {'line': b'-- Up-to-date: /root/racecar_ws/install/vs_msgs/include/vs_msgs/vs_msgs/msg\n'}
+[12.028902] (vs_msgs) StdoutLine: {'line': b'-- Up-to-date: /root/racecar_ws/install/vs_msgs/include/vs_msgs/vs_msgs/msg/detail\n'}
+[12.029488] (vs_msgs) StdoutLine: {'line': b'-- Installing: /root/racecar_ws/install/vs_msgs/include/vs_msgs/vs_msgs/msg/detail/cone_location_pixel__type_support.cpp\n'}
+[12.029767] (vs_msgs) StdoutLine: {'line': b'-- Installing: /root/racecar_ws/install/vs_msgs/include/vs_msgs/vs_msgs/msg/detail/cone_location_pixel__rosidl_typesupport_introspection_cpp.hpp\n'}
+[12.030090] (vs_msgs) StdoutLine: {'line': b'-- Installing: /root/racecar_ws/install/vs_msgs/include/vs_msgs/vs_msgs/msg/detail/parking_error__rosidl_typesupport_introspection_cpp.hpp\n'}
+[12.030421] (vs_msgs) StdoutLine: {'line': b'-- Installing: /root/racecar_ws/install/vs_msgs/include/vs_msgs/vs_msgs/msg/detail/cone_location__rosidl_typesupport_introspection_cpp.hpp\n'}
+[12.030743] (vs_msgs) StdoutLine: {'line': b'-- Installing: /root/racecar_ws/install/vs_msgs/include/vs_msgs/vs_msgs/msg/detail/parking_error__type_support.cpp\n'}
+[12.030996] (vs_msgs) StdoutLine: {'line': b'-- Installing: /root/racecar_ws/install/vs_msgs/include/vs_msgs/vs_msgs/msg/detail/cone_location__type_support.cpp\n'}
+[12.031243] (vs_msgs) StdoutLine: {'line': b'-- Installing: /root/racecar_ws/install/vs_msgs/lib/libvs_msgs__rosidl_typesupport_introspection_cpp.so\n'}
+[12.031515] (vs_msgs) StdoutLine: {'line': b'-- Set runtime path of "/root/racecar_ws/install/vs_msgs/lib/libvs_msgs__rosidl_typesupport_introspection_cpp.so" to ""\n'}
+[12.031810] (vs_msgs) StdoutLine: {'line': b'-- Installing: /root/racecar_ws/install/vs_msgs/lib/libvs_msgs__rosidl_typesupport_cpp.so\n'}
+[12.032088] (vs_msgs) StdoutLine: {'line': b'-- Set runtime path of "/root/racecar_ws/install/vs_msgs/lib/libvs_msgs__rosidl_typesupport_cpp.so" to ""\n'}
+[12.032380] (vs_msgs) StdoutLine: {'line': b'-- Installing: /root/racecar_ws/install/vs_msgs/share/vs_msgs/environment/pythonpath.sh\n'}
+[12.032901] (vs_msgs) StdoutLine: {'line': b'-- Installing: /root/racecar_ws/install/vs_msgs/share/vs_msgs/environment/pythonpath.dsv\n'}
+[12.033464] (vs_msgs) StdoutLine: {'line': b'-- Installing: /root/racecar_ws/install/vs_msgs/local/lib/python3.10/dist-packages/vs_msgs-0.0.0-py3.10.egg-info\n'}
+[12.033718] (vs_msgs) StdoutLine: {'line': b'-- Installing: /root/racecar_ws/install/vs_msgs/local/lib/python3.10/dist-packages/vs_msgs-0.0.0-py3.10.egg-info/top_level.txt\n'}
+[12.033945] (vs_msgs) StdoutLine: {'line': b'-- Installing: /root/racecar_ws/install/vs_msgs/local/lib/python3.10/dist-packages/vs_msgs-0.0.0-py3.10.egg-info/SOURCES.txt\n'}
+[12.034163] (vs_msgs) StdoutLine: {'line': b'-- Installing: /root/racecar_ws/install/vs_msgs/local/lib/python3.10/dist-packages/vs_msgs-0.0.0-py3.10.egg-info/PKG-INFO\n'}
+[12.034379] (vs_msgs) StdoutLine: {'line': b'-- Installing: /root/racecar_ws/install/vs_msgs/local/lib/python3.10/dist-packages/vs_msgs-0.0.0-py3.10.egg-info/dependency_links.txt\n'}
+[12.034591] (vs_msgs) StdoutLine: {'line': b'-- Installing: /root/racecar_ws/install/vs_msgs/local/lib/python3.10/dist-packages/vs_msgs\n'}
+[12.034801] (vs_msgs) StdoutLine: {'line': b'-- Installing: /root/racecar_ws/install/vs_msgs/local/lib/python3.10/dist-packages/vs_msgs/libvs_msgs__rosidl_generator_py.so\n'}
+[12.035012] (vs_msgs) StdoutLine: {'line': b'-- Installing: /root/racecar_ws/install/vs_msgs/local/lib/python3.10/dist-packages/vs_msgs/_vs_msgs_s.ep.rosidl_typesupport_introspection_c.c\n'}
+[12.035221] (vs_msgs) StdoutLine: {'line': b'-- Installing: /root/racecar_ws/install/vs_msgs/local/lib/python3.10/dist-packages/vs_msgs/vs_msgs_s__rosidl_typesupport_introspection_c.cpython-310-aarch64-linux-gnu.so\n'}
+[12.035488] (vs_msgs) StdoutLine: {'line': b'-- Installing: /root/racecar_ws/install/vs_msgs/local/lib/python3.10/dist-packages/vs_msgs/vs_msgs_s__rosidl_typesupport_fastrtps_c.cpython-310-aarch64-linux-gnu.so\n'}
+[12.035725] (vs_msgs) StdoutLine: {'line': b'-- Installing: /root/racecar_ws/install/vs_msgs/local/lib/python3.10/dist-packages/vs_msgs/_vs_msgs_s.ep.rosidl_typesupport_c.c\n'}
+[12.035941] (vs_msgs) StdoutLine: {'line': b'-- Installing: /root/racecar_ws/install/vs_msgs/local/lib/python3.10/dist-packages/vs_msgs/msg\n'}
+[12.036151] (vs_msgs) StdoutLine: {'line': b'-- Installing: /root/racecar_ws/install/vs_msgs/local/lib/python3.10/dist-packages/vs_msgs/msg/_cone_location_pixel_s.c\n'}
+[12.036360] (vs_msgs) StdoutLine: {'line': b'-- Installing: /root/racecar_ws/install/vs_msgs/local/lib/python3.10/dist-packages/vs_msgs/msg/_parking_error_s.c\n'}
+[12.036568] (vs_msgs) StdoutLine: {'line': b'-- Installing: /root/racecar_ws/install/vs_msgs/local/lib/python3.10/dist-packages/vs_msgs/msg/_cone_location.py\n'}
+[12.036776] (vs_msgs) StdoutLine: {'line': b'-- Installing: /root/racecar_ws/install/vs_msgs/local/lib/python3.10/dist-packages/vs_msgs/msg/_cone_location_pixel.py\n'}
+[12.037034] (vs_msgs) StdoutLine: {'line': b'-- Installing: /root/racecar_ws/install/vs_msgs/local/lib/python3.10/dist-packages/vs_msgs/msg/_cone_location_s.c\n'}
+[12.037270] (vs_msgs) StdoutLine: {'line': b'-- Installing: /root/racecar_ws/install/vs_msgs/local/lib/python3.10/dist-packages/vs_msgs/msg/__init__.py\n'}
+[12.037497] (vs_msgs) StdoutLine: {'line': b'-- Installing: /root/racecar_ws/install/vs_msgs/local/lib/python3.10/dist-packages/vs_msgs/msg/_parking_error.py\n'}
+[12.037710] (vs_msgs) StdoutLine: {'line': b'-- Installing: /root/racecar_ws/install/vs_msgs/local/lib/python3.10/dist-packages/vs_msgs/_vs_msgs_s.ep.rosidl_typesupport_fastrtps_c.c\n'}
+[12.037922] (vs_msgs) StdoutLine: {'line': b'-- Installing: /root/racecar_ws/install/vs_msgs/local/lib/python3.10/dist-packages/vs_msgs/__init__.py\n'}
+[12.038129] (vs_msgs) StdoutLine: {'line': b'-- Installing: /root/racecar_ws/install/vs_msgs/local/lib/python3.10/dist-packages/vs_msgs/vs_msgs_s__rosidl_typesupport_c.cpython-310-aarch64-linux-gnu.so\n'}
+[12.061523] (-) TimerEvent: {}
+[12.120302] (vs_msgs) StdoutLine: {'line': b"Listing '/root/racecar_ws/install/vs_msgs/local/lib/python3.10/dist-packages/vs_msgs'...\n"}
+[12.120747] (vs_msgs) StdoutLine: {'line': b"Compiling '/root/racecar_ws/install/vs_msgs/local/lib/python3.10/dist-packages/vs_msgs/__init__.py'...\n"}
+[12.120965] (vs_msgs) StdoutLine: {'line': b"Listing '/root/racecar_ws/install/vs_msgs/local/lib/python3.10/dist-packages/vs_msgs/msg'...\n"}
+[12.121111] (vs_msgs) StdoutLine: {'line': b"Compiling '/root/racecar_ws/install/vs_msgs/local/lib/python3.10/dist-packages/vs_msgs/msg/__init__.py'...\n"}
+[12.121240] (vs_msgs) StdoutLine: {'line': b"Compiling '/root/racecar_ws/install/vs_msgs/local/lib/python3.10/dist-packages/vs_msgs/msg/_cone_location.py'...\n"}
+[12.121363] (vs_msgs) StdoutLine: {'line': b"Compiling '/root/racecar_ws/install/vs_msgs/local/lib/python3.10/dist-packages/vs_msgs/msg/_cone_location_pixel.py'...\n"}
+[12.121486] (vs_msgs) StdoutLine: {'line': b"Compiling '/root/racecar_ws/install/vs_msgs/local/lib/python3.10/dist-packages/vs_msgs/msg/_parking_error.py'...\n"}
+[12.133450] (vs_msgs) StdoutLine: {'line': b'-- Installing: /root/racecar_ws/install/vs_msgs/local/lib/python3.10/dist-packages/vs_msgs/vs_msgs_s__rosidl_typesupport_fastrtps_c.cpython-310-aarch64-linux-gnu.so\n'}
+[12.134147] (vs_msgs) StdoutLine: {'line': b'-- Set runtime path of "/root/racecar_ws/install/vs_msgs/local/lib/python3.10/dist-packages/vs_msgs/vs_msgs_s__rosidl_typesupport_fastrtps_c.cpython-310-aarch64-linux-gnu.so" to ""\n'}
+[12.134639] (vs_msgs) StdoutLine: {'line': b'-- Installing: /root/racecar_ws/install/vs_msgs/local/lib/python3.10/dist-packages/vs_msgs/vs_msgs_s__rosidl_typesupport_introspection_c.cpython-310-aarch64-linux-gnu.so\n'}
+[12.135002] (vs_msgs) StdoutLine: {'line': b'-- Set runtime path of "/root/racecar_ws/install/vs_msgs/local/lib/python3.10/dist-packages/vs_msgs/vs_msgs_s__rosidl_typesupport_introspection_c.cpython-310-aarch64-linux-gnu.so" to ""\n'}
+[12.135337] (vs_msgs) StdoutLine: {'line': b'-- Installing: /root/racecar_ws/install/vs_msgs/local/lib/python3.10/dist-packages/vs_msgs/vs_msgs_s__rosidl_typesupport_c.cpython-310-aarch64-linux-gnu.so\n'}
+[12.135788] (vs_msgs) StdoutLine: {'line': b'-- Set runtime path of "/root/racecar_ws/install/vs_msgs/local/lib/python3.10/dist-packages/vs_msgs/vs_msgs_s__rosidl_typesupport_c.cpython-310-aarch64-linux-gnu.so" to ""\n'}
+[12.136110] (vs_msgs) StdoutLine: {'line': b'-- Installing: /root/racecar_ws/install/vs_msgs/lib/libvs_msgs__rosidl_generator_py.so\n'}
+[12.136522] (vs_msgs) StdoutLine: {'line': b'-- Set runtime path of "/root/racecar_ws/install/vs_msgs/lib/libvs_msgs__rosidl_generator_py.so" to ""\n'}
+[12.136904] (vs_msgs) StdoutLine: {'line': b'-- Installing: /root/racecar_ws/install/vs_msgs/share/vs_msgs/msg/ConeLocation.idl\n'}
+[12.137278] (vs_msgs) StdoutLine: {'line': b'-- Installing: /root/racecar_ws/install/vs_msgs/share/vs_msgs/msg/ConeLocationPixel.idl\n'}
+[12.137612] (vs_msgs) StdoutLine: {'line': b'-- Installing: /root/racecar_ws/install/vs_msgs/share/vs_msgs/msg/ParkingError.idl\n'}
+[12.137928] (vs_msgs) StdoutLine: {'line': b'-- Installing: /root/racecar_ws/install/vs_msgs/share/vs_msgs/msg/ConeLocation.msg\n'}
+[12.138448] (vs_msgs) StdoutLine: {'line': b'-- Installing: /root/racecar_ws/install/vs_msgs/share/vs_msgs/msg/ConeLocationPixel.msg\n'}
+[12.138846] (vs_msgs) StdoutLine: {'line': b'-- Installing: /root/racecar_ws/install/vs_msgs/share/vs_msgs/msg/ParkingError.msg\n'}
+[12.139114] (vs_msgs) StdoutLine: {'line': b'-- Installing: /root/racecar_ws/install/vs_msgs/share/ament_index/resource_index/package_run_dependencies/vs_msgs\n'}
+[12.140081] (vs_msgs) StdoutLine: {'line': b'-- Installing: /root/racecar_ws/install/vs_msgs/share/ament_index/resource_index/parent_prefix_path/vs_msgs\n'}
+[12.140577] (vs_msgs) StdoutLine: {'line': b'-- Installing: /root/racecar_ws/install/vs_msgs/share/vs_msgs/environment/ament_prefix_path.sh\n'}
+[12.141031] (vs_msgs) StdoutLine: {'line': b'-- Installing: /root/racecar_ws/install/vs_msgs/share/vs_msgs/environment/ament_prefix_path.dsv\n'}
+[12.141405] (vs_msgs) StdoutLine: {'line': b'-- Installing: /root/racecar_ws/install/vs_msgs/share/vs_msgs/environment/path.sh\n'}
+[12.141738] (vs_msgs) StdoutLine: {'line': b'-- Installing: /root/racecar_ws/install/vs_msgs/share/vs_msgs/environment/path.dsv\n'}
+[12.142421] (vs_msgs) StdoutLine: {'line': b'-- Installing: /root/racecar_ws/install/vs_msgs/share/vs_msgs/local_setup.bash\n'}
+[12.143023] (vs_msgs) StdoutLine: {'line': b'-- Installing: /root/racecar_ws/install/vs_msgs/share/vs_msgs/local_setup.sh\n'}
+[12.143543] (vs_msgs) StdoutLine: {'line': b'-- Installing: /root/racecar_ws/install/vs_msgs/share/vs_msgs/local_setup.zsh\n'}
+[12.143867] (vs_msgs) StdoutLine: {'line': b'-- Installing: /root/racecar_ws/install/vs_msgs/share/vs_msgs/local_setup.dsv\n'}
+[12.144246] (vs_msgs) StdoutLine: {'line': b'-- Installing: /root/racecar_ws/install/vs_msgs/share/vs_msgs/package.dsv\n'}
+[12.144580] (vs_msgs) StdoutLine: {'line': b'-- Installing: /root/racecar_ws/install/vs_msgs/share/ament_index/resource_index/packages/vs_msgs\n'}
+[12.144938] (vs_msgs) StdoutLine: {'line': b'-- Installing: /root/racecar_ws/install/vs_msgs/share/vs_msgs/cmake/export_vs_msgs__rosidl_generator_cExport.cmake\n'}
+[12.145530] (vs_msgs) StdoutLine: {'line': b'-- Installing: /root/racecar_ws/install/vs_msgs/share/vs_msgs/cmake/export_vs_msgs__rosidl_generator_cExport-noconfig.cmake\n'}
+[12.145953] (vs_msgs) StdoutLine: {'line': b'-- Installing: /root/racecar_ws/install/vs_msgs/share/vs_msgs/cmake/export_vs_msgs__rosidl_typesupport_fastrtps_cExport.cmake\n'}
+[12.146339] (vs_msgs) StdoutLine: {'line': b'-- Installing: /root/racecar_ws/install/vs_msgs/share/vs_msgs/cmake/export_vs_msgs__rosidl_typesupport_fastrtps_cExport-noconfig.cmake\n'}
+[12.146695] (vs_msgs) StdoutLine: {'line': b'-- Installing: /root/racecar_ws/install/vs_msgs/share/vs_msgs/cmake/vs_msgs__rosidl_typesupport_introspection_cExport.cmake\n'}
+[12.147127] (vs_msgs) StdoutLine: {'line': b'-- Installing: /root/racecar_ws/install/vs_msgs/share/vs_msgs/cmake/vs_msgs__rosidl_typesupport_introspection_cExport-noconfig.cmake\n'}
+[12.147450] (vs_msgs) StdoutLine: {'line': b'-- Installing: /root/racecar_ws/install/vs_msgs/share/vs_msgs/cmake/vs_msgs__rosidl_typesupport_cExport.cmake\n'}
+[12.147782] (vs_msgs) StdoutLine: {'line': b'-- Installing: /root/racecar_ws/install/vs_msgs/share/vs_msgs/cmake/vs_msgs__rosidl_typesupport_cExport-noconfig.cmake\n'}
+[12.148122] (vs_msgs) StdoutLine: {'line': b'-- Installing: /root/racecar_ws/install/vs_msgs/share/vs_msgs/cmake/export_vs_msgs__rosidl_generator_cppExport.cmake\n'}
+[12.148424] (vs_msgs) StdoutLine: {'line': b'-- Installing: /root/racecar_ws/install/vs_msgs/share/vs_msgs/cmake/export_vs_msgs__rosidl_typesupport_fastrtps_cppExport.cmake\n'}
+[12.148744] (vs_msgs) StdoutLine: {'line': b'-- Installing: /root/racecar_ws/install/vs_msgs/share/vs_msgs/cmake/export_vs_msgs__rosidl_typesupport_fastrtps_cppExport-noconfig.cmake\n'}
+[12.149181] (vs_msgs) StdoutLine: {'line': b'-- Installing: /root/racecar_ws/install/vs_msgs/share/vs_msgs/cmake/vs_msgs__rosidl_typesupport_introspection_cppExport.cmake\n'}
+[12.149514] (vs_msgs) StdoutLine: {'line': b'-- Installing: /root/racecar_ws/install/vs_msgs/share/vs_msgs/cmake/vs_msgs__rosidl_typesupport_introspection_cppExport-noconfig.cmake\n'}
+[12.149898] (vs_msgs) StdoutLine: {'line': b'-- Installing: /root/racecar_ws/install/vs_msgs/share/vs_msgs/cmake/vs_msgs__rosidl_typesupport_cppExport.cmake\n'}
+[12.150234] (vs_msgs) StdoutLine: {'line': b'-- Installing: /root/racecar_ws/install/vs_msgs/share/vs_msgs/cmake/vs_msgs__rosidl_typesupport_cppExport-noconfig.cmake\n'}
+[12.150596] (vs_msgs) StdoutLine: {'line': b'-- Installing: /root/racecar_ws/install/vs_msgs/share/vs_msgs/cmake/export_vs_msgs__rosidl_generator_pyExport.cmake\n'}
+[12.150902] (vs_msgs) StdoutLine: {'line': b'-- Installing: /root/racecar_ws/install/vs_msgs/share/vs_msgs/cmake/export_vs_msgs__rosidl_generator_pyExport-noconfig.cmake\n'}
+[12.151253] (vs_msgs) StdoutLine: {'line': b'-- Installing: /root/racecar_ws/install/vs_msgs/share/vs_msgs/cmake/rosidl_cmake-extras.cmake\n'}
+[12.151582] (vs_msgs) StdoutLine: {'line': b'-- Installing: /root/racecar_ws/install/vs_msgs/share/vs_msgs/cmake/ament_cmake_export_include_directories-extras.cmake\n'}
+[12.151847] (vs_msgs) StdoutLine: {'line': b'-- Installing: /root/racecar_ws/install/vs_msgs/share/vs_msgs/cmake/ament_cmake_export_libraries-extras.cmake\n'}
+[12.152105] (vs_msgs) StdoutLine: {'line': b'-- Installing: /root/racecar_ws/install/vs_msgs/share/vs_msgs/cmake/ament_cmake_export_targets-extras.cmake\n'}
+[12.152405] (vs_msgs) StdoutLine: {'line': b'-- Installing: /root/racecar_ws/install/vs_msgs/share/vs_msgs/cmake/rosidl_cmake_export_typesupport_targets-extras.cmake\n'}
+[12.152661] (vs_msgs) StdoutLine: {'line': b'-- Installing: /root/racecar_ws/install/vs_msgs/share/vs_msgs/cmake/ament_cmake_export_dependencies-extras.cmake\n'}
+[12.152987] (vs_msgs) StdoutLine: {'line': b'-- Installing: /root/racecar_ws/install/vs_msgs/share/vs_msgs/cmake/rosidl_cmake_export_typesupport_libraries-extras.cmake\n'}
+[12.153258] (vs_msgs) StdoutLine: {'line': b'-- Installing: /root/racecar_ws/install/vs_msgs/share/vs_msgs/cmake/vs_msgsConfig.cmake\n'}
+[12.153512] (vs_msgs) StdoutLine: {'line': b'-- Installing: /root/racecar_ws/install/vs_msgs/share/vs_msgs/cmake/vs_msgsConfig-version.cmake\n'}
+[12.153821] (vs_msgs) StdoutLine: {'line': b'-- Installing: /root/racecar_ws/install/vs_msgs/share/vs_msgs/package.xml\n'}
+[12.158843] (vs_msgs) CommandEnded: {'returncode': 0}
+[12.162179] (-) TimerEvent: {}
+[12.229509] (vs_msgs) JobEnded: {'identifier': 'vs_msgs', 'rc': 0}
+[12.232821] (-) EventReactorShutdown: {}

@@ -1,0 +1,6 @@
+msg/ConeLocation.idl
+msg/ConeLocation.msg
+msg/ConeLocationPixel.idl
+msg/ConeLocationPixel.msg
+msg/ParkingError.idl
+msg/ParkingError.msg
