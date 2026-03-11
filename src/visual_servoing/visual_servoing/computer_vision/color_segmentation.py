@@ -15,11 +15,16 @@ from matplotlib import pyplot as plt
 ###############################################################
 
 
+<<<<<<< HEAD
 def show_image(img):
+=======
+def image_print(img):
+>>>>>>> dbc985d (Cleaned up repo, added visual_servoing initial repo, implemented module)
     plt.imshow(img)
     plt.show()
 
 
+<<<<<<< HEAD
 def show_images(img):
     if len(img) == 0:
         return
@@ -30,6 +35,8 @@ def show_images(img):
     plt.show()
 
 
+=======
+>>>>>>> dbc985d (Cleaned up repo, added visual_servoing initial repo, implemented module)
 def visualize_test():
     img = cv2.imread(
         "src/visual_servoing/visual_servoing/computer_vision/test_images_cone/cone_template.png"
@@ -67,19 +74,27 @@ def cd_color_segmentation(
     img,
     template,
     debug=False,
+<<<<<<< HEAD
     prev_pos=None,
     delta=None,
     bounds=None,
+=======
+>>>>>>> dbc985d (Cleaned up repo, added visual_servoing initial repo, implemented module)
 ):
     """
     Implement the cone detection using color segmentation algorithm
     Input:
         img: np.3darray; the input image with a cone to be detected. BGR.
+<<<<<<< HEAD
         template: Not required, but can optionally be used to automate setting hue filter values.
+=======
+        bounds: Not required, but can optionally be used to automate setting hue filter values.
+>>>>>>> dbc985d (Cleaned up repo, added visual_servoing initial repo, implemented module)
     Return:
         bbox: ((x1, y1), (x2, y2)); the bounding box of the cone, unit in px
             (x1, y1) is the top left of the bbox and (x2, y2) is the bottom right of the bbox
     """
+<<<<<<< HEAD
     debug_imgs = []
     if bounds is None:
         bounds = ((5, 210, 110), (30, 255, 255))
@@ -99,19 +114,37 @@ def cd_color_segmentation(
     img_final = cv2.morphologyEx(img_final, cv2.MORPH_DILATE, kernel)
     if debug:
         debug_imgs.append(img_final)
+=======
+    bounds = ((5, 210, 110), (30, 255, 255))
+    img_hsv = cv2.cvtColor(img, cv2.COLOR_BGR2HSV)
+    if debug:
+        image_print(img_hsv)
+    img_filtered = cv2.inRange(img_hsv, bounds[0], bounds[1])
+    if debug:
+        image_print(img_filtered)
+    kernel = np.ones((3, 3), np.uint8)
+    img_final = img_filtered
+    img_final = cv2.morphologyEx(img_final, cv2.MORPH_CLOSE, kernel)
+    if debug:
+        image_print(img_final)
+>>>>>>> dbc985d (Cleaned up repo, added visual_servoing initial repo, implemented module)
     countours = cv2.findContours(img_final, cv2.RETR_EXTERNAL, cv2.CHAIN_APPROX_SIMPLE)[
         0
     ]
     if len(countours) == 0:
         return None
     biggest_box = None
+<<<<<<< HEAD
     biggest_box_in_dist = None
+=======
+>>>>>>> dbc985d (Cleaned up repo, added visual_servoing initial repo, implemented module)
     for contour in countours:
         box = cv2.boundingRect(contour)
         if biggest_box is None or min(box[2] * 1.5, box[3]) > min(
             biggest_box[2] * 1.5, biggest_box[3]
         ):
             biggest_box = box
+<<<<<<< HEAD
         if prev_pos is not None and delta is not None:
             curr_pos = (box[0] + box[2] / 2, box[1] + box[3])
             dist = np.linalg.norm(np.array(curr_pos) - np.array(prev_pos))
@@ -126,10 +159,13 @@ def cd_color_segmentation(
             biggest_box = biggest_box_in_dist
     if biggest_box is None:
         return None
+=======
+>>>>>>> dbc985d (Cleaned up repo, added visual_servoing initial repo, implemented module)
     bounding_box = (
         (biggest_box[0], biggest_box[1]),
         (biggest_box[0] + biggest_box[2], biggest_box[1] + biggest_box[3]),
     )
+<<<<<<< HEAD
 
     if debug:
         debug_imgs.append(
@@ -141,20 +177,33 @@ def cd_color_segmentation(
             )
         )
         show_images(debug_imgs)
+=======
+>>>>>>> dbc985d (Cleaned up repo, added visual_servoing initial repo, implemented module)
     return bounding_box
 
 
 if __name__ == "__main__":
     # visualize_test()
     # bounds = get_bounds(5)
+<<<<<<< HEAD
     # bounds = ((5, 190, 192), (30, 255, 255))
     # print(bounds)
     img = cv2.imread(
         # "/home/racecar/racecar_ws/src/visual_servoing/visual_servoing/computer_vision/test_images_cone/test_building_7.png"
         "/home/racecar/racecar_ws/src/visual_servoing/visual_servoing/computer_vision/test_images_cone/test_building_7.png"
         # "/home/racecar/racecar_ws/src/visual_servoing/visual_servoing/computer_vision/test_images_cone/test9.jpg"
+=======
+    bounds = ((5, 190, 192), (30, 255, 255))
+    print(bounds)
+    img = cv2.imread(
+        "/home/racecar/racecar_ws/src/visual_servoing/visual_servoing/computer_vision/test_images_cone/test9.jpg"
+>>>>>>> dbc985d (Cleaned up repo, added visual_servoing initial repo, implemented module)
     )
     bbox = cd_color_segmentation(img, None, True)
     print(bbox)
     img = cv2.rectangle(img, bbox[0], bbox[1], (0, 255, 0), 1)
+<<<<<<< HEAD
     show_image(cv2.cvtColor(img, cv2.COLOR_BGR2RGB))
+=======
+    image_print(cv2.cvtColor(img, cv2.COLOR_BGR2RGB))
+>>>>>>> dbc985d (Cleaned up repo, added visual_servoing initial repo, implemented module)

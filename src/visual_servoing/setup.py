@@ -16,9 +16,13 @@ setup(
         ('share/visual_servoing/launch',
             glob.glob(os.path.join('launch', '*launch.xml'))),
         ('share/visual_servoing/launch',
+<<<<<<< HEAD
             glob.glob(os.path.join('launch', '*launch.py'))),
         ('share/visual_servoing/models',
             glob.glob(os.path.join('models', '*'))),
+=======
+            glob.glob(os.path.join('launch', '*launch.py')))
+>>>>>>> dbc985d (Cleaned up repo, added visual_servoing initial repo, implemented module)
     ],
     install_requires=['setuptools'],
     zip_safe=True,
@@ -34,7 +38,10 @@ setup(
             'cone_sim_marker = visual_servoing.cone_sim_marker:main',
             'homography_transformer = visual_servoing.homography_transformer:main',
             'yolo_annotator = visual_servoing.yolo_annotator:main',
+<<<<<<< HEAD
             'evaluate_homography = visual_servoing.evaluate_homography:main',
+=======
+>>>>>>> dbc985d (Cleaned up repo, added visual_servoing initial repo, implemented module)
         ],
     },
 )

@@ -7,8 +7,11 @@
   <maintainer email="jrales@mit.edu">Jospeh</maintainer>
   <license>TODO</license>
 
+<<<<<<< HEAD
   <exec_depend>ament_index_python</exec_depend>
 
+=======
+>>>>>>> dbc985d (Cleaned up repo, added visual_servoing initial repo, implemented module)
   <test_depend>ament_copyright</test_depend>
   <test_depend>ament_flake8</test_depend>
   <test_depend>ament_pep257</test_depend>

@@ -22,43 +22,20 @@ class ConeDetector(Node):
 
     def __init__(self):
         super().__init__("cone_detector")
-        self.declare_parameter("debug", True)
-        self.declare_parameter("topics.image", "/zed/zed_node/rgb/image_rect_color")
-        self.declare_parameter("topics.cone_pos", "/relative_cone_px")
-        self.declare_parameter("topics.cone_debug", "/cone_debug_img")
-        self.declare_parameter("color_segmentation.delta", 20)
-        self.declare_parameter("color_segmentation.bounds", [5, 210, 110, 30, 255, 255])
-        self.declare_parameter("line_follower.active", False)
-        self.declare_parameter("line_follower.roi.xmin", 0)
-        self.declare_parameter("line_follower.roi.xmax", 600)
-        self.declare_parameter("line_follower.roi.ymin", 100)
-        self.declare_parameter("line_follower.roi.ymax", 200)
-        
-        self.debug = self.get_parameter("debug").value
-        self.IMAGE_TOPIC = self.get_parameter("topics.image").value
-        self.CONE_POS_TOPIC = self.get_parameter("topics.cone_pos").value
-        self.CONE_DEBUG_TOPIC = self.get_parameter("topics.cone_debug").value
-        self.delta = self.get_parameter("color_segmentation.delta").value
-        self.bounds = self.get_parameter("color_segmentation.bounds").value
-        self.bounds = ((self.bounds[0],self.bounds[1],self.bounds[2]),(self.bounds[3],self.bounds[4],self.bounds[5]))
-        self.line_follower_active = self.get_parameter("line_follower.active").value
-        self.roi_xmin = self.get_parameter("line_follower.roi.xmin").value
-        self.roi_xmax = self.get_parameter("line_follower.roi.xmax").value
-        self.roi_ymin = self.get_parameter("line_follower.roi.ymin").value
-        self.roi_ymax = self.get_parameter("line_follower.roi.ymax").value
+        # toggle line follower vs cone parker
+        self.LineFollower = False
+
+        # Subscribe to ZED camera RGB frames
         self.cone_pub = self.create_publisher(
-            ConeLocationPixel, self.CONE_POS_TOPIC, 10
+            ConeLocationPixel, "/relative_cone_px", 10
         )
-        self.debug_pub = self.create_publisher(Image, self.CONE_DEBUG_TOPIC, 10)
+        self.debug_pub = self.create_publisher(Image, "/cone_debug_img", 10)
         self.image_sub = self.create_subscription(
-            Image, self.IMAGE_TOPIC, self.image_callback, 5
+            Image, "/zed/zed_node/rgb/image_rect_color", self.image_callback, 5
         )
         self.bridge = CvBridge()  # Converts between ROS images and OpenCV Images
 
         self.get_logger().info("Cone Detector Initialized")
-
-        self.prev_pos = None
-        self.delta = 20
 
     def image_callback(self, image_msg):
         # Apply your imported color segmentation function (cd_color_segmentation) to the image msg here
@@ -68,40 +45,15 @@ class ConeDetector(Node):
         # convert it to the car frame.
 
         image = self.bridge.imgmsg_to_cv2(image_msg, "bgr8")
-        if self.line_follower_active:
-            masked = np.zeros_like(image)
-            masked[self.roi_ymin : self.roi_ymax, self.roi_xmin : self.roi_xmax] = \
-                image[self.roi_ymin : self.roi_ymax, self.roi_xmin : self.roi_xmax]
-            image = masked
-
-        bbox = cd_color_segmentation(
-            image,
-            None,
-            debug=False,
-            prev_pos=self.prev_pos,
-            delta=self.delta,
-            bounds=self.bounds,
-        )
+        bbox = cd_color_segmentation(image, None, debug=True)
         if bbox is not None:
             (x1, y1), (x2, y2) = bbox
             cone_location = ConeLocationPixel()
-            cone_location.u = float((x1 + x2) / 2)
-            cone_location.v = float(y2)
-            self.prev_pos = (cone_location.u, cone_location.v)
+            cone_location.u = int((x1 + x2) / 2)
+            cone_location.v = int(y2)
             self.cone_pub.publish(cone_location)
-        else:
-            self.get_logger().warn("No cone detected in current frame.")
-            if self.prev_pos is not None:
-                cone_location = ConeLocationPixel()
-                cone_location.u, cone_location.v = self.prev_pos
-                self.cone_pub.publish(cone_location)
-            self.prev_pos = None
-        if self.debug:
-            if bbox is None:
-                bbox = ((0,0),(0,0))
-            image = cv2.rectangle(cv2.cvtColor(image,cv2.COLOR_BGR2HSV), bbox[0], bbox[1], (0, 255, 0), 1)
-            debug_msg = self.bridge.cv2_to_imgmsg(image, "bgr8")
-            self.debug_pub.publish(debug_msg)
+        debug_msg = self.bridge.cv2_to_imgmsg(image, "bgr8")
+        self.debug_pub.publish(debug_msg)
 
 
 def main(args=None):

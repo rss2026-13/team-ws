@@ -83,8 +83,6 @@ class YoloAnnotatorNode(Node):
         return {
             "chair": (255, 0, 0),
             "dining table": (0, 255, 0),
-            "person": (0, 0, 255),
-            "cell phone": (255, 255, 0)
         }
 
     def on_image(self, msg: Image) -> None:
@@ -150,20 +148,6 @@ class YoloAnnotatorNode(Node):
         #       detections List.
         #
         # Hint: use Python's zip keyword to iterate through the three arrays in a single for loop.
-        for xyxy, conf, cls in zip(xyxy_np, conf_np, cls_np):
-            class_id = int(cls)
-            x1, y1, x2, y2 = xyxy
-            detections.append(
-                Detection(
-                    class_id=class_id,
-                    class_name=self.model.names[class_id],
-                    confidence=float(conf),
-                    x1=int(x1),
-                    y1=int(y1),
-                    x2=int(x2),
-                    y2=int(y2),
-                )
-            )
 
         return detections
 
@@ -177,31 +161,17 @@ class YoloAnnotatorNode(Node):
 
         for det in detections:
             # TODO: Get the bounding box for the detection
-            pt1 = (det.x1, det.y1)
-            pt2 = (det.x2, det.y2)
 
             # TODO: Draw the bounding box around the detection to the output image.
             #       Use the colors you specified per class in `get_class_color_map`
             #       by accessing the self.class_color_map dictionary.
             #
             # Hint: Use cv2's `rectangle` function to draw a rectangle on the annotated image.
-            color = self.class_color_map[det.class_name]
-            cv2.rectangle(out_image, pt1, pt2, color, 2)
 
             # TODO: Label the box with the class name and confidence.
             #
             # Hint: Use cv2's `putText` function to put text on the annotated image.
-            label = f"{det.class_name}: {det.confidence:.2f}"
-            cv2.putText(
-                out_image,
-                label,
-                (det.x1, det.y1 - 10),
-                cv2.FONT_HERSHEY_SIMPLEX,
-                0.5,
-                color,
-                1,
-                # cv2.LINE_AA,
-            )
+            raise NotImplementedError
 
         return out_image
 
