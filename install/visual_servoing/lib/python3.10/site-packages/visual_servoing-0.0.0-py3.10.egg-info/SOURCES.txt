@@ -18,6 +18,7 @@ test/test_pep257.py
 visual_servoing/__init__.py
 visual_servoing/cone_detector.py
 visual_servoing/cone_sim_marker.py
+visual_servoing/evaluate_homography.py
 visual_servoing/homography_transformer.py
 visual_servoing/parking_controller.py
 visual_servoing/yolo_annotator.py

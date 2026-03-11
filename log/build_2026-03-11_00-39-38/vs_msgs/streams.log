@@ -1,0 +1,184 @@
+[0.782s] Invoking command in '/root/racecar_ws/build/vs_msgs': CMAKE_PREFIX_PATH=${CMAKE_PREFIX_PATH}:/root/racecar_ws/install/wall_follower:/root/racecar_ws/install/visual_servoing:/root/racecar_ws/install/safety_controller:/root/racecar_ws/install/ros_exercises:/root/racecar_ws/install/py_pubsub:/root/racecar_ws/install/labc_test1:/root/racecar_ws/install/evaluation:/root/ros2_ws/install/racecar:/opt/ros/humble /usr/bin/cmake --build /root/racecar_ws/build/vs_msgs -- -j6 -l6
+[0.912s] [  6%] Built target vs_msgs__cpp
+[0.913s] [ 12%] Built target vs_msgs__rosidl_generator_c
+[0.948s] [ 12%] Built target ament_cmake_python_copy_vs_msgs
+[0.983s] [ 23%] Built target vs_msgs__rosidl_typesupport_c
+[0.998s] [ 34%] Built target vs_msgs__rosidl_typesupport_fastrtps_cpp
+[1.001s] [ 44%] Built target vs_msgs__rosidl_typesupport_fastrtps_c
+[1.012s] [ 55%] Built target vs_msgs__rosidl_typesupport_introspection_c
+[1.013s] [ 65%] Built target vs_msgs__rosidl_typesupport_introspection_cpp
+[1.023s] [ 76%] Built target vs_msgs__rosidl_typesupport_cpp
+[1.072s] [ 76%] Built target vs_msgs
+[1.125s] [ 78%] Built target vs_msgs__py
+[1.183s] [ 87%] Built target vs_msgs__rosidl_generator_py
+[1.239s] [ 91%] Built target vs_msgs__rosidl_typesupport_introspection_c__pyext
+[1.242s] [ 95%] Built target vs_msgs__rosidl_typesupport_fastrtps_c__pyext
+[1.257s] [100%] Built target vs_msgs__rosidl_typesupport_c__pyext
+[1.710s] running egg_info
+[1.712s] writing vs_msgs.egg-info/PKG-INFO
+[1.713s] writing dependency_links to vs_msgs.egg-info/dependency_links.txt
+[1.714s] writing top-level names to vs_msgs.egg-info/top_level.txt
+[1.721s] reading manifest file 'vs_msgs.egg-info/SOURCES.txt'
+[1.722s] writing manifest file 'vs_msgs.egg-info/SOURCES.txt'
+[1.804s] [100%] Built target ament_cmake_python_build_vs_msgs_egg
+[1.835s] Invoked command in '/root/racecar_ws/build/vs_msgs' returned '0': CMAKE_PREFIX_PATH=${CMAKE_PREFIX_PATH}:/root/racecar_ws/install/wall_follower:/root/racecar_ws/install/visual_servoing:/root/racecar_ws/install/safety_controller:/root/racecar_ws/install/ros_exercises:/root/racecar_ws/install/py_pubsub:/root/racecar_ws/install/labc_test1:/root/racecar_ws/install/evaluation:/root/ros2_ws/install/racecar:/opt/ros/humble /usr/bin/cmake --build /root/racecar_ws/build/vs_msgs -- -j6 -l6
+[1.864s] Invoking command in '/root/racecar_ws/build/vs_msgs': CMAKE_PREFIX_PATH=${CMAKE_PREFIX_PATH}:/root/racecar_ws/install/wall_follower:/root/racecar_ws/install/visual_servoing:/root/racecar_ws/install/safety_controller:/root/racecar_ws/install/ros_exercises:/root/racecar_ws/install/py_pubsub:/root/racecar_ws/install/labc_test1:/root/racecar_ws/install/evaluation:/root/ros2_ws/install/racecar:/opt/ros/humble /usr/bin/cmake --install /root/racecar_ws/build/vs_msgs
+[1.889s] -- Install configuration: ""
+[1.889s] -- Up-to-date: /root/racecar_ws/install/vs_msgs/share/ament_index/resource_index/rosidl_interfaces/vs_msgs
+[1.890s] -- Up-to-date: /root/racecar_ws/install/vs_msgs/include/vs_msgs/vs_msgs
+[1.890s] -- Up-to-date: /root/racecar_ws/install/vs_msgs/include/vs_msgs/vs_msgs/msg
+[1.890s] -- Up-to-date: /root/racecar_ws/install/vs_msgs/include/vs_msgs/vs_msgs/msg/rosidl_generator_c__visibility_control.h
+[1.890s] -- Up-to-date: /root/racecar_ws/install/vs_msgs/include/vs_msgs/vs_msgs/msg/cone_location_pixel.h
+[1.891s] -- Up-to-date: /root/racecar_ws/install/vs_msgs/include/vs_msgs/vs_msgs/msg/detail
+[1.891s] -- Up-to-date: /root/racecar_ws/install/vs_msgs/include/vs_msgs/vs_msgs/msg/detail/parking_error__type_support.h
+[1.891s] -- Up-to-date: /root/racecar_ws/install/vs_msgs/include/vs_msgs/vs_msgs/msg/detail/cone_location__functions.c
+[1.891s] -- Up-to-date: /root/racecar_ws/install/vs_msgs/include/vs_msgs/vs_msgs/msg/detail/cone_location_pixel__functions.c
+[1.892s] -- Up-to-date: /root/racecar_ws/install/vs_msgs/include/vs_msgs/vs_msgs/msg/detail/parking_error__struct.h
+[1.892s] -- Up-to-date: /root/racecar_ws/install/vs_msgs/include/vs_msgs/vs_msgs/msg/detail/cone_location__struct.h
+[1.892s] -- Up-to-date: /root/racecar_ws/install/vs_msgs/include/vs_msgs/vs_msgs/msg/detail/cone_location_pixel__struct.h
+[1.893s] -- Up-to-date: /root/racecar_ws/install/vs_msgs/include/vs_msgs/vs_msgs/msg/detail/cone_location_pixel__functions.h
+[1.893s] -- Up-to-date: /root/racecar_ws/install/vs_msgs/include/vs_msgs/vs_msgs/msg/detail/cone_location_pixel__type_support.h
+[1.894s] -- Up-to-date: /root/racecar_ws/install/vs_msgs/include/vs_msgs/vs_msgs/msg/detail/parking_error__functions.h
+[1.894s] -- Up-to-date: /root/racecar_ws/install/vs_msgs/include/vs_msgs/vs_msgs/msg/detail/cone_location__type_support.h
+[1.895s] -- Up-to-date: /root/racecar_ws/install/vs_msgs/include/vs_msgs/vs_msgs/msg/detail/cone_location__functions.h
+[1.895s] -- Up-to-date: /root/racecar_ws/install/vs_msgs/include/vs_msgs/vs_msgs/msg/detail/parking_error__functions.c
+[1.895s] -- Up-to-date: /root/racecar_ws/install/vs_msgs/include/vs_msgs/vs_msgs/msg/cone_location.h
+[1.896s] -- Up-to-date: /root/racecar_ws/install/vs_msgs/include/vs_msgs/vs_msgs/msg/parking_error.h
+[1.896s] -- Up-to-date: /root/racecar_ws/install/vs_msgs/share/vs_msgs/environment/library_path.sh
+[1.896s] -- Up-to-date: /root/racecar_ws/install/vs_msgs/share/vs_msgs/environment/library_path.dsv
+[1.897s] -- Up-to-date: /root/racecar_ws/install/vs_msgs/lib/libvs_msgs__rosidl_generator_c.so
+[1.897s] -- Up-to-date: /root/racecar_ws/install/vs_msgs/include/vs_msgs/vs_msgs
+[1.897s] -- Up-to-date: /root/racecar_ws/install/vs_msgs/include/vs_msgs/vs_msgs/msg
+[1.898s] -- Up-to-date: /root/racecar_ws/install/vs_msgs/include/vs_msgs/vs_msgs/msg/detail
+[1.898s] -- Up-to-date: /root/racecar_ws/install/vs_msgs/include/vs_msgs/vs_msgs/msg/detail/cone_location__rosidl_typesupport_fastrtps_c.h
+[1.898s] -- Up-to-date: /root/racecar_ws/install/vs_msgs/include/vs_msgs/vs_msgs/msg/detail/cone_location_pixel__rosidl_typesupport_fastrtps_c.h
+[1.898s] -- Up-to-date: /root/racecar_ws/install/vs_msgs/include/vs_msgs/vs_msgs/msg/detail/parking_error__rosidl_typesupport_fastrtps_c.h
+[1.899s] -- Up-to-date: /root/racecar_ws/install/vs_msgs/include/vs_msgs/vs_msgs/msg/rosidl_typesupport_fastrtps_c__visibility_control.h
+[1.900s] -- Up-to-date: /root/racecar_ws/install/vs_msgs/lib/libvs_msgs__rosidl_typesupport_fastrtps_c.so
+[1.900s] -- Up-to-date: /root/racecar_ws/install/vs_msgs/include/vs_msgs/vs_msgs
+[1.900s] -- Up-to-date: /root/racecar_ws/install/vs_msgs/include/vs_msgs/vs_msgs/msg
+[1.900s] -- Up-to-date: /root/racecar_ws/install/vs_msgs/include/vs_msgs/vs_msgs/msg/detail
+[1.901s] -- Up-to-date: /root/racecar_ws/install/vs_msgs/include/vs_msgs/vs_msgs/msg/detail/parking_error__rosidl_typesupport_introspection_c.h
+[1.901s] -- Up-to-date: /root/racecar_ws/install/vs_msgs/include/vs_msgs/vs_msgs/msg/detail/cone_location_pixel__rosidl_typesupport_introspection_c.h
+[1.901s] -- Up-to-date: /root/racecar_ws/install/vs_msgs/include/vs_msgs/vs_msgs/msg/detail/cone_location__rosidl_typesupport_introspection_c.h
+[1.901s] -- Up-to-date: /root/racecar_ws/install/vs_msgs/include/vs_msgs/vs_msgs/msg/detail/cone_location_pixel__type_support.c
+[1.901s] -- Up-to-date: /root/racecar_ws/install/vs_msgs/include/vs_msgs/vs_msgs/msg/detail/cone_location__type_support.c
+[1.901s] -- Up-to-date: /root/racecar_ws/install/vs_msgs/include/vs_msgs/vs_msgs/msg/detail/parking_error__type_support.c
+[1.901s] -- Up-to-date: /root/racecar_ws/install/vs_msgs/include/vs_msgs/vs_msgs/msg/rosidl_typesupport_introspection_c__visibility_control.h
+[1.901s] -- Up-to-date: /root/racecar_ws/install/vs_msgs/lib/libvs_msgs__rosidl_typesupport_introspection_c.so
+[1.901s] -- Up-to-date: /root/racecar_ws/install/vs_msgs/lib/libvs_msgs__rosidl_typesupport_c.so
+[1.902s] -- Up-to-date: /root/racecar_ws/install/vs_msgs/include/vs_msgs/vs_msgs
+[1.902s] -- Up-to-date: /root/racecar_ws/install/vs_msgs/include/vs_msgs/vs_msgs/msg
+[1.902s] -- Up-to-date: /root/racecar_ws/install/vs_msgs/include/vs_msgs/vs_msgs/msg/cone_location_pixel.hpp
+[1.902s] -- Up-to-date: /root/racecar_ws/install/vs_msgs/include/vs_msgs/vs_msgs/msg/rosidl_generator_cpp__visibility_control.hpp
+[1.902s] -- Up-to-date: /root/racecar_ws/install/vs_msgs/include/vs_msgs/vs_msgs/msg/detail
+[1.902s] -- Up-to-date: /root/racecar_ws/install/vs_msgs/include/vs_msgs/vs_msgs/msg/detail/cone_location__struct.hpp
+[1.902s] -- Up-to-date: /root/racecar_ws/install/vs_msgs/include/vs_msgs/vs_msgs/msg/detail/parking_error__type_support.hpp
+[1.902s] -- Up-to-date: /root/racecar_ws/install/vs_msgs/include/vs_msgs/vs_msgs/msg/detail/parking_error__struct.hpp
+[1.903s] -- Up-to-date: /root/racecar_ws/install/vs_msgs/include/vs_msgs/vs_msgs/msg/detail/cone_location__builder.hpp
+[1.903s] -- Up-to-date: /root/racecar_ws/install/vs_msgs/include/vs_msgs/vs_msgs/msg/detail/cone_location_pixel__struct.hpp
+[1.903s] -- Up-to-date: /root/racecar_ws/install/vs_msgs/include/vs_msgs/vs_msgs/msg/detail/cone_location__type_support.hpp
+[1.903s] -- Up-to-date: /root/racecar_ws/install/vs_msgs/include/vs_msgs/vs_msgs/msg/detail/cone_location_pixel__traits.hpp
+[1.903s] -- Up-to-date: /root/racecar_ws/install/vs_msgs/include/vs_msgs/vs_msgs/msg/detail/cone_location_pixel__builder.hpp
+[1.903s] -- Up-to-date: /root/racecar_ws/install/vs_msgs/include/vs_msgs/vs_msgs/msg/detail/cone_location__traits.hpp
+[1.903s] -- Up-to-date: /root/racecar_ws/install/vs_msgs/include/vs_msgs/vs_msgs/msg/detail/parking_error__builder.hpp
+[1.903s] -- Up-to-date: /root/racecar_ws/install/vs_msgs/include/vs_msgs/vs_msgs/msg/detail/parking_error__traits.hpp
+[1.903s] -- Up-to-date: /root/racecar_ws/install/vs_msgs/include/vs_msgs/vs_msgs/msg/detail/cone_location_pixel__type_support.hpp
+[1.904s] -- Up-to-date: /root/racecar_ws/install/vs_msgs/include/vs_msgs/vs_msgs/msg/parking_error.hpp
+[1.904s] -- Up-to-date: /root/racecar_ws/install/vs_msgs/include/vs_msgs/vs_msgs/msg/cone_location.hpp
+[1.904s] -- Up-to-date: /root/racecar_ws/install/vs_msgs/include/vs_msgs/vs_msgs
+[1.904s] -- Up-to-date: /root/racecar_ws/install/vs_msgs/include/vs_msgs/vs_msgs/msg
+[1.904s] -- Up-to-date: /root/racecar_ws/install/vs_msgs/include/vs_msgs/vs_msgs/msg/detail
+[1.904s] -- Up-to-date: /root/racecar_ws/install/vs_msgs/include/vs_msgs/vs_msgs/msg/detail/dds_fastrtps
+[1.904s] -- Up-to-date: /root/racecar_ws/install/vs_msgs/include/vs_msgs/vs_msgs/msg/detail/cone_location__rosidl_typesupport_fastrtps_cpp.hpp
+[1.904s] -- Up-to-date: /root/racecar_ws/install/vs_msgs/include/vs_msgs/vs_msgs/msg/detail/parking_error__rosidl_typesupport_fastrtps_cpp.hpp
+[1.905s] -- Up-to-date: /root/racecar_ws/install/vs_msgs/include/vs_msgs/vs_msgs/msg/detail/cone_location_pixel__rosidl_typesupport_fastrtps_cpp.hpp
+[1.905s] -- Up-to-date: /root/racecar_ws/install/vs_msgs/include/vs_msgs/vs_msgs/msg/rosidl_typesupport_fastrtps_cpp__visibility_control.h
+[1.905s] -- Up-to-date: /root/racecar_ws/install/vs_msgs/lib/libvs_msgs__rosidl_typesupport_fastrtps_cpp.so
+[1.905s] -- Up-to-date: /root/racecar_ws/install/vs_msgs/include/vs_msgs/vs_msgs
+[1.905s] -- Up-to-date: /root/racecar_ws/install/vs_msgs/include/vs_msgs/vs_msgs/msg
+[1.905s] -- Up-to-date: /root/racecar_ws/install/vs_msgs/include/vs_msgs/vs_msgs/msg/detail
+[1.905s] -- Up-to-date: /root/racecar_ws/install/vs_msgs/include/vs_msgs/vs_msgs/msg/detail/cone_location_pixel__type_support.cpp
+[1.905s] -- Up-to-date: /root/racecar_ws/install/vs_msgs/include/vs_msgs/vs_msgs/msg/detail/cone_location_pixel__rosidl_typesupport_introspection_cpp.hpp
+[1.905s] -- Up-to-date: /root/racecar_ws/install/vs_msgs/include/vs_msgs/vs_msgs/msg/detail/parking_error__rosidl_typesupport_introspection_cpp.hpp
+[1.906s] -- Up-to-date: /root/racecar_ws/install/vs_msgs/include/vs_msgs/vs_msgs/msg/detail/cone_location__rosidl_typesupport_introspection_cpp.hpp
+[1.906s] -- Up-to-date: /root/racecar_ws/install/vs_msgs/include/vs_msgs/vs_msgs/msg/detail/parking_error__type_support.cpp
+[1.906s] -- Up-to-date: /root/racecar_ws/install/vs_msgs/include/vs_msgs/vs_msgs/msg/detail/cone_location__type_support.cpp
+[1.906s] -- Up-to-date: /root/racecar_ws/install/vs_msgs/lib/libvs_msgs__rosidl_typesupport_introspection_cpp.so
+[1.906s] -- Up-to-date: /root/racecar_ws/install/vs_msgs/lib/libvs_msgs__rosidl_typesupport_cpp.so
+[1.906s] -- Up-to-date: /root/racecar_ws/install/vs_msgs/share/vs_msgs/environment/pythonpath.sh
+[1.906s] -- Up-to-date: /root/racecar_ws/install/vs_msgs/share/vs_msgs/environment/pythonpath.dsv
+[1.906s] -- Up-to-date: /root/racecar_ws/install/vs_msgs/local/lib/python3.10/dist-packages/vs_msgs-0.0.0-py3.10.egg-info
+[1.906s] -- Installing: /root/racecar_ws/install/vs_msgs/local/lib/python3.10/dist-packages/vs_msgs-0.0.0-py3.10.egg-info/top_level.txt
+[1.907s] -- Installing: /root/racecar_ws/install/vs_msgs/local/lib/python3.10/dist-packages/vs_msgs-0.0.0-py3.10.egg-info/SOURCES.txt
+[1.907s] -- Installing: /root/racecar_ws/install/vs_msgs/local/lib/python3.10/dist-packages/vs_msgs-0.0.0-py3.10.egg-info/PKG-INFO
+[1.907s] -- Installing: /root/racecar_ws/install/vs_msgs/local/lib/python3.10/dist-packages/vs_msgs-0.0.0-py3.10.egg-info/dependency_links.txt
+[1.907s] -- Up-to-date: /root/racecar_ws/install/vs_msgs/local/lib/python3.10/dist-packages/vs_msgs
+[1.907s] -- Up-to-date: /root/racecar_ws/install/vs_msgs/local/lib/python3.10/dist-packages/vs_msgs/libvs_msgs__rosidl_generator_py.so
+[1.907s] -- Up-to-date: /root/racecar_ws/install/vs_msgs/local/lib/python3.10/dist-packages/vs_msgs/_vs_msgs_s.ep.rosidl_typesupport_introspection_c.c
+[1.907s] -- Up-to-date: /root/racecar_ws/install/vs_msgs/local/lib/python3.10/dist-packages/vs_msgs/vs_msgs_s__rosidl_typesupport_introspection_c.cpython-310-aarch64-linux-gnu.so
+[1.907s] -- Up-to-date: /root/racecar_ws/install/vs_msgs/local/lib/python3.10/dist-packages/vs_msgs/vs_msgs_s__rosidl_typesupport_fastrtps_c.cpython-310-aarch64-linux-gnu.so
+[1.907s] -- Up-to-date: /root/racecar_ws/install/vs_msgs/local/lib/python3.10/dist-packages/vs_msgs/_vs_msgs_s.ep.rosidl_typesupport_c.c
+[1.908s] -- Up-to-date: /root/racecar_ws/install/vs_msgs/local/lib/python3.10/dist-packages/vs_msgs/msg
+[1.908s] -- Up-to-date: /root/racecar_ws/install/vs_msgs/local/lib/python3.10/dist-packages/vs_msgs/msg/_cone_location_pixel_s.c
+[1.908s] -- Up-to-date: /root/racecar_ws/install/vs_msgs/local/lib/python3.10/dist-packages/vs_msgs/msg/_parking_error_s.c
+[1.908s] -- Up-to-date: /root/racecar_ws/install/vs_msgs/local/lib/python3.10/dist-packages/vs_msgs/msg/_cone_location.py
+[1.908s] -- Up-to-date: /root/racecar_ws/install/vs_msgs/local/lib/python3.10/dist-packages/vs_msgs/msg/_cone_location_pixel.py
+[1.908s] -- Up-to-date: /root/racecar_ws/install/vs_msgs/local/lib/python3.10/dist-packages/vs_msgs/msg/_cone_location_s.c
+[1.908s] -- Up-to-date: /root/racecar_ws/install/vs_msgs/local/lib/python3.10/dist-packages/vs_msgs/msg/__init__.py
+[1.908s] -- Up-to-date: /root/racecar_ws/install/vs_msgs/local/lib/python3.10/dist-packages/vs_msgs/msg/_parking_error.py
+[1.909s] -- Up-to-date: /root/racecar_ws/install/vs_msgs/local/lib/python3.10/dist-packages/vs_msgs/_vs_msgs_s.ep.rosidl_typesupport_fastrtps_c.c
+[1.909s] -- Up-to-date: /root/racecar_ws/install/vs_msgs/local/lib/python3.10/dist-packages/vs_msgs/__init__.py
+[1.909s] -- Up-to-date: /root/racecar_ws/install/vs_msgs/local/lib/python3.10/dist-packages/vs_msgs/vs_msgs_s__rosidl_typesupport_c.cpython-310-aarch64-linux-gnu.so
+[1.985s] Listing '/root/racecar_ws/install/vs_msgs/local/lib/python3.10/dist-packages/vs_msgs'...
+[1.986s] Listing '/root/racecar_ws/install/vs_msgs/local/lib/python3.10/dist-packages/vs_msgs/msg'...
+[1.998s] -- Up-to-date: /root/racecar_ws/install/vs_msgs/local/lib/python3.10/dist-packages/vs_msgs/vs_msgs_s__rosidl_typesupport_fastrtps_c.cpython-310-aarch64-linux-gnu.so
+[1.998s] -- Up-to-date: /root/racecar_ws/install/vs_msgs/local/lib/python3.10/dist-packages/vs_msgs/vs_msgs_s__rosidl_typesupport_introspection_c.cpython-310-aarch64-linux-gnu.so
+[1.998s] -- Up-to-date: /root/racecar_ws/install/vs_msgs/local/lib/python3.10/dist-packages/vs_msgs/vs_msgs_s__rosidl_typesupport_c.cpython-310-aarch64-linux-gnu.so
+[1.998s] -- Up-to-date: /root/racecar_ws/install/vs_msgs/lib/libvs_msgs__rosidl_generator_py.so
+[1.999s] -- Up-to-date: /root/racecar_ws/install/vs_msgs/share/vs_msgs/msg/ConeLocation.idl
+[1.999s] -- Up-to-date: /root/racecar_ws/install/vs_msgs/share/vs_msgs/msg/ConeLocationPixel.idl
+[1.999s] -- Up-to-date: /root/racecar_ws/install/vs_msgs/share/vs_msgs/msg/ParkingError.idl
+[2.000s] -- Up-to-date: /root/racecar_ws/install/vs_msgs/share/vs_msgs/msg/ConeLocation.msg
+[2.000s] -- Up-to-date: /root/racecar_ws/install/vs_msgs/share/vs_msgs/msg/ConeLocationPixel.msg
+[2.001s] -- Up-to-date: /root/racecar_ws/install/vs_msgs/share/vs_msgs/msg/ParkingError.msg
+[2.001s] -- Up-to-date: /root/racecar_ws/install/vs_msgs/share/ament_index/resource_index/package_run_dependencies/vs_msgs
+[2.002s] -- Up-to-date: /root/racecar_ws/install/vs_msgs/share/ament_index/resource_index/parent_prefix_path/vs_msgs
+[2.002s] -- Up-to-date: /root/racecar_ws/install/vs_msgs/share/vs_msgs/environment/ament_prefix_path.sh
+[2.002s] -- Up-to-date: /root/racecar_ws/install/vs_msgs/share/vs_msgs/environment/ament_prefix_path.dsv
+[2.002s] -- Up-to-date: /root/racecar_ws/install/vs_msgs/share/vs_msgs/environment/path.sh
+[2.002s] -- Up-to-date: /root/racecar_ws/install/vs_msgs/share/vs_msgs/environment/path.dsv
+[2.003s] -- Up-to-date: /root/racecar_ws/install/vs_msgs/share/vs_msgs/local_setup.bash
+[2.003s] -- Up-to-date: /root/racecar_ws/install/vs_msgs/share/vs_msgs/local_setup.sh
+[2.003s] -- Up-to-date: /root/racecar_ws/install/vs_msgs/share/vs_msgs/local_setup.zsh
+[2.003s] -- Up-to-date: /root/racecar_ws/install/vs_msgs/share/vs_msgs/local_setup.dsv
+[2.003s] -- Installing: /root/racecar_ws/install/vs_msgs/share/vs_msgs/package.dsv
+[2.003s] -- Up-to-date: /root/racecar_ws/install/vs_msgs/share/ament_index/resource_index/packages/vs_msgs
+[2.004s] -- Up-to-date: /root/racecar_ws/install/vs_msgs/share/vs_msgs/cmake/export_vs_msgs__rosidl_generator_cExport.cmake
+[2.004s] -- Up-to-date: /root/racecar_ws/install/vs_msgs/share/vs_msgs/cmake/export_vs_msgs__rosidl_generator_cExport-noconfig.cmake
+[2.004s] -- Up-to-date: /root/racecar_ws/install/vs_msgs/share/vs_msgs/cmake/export_vs_msgs__rosidl_typesupport_fastrtps_cExport.cmake
+[2.004s] -- Up-to-date: /root/racecar_ws/install/vs_msgs/share/vs_msgs/cmake/export_vs_msgs__rosidl_typesupport_fastrtps_cExport-noconfig.cmake
+[2.004s] -- Up-to-date: /root/racecar_ws/install/vs_msgs/share/vs_msgs/cmake/vs_msgs__rosidl_typesupport_introspection_cExport.cmake
+[2.004s] -- Up-to-date: /root/racecar_ws/install/vs_msgs/share/vs_msgs/cmake/vs_msgs__rosidl_typesupport_introspection_cExport-noconfig.cmake
+[2.004s] -- Up-to-date: /root/racecar_ws/install/vs_msgs/share/vs_msgs/cmake/vs_msgs__rosidl_typesupport_cExport.cmake
+[2.005s] -- Up-to-date: /root/racecar_ws/install/vs_msgs/share/vs_msgs/cmake/vs_msgs__rosidl_typesupport_cExport-noconfig.cmake
+[2.005s] -- Up-to-date: /root/racecar_ws/install/vs_msgs/share/vs_msgs/cmake/export_vs_msgs__rosidl_generator_cppExport.cmake
+[2.005s] -- Up-to-date: /root/racecar_ws/install/vs_msgs/share/vs_msgs/cmake/export_vs_msgs__rosidl_typesupport_fastrtps_cppExport.cmake
+[2.005s] -- Up-to-date: /root/racecar_ws/install/vs_msgs/share/vs_msgs/cmake/export_vs_msgs__rosidl_typesupport_fastrtps_cppExport-noconfig.cmake
+[2.005s] -- Up-to-date: /root/racecar_ws/install/vs_msgs/share/vs_msgs/cmake/vs_msgs__rosidl_typesupport_introspection_cppExport.cmake
+[2.005s] -- Up-to-date: /root/racecar_ws/install/vs_msgs/share/vs_msgs/cmake/vs_msgs__rosidl_typesupport_introspection_cppExport-noconfig.cmake
+[2.005s] -- Up-to-date: /root/racecar_ws/install/vs_msgs/share/vs_msgs/cmake/vs_msgs__rosidl_typesupport_cppExport.cmake
+[2.005s] -- Up-to-date: /root/racecar_ws/install/vs_msgs/share/vs_msgs/cmake/vs_msgs__rosidl_typesupport_cppExport-noconfig.cmake
+[2.006s] -- Up-to-date: /root/racecar_ws/install/vs_msgs/share/vs_msgs/cmake/export_vs_msgs__rosidl_generator_pyExport.cmake
+[2.006s] -- Up-to-date: /root/racecar_ws/install/vs_msgs/share/vs_msgs/cmake/export_vs_msgs__rosidl_generator_pyExport-noconfig.cmake
+[2.006s] -- Up-to-date: /root/racecar_ws/install/vs_msgs/share/vs_msgs/cmake/rosidl_cmake-extras.cmake
+[2.006s] -- Up-to-date: /root/racecar_ws/install/vs_msgs/share/vs_msgs/cmake/ament_cmake_export_include_directories-extras.cmake
+[2.006s] -- Up-to-date: /root/racecar_ws/install/vs_msgs/share/vs_msgs/cmake/ament_cmake_export_libraries-extras.cmake
+[2.006s] -- Up-to-date: /root/racecar_ws/install/vs_msgs/share/vs_msgs/cmake/ament_cmake_export_targets-extras.cmake
+[2.006s] -- Up-to-date: /root/racecar_ws/install/vs_msgs/share/vs_msgs/cmake/rosidl_cmake_export_typesupport_targets-extras.cmake
+[2.006s] -- Up-to-date: /root/racecar_ws/install/vs_msgs/share/vs_msgs/cmake/ament_cmake_export_dependencies-extras.cmake
+[2.006s] -- Up-to-date: /root/racecar_ws/install/vs_msgs/share/vs_msgs/cmake/rosidl_cmake_export_typesupport_libraries-extras.cmake
+[2.007s] -- Up-to-date: /root/racecar_ws/install/vs_msgs/share/vs_msgs/cmake/vs_msgsConfig.cmake
+[2.007s] -- Up-to-date: /root/racecar_ws/install/vs_msgs/share/vs_msgs/cmake/vs_msgsConfig-version.cmake
+[2.007s] -- Up-to-date: /root/racecar_ws/install/vs_msgs/share/vs_msgs/package.xml
+[2.009s] Invoked command in '/root/racecar_ws/build/vs_msgs' returned '0': CMAKE_PREFIX_PATH=${CMAKE_PREFIX_PATH}:/root/racecar_ws/install/wall_follower:/root/racecar_ws/install/visual_servoing:/root/racecar_ws/install/safety_controller:/root/racecar_ws/install/ros_exercises:/root/racecar_ws/install/py_pubsub:/root/racecar_ws/install/labc_test1:/root/racecar_ws/install/evaluation:/root/ros2_ws/install/racecar:/opt/ros/humble /usr/bin/cmake --install /root/racecar_ws/build/vs_msgs

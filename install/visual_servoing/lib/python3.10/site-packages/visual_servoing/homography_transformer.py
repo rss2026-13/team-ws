@@ -69,6 +69,8 @@ class HomographyTransformer(Node):
         self.h, err = cv2.findHomography(np_pts_image, np_pts_ground)
 
         self.get_logger().info("Homography Transformer Initialized")
+        self.get_logger().info(f"Homography Matrix:\n{self.h}")
+
 
     def cone_detection_callback(self, msg):
 

@@ -1,0 +1,27 @@
+[1.813s] Invoking command in '/root/racecar_ws/src/visual_servoing/visual_servoing': PYTHONPATH=/root/racecar_ws/build/visual_servoing/prefix_override:/usr/lib/python3/dist-packages/colcon_core/task/python/colcon_distutils_commands:/root/racecar_ws/install/visual_servoing/lib/python3.10/site-packages:${PYTHONPATH} /usr/bin/python3 -W ignore:setup.py install is deprecated -W ignore:easy_install command is deprecated setup.py egg_info --egg-base ../../../build/visual_servoing build --build-base /root/racecar_ws/build/visual_servoing/build install --record /root/racecar_ws/build/visual_servoing/install.log --install-scripts $base/lib/visual_servoing --single-version-externally-managed install_data
+[2.439s] /usr/lib/python3/dist-packages/setuptools/dist.py:723: UserWarning: Usage of dash-separated 'script-dir' will not be supported in future versions. Please use the underscore name 'script_dir' instead
+[2.439s]   warnings.warn(
+[2.460s] running egg_info
+[2.462s] writing ../../../build/visual_servoing/visual_servoing.egg-info/PKG-INFO
+[2.462s] writing dependency_links to ../../../build/visual_servoing/visual_servoing.egg-info/dependency_links.txt
+[2.463s] writing entry points to ../../../build/visual_servoing/visual_servoing.egg-info/entry_points.txt
+[2.463s] writing requirements to ../../../build/visual_servoing/visual_servoing.egg-info/requires.txt
+[2.463s] writing top-level names to ../../../build/visual_servoing/visual_servoing.egg-info/top_level.txt
+[2.467s] reading manifest file '../../../build/visual_servoing/visual_servoing.egg-info/SOURCES.txt'
+[2.469s] writing manifest file '../../../build/visual_servoing/visual_servoing.egg-info/SOURCES.txt'
+[2.470s] running build
+[2.470s] running build_py
+[2.471s] running install
+[2.471s] running install_lib
+[2.475s] running install_data
+[2.475s] running install_egg_info
+[2.481s] removing '/root/racecar_ws/install/visual_servoing/lib/python3.10/site-packages/visual_servoing-0.0.0-py3.10.egg-info' (and everything under it)
+[2.481s] Copying ../../../build/visual_servoing/visual_servoing.egg-info to /root/racecar_ws/install/visual_servoing/lib/python3.10/site-packages/visual_servoing-0.0.0-py3.10.egg-info
+[2.483s] running install_scripts
+[2.529s] Installing cone_detector script to /root/racecar_ws/install/visual_servoing/lib/visual_servoing
+[2.529s] Installing cone_sim_marker script to /root/racecar_ws/install/visual_servoing/lib/visual_servoing
+[2.530s] Installing homography_transformer script to /root/racecar_ws/install/visual_servoing/lib/visual_servoing
+[2.530s] Installing parking_controller script to /root/racecar_ws/install/visual_servoing/lib/visual_servoing
+[2.530s] Installing yolo_annotator script to /root/racecar_ws/install/visual_servoing/lib/visual_servoing
+[2.531s] writing list of installed files to '/root/racecar_ws/build/visual_servoing/install.log'
+[2.607s] Invoked command in '/root/racecar_ws/src/visual_servoing/visual_servoing' returned '0': PYTHONPATH=/root/racecar_ws/build/visual_servoing/prefix_override:/usr/lib/python3/dist-packages/colcon_core/task/python/colcon_distutils_commands:/root/racecar_ws/install/visual_servoing/lib/python3.10/site-packages:${PYTHONPATH} /usr/bin/python3 -W ignore:setup.py install is deprecated -W ignore:easy_install command is deprecated setup.py egg_info --egg-base ../../../build/visual_servoing build --build-base /root/racecar_ws/build/visual_servoing/build install --record /root/racecar_ws/build/visual_servoing/install.log --install-scripts $base/lib/visual_servoing --single-version-externally-managed install_data
