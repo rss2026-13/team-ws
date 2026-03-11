@@ -55,12 +55,10 @@ class SafetyController(Node):
     def drive_callback(self, msg):
         self.drive_command = msg
         self.get_logger().debug("Received new drive command")
-        self.evaluate_safety()
 
     def scan_callback(self, msg):
         if (self.scan_cos_angles is None) or (self.scan_sin_angles is None): # Lazy initialization
-            ranges = scipy.signal.medfilt(msg.ranges, kernel_size=7)
-            angles = np.linspace(msg.angle_min, msg.angle_max, num=np.array(ranges).shape[0])
+            angles = np.linspace(msg.angle_min, msg.angle_max, len(msg.ranges))
             self.scan_cos_angles = np.cos(angles)
             self.scan_sin_angles = np.sin(angles)
         
@@ -83,7 +81,7 @@ class SafetyController(Node):
             self.publish_safety_marker(delta, front_threshold)
 
         # Get Cartesian points
-        ranges = np.array(scipy.signal.medfilt(self.scan_data.ranges, kernel_size=7))
+        ranges = np.array(self.scan_data.ranges)
         px = ranges * self.scan_cos_angles
         py = ranges * self.scan_sin_angles
 
