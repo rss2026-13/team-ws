@@ -4,6 +4,6 @@ safety_controller:
     drive_topic: "/vesc/low_level/ackermann_cmd"
     output_topic: "/vesc/low_level/input/safety"
     margin: 0.2
-    max_deceleration: 2.5
+    max_deceleration: 2.0
     car_width: 0.25
     lidar_offset: 0.12

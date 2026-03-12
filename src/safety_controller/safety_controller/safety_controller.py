@@ -16,7 +16,7 @@ class SafetyController(Node):
         self.declare_parameter("output_topic", "/vesc/low_level/input/safety")
         self.declare_parameter("scan_topic", "/scan")
         self.declare_parameter("margin", 0.2)
-        self.declare_parameter("max_deceleration", 2.5)
+        self.declare_parameter("max_deceleration", 2.0)
         self.declare_parameter("car_width", 0.25)
         self.declare_parameter("wheelbase", 0.325)
         self.declare_parameter("lidar_offset", 0.12)          # Lidar to front bumper
