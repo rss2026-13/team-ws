@@ -45,6 +45,7 @@ class SafetyController(Node):
         self.drive_publisher = self.create_publisher(AckermannDriveStamped, self.OUTPUT_TOPIC, 10)
         self.distance_pub = self.create_publisher(Float32, "/sc_wall_dist", 10)
         self.marker_pub = self.create_publisher(Marker, "/safety_marker", 1)
+        self.threshold_dist_pub = self.create_publisher(Float32, "/threshold_distance", 10)
 
         self.is_collision = False
         self.scan_data = None
@@ -77,6 +78,9 @@ class SafetyController(Node):
 
         # Kinematic stopping distance threshold
         front_threshold = self.MARGIN + (velocity ** 2) / (2 * self.MAX_DECELERATION)
+        thresh_dist = Float32()
+        thresh_dist.data = float(front_threshold)
+        self.threshold_dist_pub.publish(thresh_dist)
 
         if self.VISUALIZE:
             self.publish_safety_marker(delta, front_threshold)
