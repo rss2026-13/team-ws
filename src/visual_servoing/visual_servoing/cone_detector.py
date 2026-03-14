@@ -45,7 +45,7 @@ class ConeDetector(Node):
         # convert it to the car frame.
 
         image = self.bridge.imgmsg_to_cv2(image_msg, "bgr8")
-        bbox = cd_color_segmentation(image, None, debug=True)
+        bbox = cd_color_segmentation(image, None, debug=False)
         if bbox is not None:
             (x1, y1), (x2, y2) = bbox
             cone_location = ConeLocationPixel()
