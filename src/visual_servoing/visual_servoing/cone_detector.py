@@ -1,14 +1,12 @@
 #!/usr/bin/env python3
 
-import rclpy
-from rclpy.node import Node
-import numpy as np
-
 import cv2
+import numpy as np
+import rclpy
 from cv_bridge import CvBridge, CvBridgeError
-
+from geometry_msgs.msg import Point  # geometry_msgs not in CMake file
+from rclpy.node import Node
 from sensor_msgs.msg import Image
-from geometry_msgs.msg import Point #geometry_msgs not in CMake file
 from vs_msgs.msg import ConeLocationPixel
 
 # import your color segmentation algorithm; call this function in ros_image_callback!
@@ -28,9 +26,13 @@ class ConeDetector(Node):
         self.LineFollower = False
 
         # Subscribe to ZED camera RGB frames
-        self.cone_pub = self.create_publisher(ConeLocationPixel, "/relative_cone_px", 10)
+        self.cone_pub = self.create_publisher(
+            ConeLocationPixel, "/relative_cone_px", 10
+        )
         self.debug_pub = self.create_publisher(Image, "/cone_debug_img", 10)
-        self.image_sub = self.create_subscription(Image, "/zed/zed_node/rgb/image_rect_color", self.image_callback, 5)
+        self.image_sub = self.create_subscription(
+            Image, "/zed/zed_node/rgb/image_rect_color", self.image_callback, 5
+        )
         self.bridge = CvBridge()  # Converts between ROS images and OpenCV Images
 
         self.get_logger().info("Cone Detector Initialized")
@@ -42,15 +44,14 @@ class ConeDetector(Node):
         # publish this pixel (u, v) to the /relative_cone_px topic; the homography transformer will
         # convert it to the car frame.
 
-        #################################
-        # YOUR CODE HERE
-        # detect the cone and publish its
-        # pixel location in the image.
-        # vvvvvvvvvvvvvvvvvvvvvvvvvvvvvv
-        #################################
-
         image = self.bridge.imgmsg_to_cv2(image_msg, "bgr8")
-
+        bbox = cd_color_segmentation(image, None, debug=False)
+        if bbox is not None:
+            (x1, y1), (x2, y2) = bbox
+            cone_location = ConeLocationPixel()
+            cone_location.u = int((x1 + x2) / 2)
+            cone_location.v = int(y2)
+            self.cone_pub.publish(cone_location)
         debug_msg = self.bridge.cv2_to_imgmsg(image, "bgr8")
         self.debug_pub.publish(debug_msg)
 
@@ -62,5 +63,5 @@ def main(args=None):
     rclpy.shutdown()
 
 
-if __name__ == '__main__':
+if __name__ == "__main__":
     main()
