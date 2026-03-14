@@ -13,6 +13,8 @@ from ackermann_msgs.msg import AckermannDriveStamped
 from visualization_msgs.msg import Marker
 from vs_msgs.msg import ConeLocation, ConeLocationPixel
 
+from geometry_msgs.msg import Point # Add
+
 # The following collection of pixel locations and corresponding relative
 # ground plane locations are used to compute our homography matrix
 
@@ -21,10 +23,10 @@ from vs_msgs.msg import ConeLocation, ConeLocationPixel
 
 ######################################################
 # DUMMY POINTS -- ENTER YOUR MEASUREMENTS HERE
-PTS_IMAGE_PLANE = [[-1, -1],
-                   [-1, -1],
-                   [-1, -1],
-                   [-1, -1]]  # dummy points
+PTS_IMAGE_PLANE = [[250, 254],
+                   [341, 271],
+                   [233, 323],
+                   [330, 310]]  # dummy points
 ######################################################
 
 # PTS_GROUND_PLANE units are in inches
@@ -32,10 +34,10 @@ PTS_IMAGE_PLANE = [[-1, -1],
 
 ######################################################
 # DUMMY POINTS -- ENTER YOUR MEASUREMENTS HERE
-PTS_GROUND_PLANE = [[-1, -1],
-                    [-1, -1],
-                    [-1, -1],
-                    [-1, -1]]  # dummy points
+PTS_GROUND_PLANE = [[31.89, 7.68],
+                    [29.33, 1.77],
+                    [24.015, 6.377],
+                    [25, 2.36]]  # dummy points
 ######################################################
 
 METERS_PER_INCH = 0.0254
@@ -47,7 +49,9 @@ class HomographyTransformer(Node):
 
         self.cone_pub = self.create_publisher(ConeLocation, "/relative_cone", 10)
         self.marker_pub = self.create_publisher(Marker, "/cone_marker", 1)
-        self.cone_px_sub = self.create_subscription(ConeLocationPixel, "/relative_cone_px", self.cone_detection_callback, 1)
+        # self.cone_px_sub = self.create_subscription(ConeLocationPixel, "/relative_cone_px", self.cone_detection_callback, 1)
+        self.cone_px_sub = self.create_subscription(Point, "/mouse_left", self.cone_detection_callback, 1)
+
 
         if not len(PTS_GROUND_PLANE) == len(PTS_IMAGE_PLANE):
             rclpy.logerr("ERROR: PTS_GROUND_PLANE and PTS_IMAGE_PLANE should be of same length")
@@ -65,14 +69,24 @@ class HomographyTransformer(Node):
         self.h, err = cv2.findHomography(np_pts_image, np_pts_ground)
 
         self.get_logger().info("Homography Transformer Initialized")
+        self.get_logger().info(f"Homography Matrix:\n{self.h}")
+
 
     def cone_detection_callback(self, msg):
+
+
         # Extract information from message
-        u = msg.u
-        v = msg.v
+        #u = msg.u
+        #v = msg.v
+
+        u=msg.x
+        v=msg.y
+        self.get_logger().info(f"CLICK DETECTED: u={u}, v={v}")
 
         # Call to main function
         x, y = self.transformUvToXy(u, v)
+
+        self.draw_marker(x,y,"zed_camera_link")
 
         # Publish relative xy position of object in real world
         relative_xy_msg = ConeLocation()
