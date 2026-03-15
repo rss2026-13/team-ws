@@ -1,12 +1,12 @@
 cone_detector:
   ros_params:
-    debug: false
+    debug: true
     topics:
       image: "/zed/zed_node/rgb/image_rect_color"
       cone_pos: "/relative_cone_px"
       cone_debug: "/cone_debug_img"
     color_segmentation:
-      delta: 20
+      delta: 40
       bounds: [5, 210, 110, 30, 255, 255]
       # stata_basement: [5, 210, 110, 30, 255, 255]
       # building_7: [5, 210, 110, 30, 255, 255]
@@ -15,6 +15,6 @@ cone_detector:
       active: false
       roi:
         x_min: 0
-        x_max: 600
-        y_min: 100
+        x_max: 640
+        y_min: 150
         y_max: 200

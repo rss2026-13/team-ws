@@ -46,6 +46,7 @@ class ParkingController(Node):
         self.CAR_WIDTH = 0.25
         self.MAX_STEERING_ANGLE = 0.34
         self.TURN_RADIUS = self.WHEELBASE / np.tan(self.MAX_STEERING_ANGLE)
+        self.BACKUP_VELOCITY = -0.5
         
         # Physical Car Variables
         self.declare_parameter("velocity", 0.5)
@@ -59,8 +60,8 @@ class ParkingController(Node):
         # Thresholds and State Trackers
         self.declare_parameter("visualize_parking", False)
         self.VISUALIZE = self.get_parameter("visualize_parking").get_parameter_value().bool_value
-        self.DISTANCE_THRESHOLD = 0.05
-        self.ANGLE_THRESHOLD = 0.10
+        self.DISTANCE_THRESHOLD = 0.10
+        self.ANGLE_THRESHOLD = 0.15
         self.parking_state = ParkingState.DOCKING
         self.escape_direction = 0
         self.relative_x = 0
@@ -115,7 +116,7 @@ class ParkingController(Node):
                 self.escape_direction = np.sign(cone_angle)
 
             if abs(cone_angle) < np.pi / 2:   # Car facing cone but too close -> Backup straight to keep cone in view
-                self.drive_publisher(-self.VELOCITY, 0.0, self.get_clock().now().to_msg())
+                self.drive_publisher(self.BACKUP_VELOCITY, 0.0, self.get_clock().now().to_msg())
                 # Old Code that doesn't keep cone in cam FOV but is more space efficient (spiral at 45 deg rel to cone)
                 # delta = -abs(cone_angle) * self.escape_direction * np.radians(135) 
                 # drive_cmd.drive.steering_angle = np.clip(delta, -self.MAX_STEERING_ANGLE, self.MAX_STEERING_ANGLE) 

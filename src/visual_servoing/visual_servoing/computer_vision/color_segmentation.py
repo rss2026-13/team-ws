@@ -83,7 +83,7 @@ def cd_color_segmentation(
     debug_imgs = []
     if bounds is None:
         bounds = ((5, 210, 110), (30, 255, 255))
-
+    
     img_hsv = cv2.cvtColor(img, cv2.COLOR_BGR2HSV)
     if debug:
         debug_imgs.append(img_hsv)
@@ -92,11 +92,11 @@ def cd_color_segmentation(
         debug_imgs.append(img_filtered)
     img_final = img_filtered
     kernel = np.ones((3, 3), np.uint8)
-    img_final = cv2.morphologyEx(img_final, cv2.MORPH_CLOSE, kernel)
-    # kernel = np.ones((1, 3), np.uint8)
-    # img_final = cv2.morphologyEx(img_final, cv2.MORPH_DILATE, kernel)
-    # kernel = np.ones((3, 3), np.uint8)
-    # img_final = cv2.morphologyEx(img_final, cv2.MORPH_DILATE, kernel)
+    img_final = cv2.morphologyEx(img_final, cv2.MORPH_OPEN, kernel)
+    kernel = np.ones((1, 3), np.uint8)
+    img_final = cv2.morphologyEx(img_final, cv2.MORPH_DILATE, kernel)
+    kernel = np.ones((3, 3), np.uint8)
+    img_final = cv2.morphologyEx(img_final, cv2.MORPH_DILATE, kernel)
     if debug:
         debug_imgs.append(img_final)
     countours = cv2.findContours(img_final, cv2.RETR_EXTERNAL, cv2.CHAIN_APPROX_SIMPLE)[
@@ -122,7 +122,8 @@ def cd_color_segmentation(
             ):
                 biggest_box_in_dist = box
     if biggest_box_in_dist is not None:
-        biggest_box = biggest_box_in_dist
+        if min(biggest_box[2] * 1.5, biggest_box[3]) < 3 * min(biggest_box_in_dist[2] * 1.5, biggest_box_in_dist[3]):
+            biggest_box = biggest_box_in_dist
     if biggest_box is None:
         return None
     bounding_box = (

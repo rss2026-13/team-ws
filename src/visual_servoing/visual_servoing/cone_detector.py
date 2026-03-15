@@ -22,7 +22,7 @@ class ConeDetector(Node):
 
     def __init__(self):
         super().__init__("cone_detector")
-        self.declare_parameter("debug", False)
+        self.declare_parameter("debug", True)
         self.declare_parameter("topics.image", "/zed/zed_node/rgb/image_rect_color")
         self.declare_parameter("topics.cone_pos", "/relative_cone_px")
         self.declare_parameter("topics.cone_debug", "/cone_debug_img")
@@ -33,17 +33,14 @@ class ConeDetector(Node):
         self.declare_parameter("line_follower.roi.xmax", 600)
         self.declare_parameter("line_follower.roi.ymin", 100)
         self.declare_parameter("line_follower.roi.ymax", 200)
-
+        
         self.debug = self.get_parameter("debug").value
         self.IMAGE_TOPIC = self.get_parameter("topics.image").value
         self.CONE_POS_TOPIC = self.get_parameter("topics.cone_pos").value
         self.CONE_DEBUG_TOPIC = self.get_parameter("topics.cone_debug").value
         self.delta = self.get_parameter("color_segmentation.delta").value
         self.bounds = self.get_parameter("color_segmentation.bounds").value
-        self.bounds = (
-            self.bounds[0:3],
-            self.bounds[3:6],
-        )
+        self.bounds = ((self.bounds[0],self.bounds[1],self.bounds[2]),(self.bounds[3],self.bounds[4],self.bounds[5]))
         self.line_follower_active = self.get_parameter("line_follower.active").value
         self.roi_xmin = self.get_parameter("line_follower.roi.xmin").value
         self.roi_xmax = self.get_parameter("line_follower.roi.xmax").value
@@ -72,7 +69,10 @@ class ConeDetector(Node):
 
         image = self.bridge.imgmsg_to_cv2(image_msg, "bgr8")
         if self.line_follower_active:
-            image = image[self.roi_ymin : self.roi_ymax, self.roi_xmin : self.roi_xmax]
+            masked = np.zeros_like(image)
+            masked[self.roi_ymin : self.roi_ymax, self.roi_xmin : self.roi_xmax] = \
+                image[self.roi_ymin : self.roi_ymax, self.roi_xmin : self.roi_xmax]
+            image = masked
 
         bbox = cd_color_segmentation(
             image,
@@ -91,8 +91,15 @@ class ConeDetector(Node):
             self.cone_pub.publish(cone_location)
         else:
             self.get_logger().warn("No cone detected in current frame.")
+            if self.prev_pos is not None:
+                cone_location = ConeLocationPixel()
+                cone_location.u, cone_location.v = self.prev_pos
+                self.cone_pub.publish(cone_location)
             self.prev_pos = None
         if self.debug:
+            if bbox is None:
+                bbox = ((0,0),(0,0))
+            image = cv2.rectangle(cv2.cvtColor(image,cv2.COLOR_BGR2HSV), bbox[0], bbox[1], (0, 255, 0), 1)
             debug_msg = self.bridge.cv2_to_imgmsg(image, "bgr8")
             self.debug_pub.publish(debug_msg)
 
