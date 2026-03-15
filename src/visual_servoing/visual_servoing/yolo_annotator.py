@@ -1,10 +1,13 @@
 #!/usr/bin/env python3
 
+import os
+
 import cv2
 import numpy as np
 import rclpy
 import torch
 
+from ament_index_python.packages import get_package_share_directory
 from sensor_msgs.msg import Image
 from cv_bridge import CvBridge
 from dataclasses import dataclass
@@ -35,6 +38,17 @@ class YoloAnnotatorNode(Node):
             .get_parameter_value()
             .string_value
         )
+        # Resolve to local path when offline: use package share models/ if it's a bare filename
+        model_path = self.model_name
+        if not os.path.isabs(self.model_name) and os.path.basename(self.model_name) == self.model_name:
+            try:
+                pkg_share = get_package_share_directory("visual_servoing")
+                candidate = os.path.join(pkg_share, "models", self.model_name)
+                if os.path.isfile(candidate):
+                    model_path = os.path.abspath(candidate)
+                    self.get_logger().info(f"Using local model: {model_path}")
+            except Exception:
+                pass
         self.conf_threshold = (
             self.declare_parameter("conf_threshold", 0.5)
             .get_parameter_value()
@@ -47,7 +61,7 @@ class YoloAnnotatorNode(Node):
         )
 
         self.device = "cuda:0" if torch.cuda.is_available() else "cpu"
-        self.model = YOLO(self.model_name)
+        self.model = YOLO(model_path)
         self.model.to(self.device)
 
         self.class_color_map = self.get_class_color_map()
@@ -56,7 +70,7 @@ class YoloAnnotatorNode(Node):
             if name in self.class_color_map
         ]
 
-        self.get_logger().info(f"Running {self.model_name} on device {self.device}")
+        self.get_logger().info(f"Running {model_path} on device {self.device}")
         self.get_logger().info(f"Confidence threshold: {self.conf_threshold}")
         if self.allowed_cls:
             self.get_logger().info(f"You've chosen to keep these class IDs: {self.allowed_cls}")
@@ -83,6 +97,8 @@ class YoloAnnotatorNode(Node):
         return {
             "chair": (255, 0, 0),
             "dining table": (0, 255, 0),
+            "person": (0, 0, 255),
+            "cell phone": (255, 255, 0)
         }
 
     def on_image(self, msg: Image) -> None:
@@ -148,6 +164,20 @@ class YoloAnnotatorNode(Node):
         #       detections List.
         #
         # Hint: use Python's zip keyword to iterate through the three arrays in a single for loop.
+        for xyxy, conf, cls in zip(xyxy_np, conf_np, cls_np):
+            class_id = int(cls)
+            x1, y1, x2, y2 = xyxy
+            detections.append(
+                Detection(
+                    class_id=class_id,
+                    class_name=self.model.names[class_id],
+                    confidence=float(conf),
+                    x1=int(x1),
+                    y1=int(y1),
+                    x2=int(x2),
+                    y2=int(y2),
+                )
+            )
 
         return detections
 
@@ -161,17 +191,31 @@ class YoloAnnotatorNode(Node):
 
         for det in detections:
             # TODO: Get the bounding box for the detection
+            pt1 = (det.x1, det.y1)
+            pt2 = (det.x2, det.y2)
 
             # TODO: Draw the bounding box around the detection to the output image.
             #       Use the colors you specified per class in `get_class_color_map`
             #       by accessing the self.class_color_map dictionary.
             #
             # Hint: Use cv2's `rectangle` function to draw a rectangle on the annotated image.
+            color = self.class_color_map[det.class_name]
+            cv2.rectangle(out_image, pt1, pt2, color, 2)
 
             # TODO: Label the box with the class name and confidence.
             #
             # Hint: Use cv2's `putText` function to put text on the annotated image.
-            raise NotImplementedError
+            label = f"{det.class_name}: {det.confidence:.2f}"
+            cv2.putText(
+                out_image,
+                label,
+                (det.x1, det.y1 - 10),
+                cv2.FONT_HERSHEY_SIMPLEX,
+                0.5,
+                color,
+                1,
+                # cv2.LINE_AA,
+            )
 
         return out_image
 

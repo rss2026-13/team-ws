@@ -1,0 +1,4 @@
+# Dependencies for cv_test / sift_template (imutils.resize etc.)
+opencv-python
+numpy
+imutils

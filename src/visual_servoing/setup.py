@@ -16,7 +16,9 @@ setup(
         ('share/visual_servoing/launch',
             glob.glob(os.path.join('launch', '*launch.xml'))),
         ('share/visual_servoing/launch',
-            glob.glob(os.path.join('launch', '*launch.py')))
+            glob.glob(os.path.join('launch', '*launch.py'))),
+        ('share/visual_servoing/models',
+            glob.glob(os.path.join('models', '*'))),
     ],
     install_requires=['setuptools'],
     zip_safe=True,
