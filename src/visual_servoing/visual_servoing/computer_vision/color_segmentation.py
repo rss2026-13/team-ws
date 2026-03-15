@@ -15,8 +15,18 @@ from matplotlib import pyplot as plt
 ###############################################################
 
 
-def image_print(img):
+def show_image(img):
     plt.imshow(img)
+    plt.show()
+
+
+def show_images(img):
+    if len(img) == 0:
+        return
+    size = int(np.ceil(np.sqrt(len(img))))
+    fig, axs = plt.subplots(size, size, figsize=(10, 10))
+    for i in range(len(img)):
+        axs[i // size, i % size].imshow(img[i])
     plt.show()
 
 
@@ -57,6 +67,9 @@ def cd_color_segmentation(
     img,
     template,
     debug=False,
+    prev_pos=None,
+    delta=None,
+    bounds=None,
 ):
     """
     Implement the cone detection using color segmentation algorithm
@@ -67,38 +80,66 @@ def cd_color_segmentation(
         bbox: ((x1, y1), (x2, y2)); the bounding box of the cone, unit in px
             (x1, y1) is the top left of the bbox and (x2, y2) is the bottom right of the bbox
     """
-    bounds = ((5, 210, 110), (30, 255, 255))
+    debug_imgs = []
+    if bounds is None:
+        bounds = ((5, 210, 110), (30, 255, 255))
+
     img_hsv = cv2.cvtColor(img, cv2.COLOR_BGR2HSV)
     if debug:
-        image_print(img_hsv)
+        debug_imgs.append(img_hsv)
     img_filtered = cv2.inRange(img_hsv, bounds[0], bounds[1])
     if debug:
-        image_print(img_filtered)
+        debug_imgs.append(img_filtered)
     img_final = img_filtered
     kernel = np.ones((3, 3), np.uint8)
     img_final = cv2.morphologyEx(img_final, cv2.MORPH_CLOSE, kernel)
-    kernel = np.ones((1, 3), np.uint8)
-    img_final = cv2.morphologyEx(img_final, cv2.MORPH_DILATE, kernel)
-    kernel = np.ones((3, 3), np.uint8)
-    img_final = cv2.morphologyEx(img_final, cv2.MORPH_DILATE, kernel)
+    # kernel = np.ones((1, 3), np.uint8)
+    # img_final = cv2.morphologyEx(img_final, cv2.MORPH_DILATE, kernel)
+    # kernel = np.ones((3, 3), np.uint8)
+    # img_final = cv2.morphologyEx(img_final, cv2.MORPH_DILATE, kernel)
     if debug:
-        image_print(img_final)
+        debug_imgs.append(img_final)
     countours = cv2.findContours(img_final, cv2.RETR_EXTERNAL, cv2.CHAIN_APPROX_SIMPLE)[
         0
     ]
     if len(countours) == 0:
-        return ((0, 0), (0, 0))
+        return None
     biggest_box = None
+    biggest_box_in_dist = None
     for contour in countours:
         box = cv2.boundingRect(contour)
         if biggest_box is None or min(box[2] * 1.5, box[3]) > min(
             biggest_box[2] * 1.5, biggest_box[3]
         ):
             biggest_box = box
+        if prev_pos is not None and delta is not None:
+            curr_pos = (box[0] + box[2] / 2, box[1] + box[3])
+            dist = np.linalg.norm(np.array(curr_pos) - np.array(prev_pos))
+            if dist < delta and (
+                biggest_box_in_dist is None
+                or min(box[2] * 1.5, box[3])
+                > min(biggest_box_in_dist[2] * 1.5, biggest_box_in_dist[3])
+            ):
+                biggest_box_in_dist = box
+    if biggest_box_in_dist is not None:
+        biggest_box = biggest_box_in_dist
+    if biggest_box is None:
+        return None
     bounding_box = (
         (biggest_box[0], biggest_box[1]),
         (biggest_box[0] + biggest_box[2], biggest_box[1] + biggest_box[3]),
     )
+
+    if debug:
+        debug_imgs.append(
+            cv2.cvtColor(
+                cv2.rectangle(
+                    img.copy(), bounding_box[0], bounding_box[1], (0, 255, 0), 1
+                ),
+                cv2.COLOR_BGR2RGB,
+            )
+        )
+        show_images(debug_imgs)
     return bounding_box
 
 
@@ -108,9 +149,11 @@ if __name__ == "__main__":
     # bounds = ((5, 190, 192), (30, 255, 255))
     # print(bounds)
     img = cv2.imread(
-        "/home/racecar/racecar_ws/src/visual_servoing/visual_servoing/computer_vision/test_images_cone/test9.jpg"
+        # "/home/racecar/racecar_ws/src/visual_servoing/visual_servoing/computer_vision/test_images_cone/test_building_7.png"
+        "/home/racecar/racecar_ws/src/visual_servoing/visual_servoing/computer_vision/test_images_cone/test_building_7.png"
+        # "/home/racecar/racecar_ws/src/visual_servoing/visual_servoing/computer_vision/test_images_cone/test9.jpg"
     )
     bbox = cd_color_segmentation(img, None, True)
     print(bbox)
     img = cv2.rectangle(img, bbox[0], bbox[1], (0, 255, 0), 1)
-    image_print(cv2.cvtColor(img, cv2.COLOR_BGR2RGB))
+    show_image(cv2.cvtColor(img, cv2.COLOR_BGR2RGB))

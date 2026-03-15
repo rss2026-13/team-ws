@@ -74,61 +74,12 @@ if __name__ == "__main__":
             0.8936170212765957,
         ]
     )
-    scores_4 = np.array(
-        [
-            0.9821428571428571,
-            0.8578947368421053,
-            0.8604500216356555,
-            0.9408909689720922,
-            0.9574468085106383,
-            0.8981101543085014,
-            0.7070707070707071,
-            0.8888888888888888,
-            0.7382198952879581,
-            0.9302536231884058,
-            0.7809010396611474,
-            0.8532460447354064,
-            0.9756805807622505,
-            0.7146401985111662,
-            0.7638888888888888,
-            0.9605930176948828,
-            0.7478260869565218,
-            0.9051300070274069,
-            0.9528508771929824,
-            0.8936170212765957,
-        ]
-    )
-    scores_5 = np.array(
-        [
-            0.9521739130434783,
-            0.8388150534747394,
-            0.8627184262843989,
-            0.96539969319925,
-            0.9934640522875817,
-            0.943766976824828,
-            0.8193939393939393,
-            0.9540352752538749,
-            0.8447160316319194,
-            0.9775956983740878,
-            0.8632575757575758,
-            0.9545697487974345,
-            0.976027397260274,
-            0.880066170388751,
-            0.9052224371373307,
-            0.9770114942528736,
-            0.8804347826086957,
-            0.9128409846972722,
-            0.9541745134965474,
-            0.9059297218155198,
-        ]
-    )
-
-    # plot all 5 graphs
     plt.figure(figsize=(10, 6))
     # plt.plot(scores_1, label="Initial idea (95th percentile from template)")
     # plt.plot(scores_2, label="Initial idea (99th percentile from template)")
     plt.plot(scores_3, label="Tuned parameters")
     plt.plot(scores_4, label="Tuned parameters + erosion / dilation")
-    plt.plot(scores_5, label="Tuned parameters + erosion / dilation + slight expansion")
+    plt.plot(scores_5, label="Tuned parameters + dilation / erosion")
+    plt.plot(scores_6, label="Tuned parameters + slight expansion")
     plt.legend()
     plt.show()
