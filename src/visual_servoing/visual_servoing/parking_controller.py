@@ -85,8 +85,9 @@ class ParkingController(Node):
             if abs(cone_angle) < np.pi / 2:
                 # Facing cone, too close. Backward spiral at 45 degrees relative to cone
                 drive_cmd.drive.speed = -self.VELOCITY
-                delta = -abs(cone_angle) * self.escape_direction * np.radians(135) 
-                drive_cmd.drive.steering_angle = np.clip(delta, -self.MAX_STEERING_ANGLE, self.MAX_STEERING_ANGLE) 
+                # delta = -abs(cone_angle) * self.escape_direction * np.radians(135) 
+                # drive_cmd.drive.steering_angle = np.clip(delta, -self.MAX_STEERING_ANGLE, self.MAX_STEERING_ANGLE) 
+                drive_cmd.drive.steering_angle = 0.0
             else:
                 # Facing away, too close. Forward spiral at 45 degrees relative to cone
                 drive_cmd.drive.speed = self.VELOCITY

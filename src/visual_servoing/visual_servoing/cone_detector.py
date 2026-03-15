@@ -49,8 +49,8 @@ class ConeDetector(Node):
         if bbox is not None:
             (x1, y1), (x2, y2) = bbox
             cone_location = ConeLocationPixel()
-            cone_location.u = int((x1 + x2) / 2)
-            cone_location.v = int(y2)
+            cone_location.u = float((x1 + x2) / 2)
+            cone_location.v = float(y2)
             self.cone_pub.publish(cone_location)
         debug_msg = self.bridge.cv2_to_imgmsg(image, "bgr8")
         self.debug_pub.publish(debug_msg)
