@@ -74,16 +74,20 @@ def cd_color_segmentation(
     img_filtered = cv2.inRange(img_hsv, bounds[0], bounds[1])
     if debug:
         image_print(img_filtered)
-    kernel = np.ones((3, 3), np.uint8)
     img_final = img_filtered
+    kernel = np.ones((3, 3), np.uint8)
     img_final = cv2.morphologyEx(img_final, cv2.MORPH_CLOSE, kernel)
+    kernel = np.ones((1, 3), np.uint8)
+    img_final = cv2.morphologyEx(img_final, cv2.MORPH_DILATE, kernel)
+    kernel = np.ones((3, 3), np.uint8)
+    img_final = cv2.morphologyEx(img_final, cv2.MORPH_DILATE, kernel)
     if debug:
         image_print(img_final)
     countours = cv2.findContours(img_final, cv2.RETR_EXTERNAL, cv2.CHAIN_APPROX_SIMPLE)[
         0
     ]
     if len(countours) == 0:
-        return None
+        return ((0, 0), (0, 0))
     biggest_box = None
     for contour in countours:
         box = cv2.boundingRect(contour)
@@ -101,8 +105,8 @@ def cd_color_segmentation(
 if __name__ == "__main__":
     # visualize_test()
     # bounds = get_bounds(5)
-    bounds = ((5, 190, 192), (30, 255, 255))
-    print(bounds)
+    # bounds = ((5, 190, 192), (30, 255, 255))
+    # print(bounds)
     img = cv2.imread(
         "/home/racecar/racecar_ws/src/visual_servoing/visual_servoing/computer_vision/test_images_cone/test9.jpg"
     )
