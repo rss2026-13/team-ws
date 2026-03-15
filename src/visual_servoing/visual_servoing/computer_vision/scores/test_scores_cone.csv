@@ -1,60 +1,62 @@
-template_matching,./test_images_cone/test1.jpg,0.0
-template_matching,./test_images_cone/test2.jpg,0.0
-template_matching,./test_images_cone/test3.jpg,0.0
-template_matching,./test_images_cone/test4.jpg,0.0
-template_matching,./test_images_cone/test5.jpg,0.0
-template_matching,./test_images_cone/test6.jpg,0.0
-template_matching,./test_images_cone/test7.jpg,0.0
-template_matching,./test_images_cone/test8.jpg,0.0
-template_matching,./test_images_cone/test9.jpg,0.0
-template_matching,./test_images_cone/test10.jpg,0.0
-template_matching,./test_images_cone/test11.jpg,0.0
-template_matching,./test_images_cone/test12.jpg,0.0
-template_matching,./test_images_cone/test13.jpg,0.0
-template_matching,./test_images_cone/test14.jpg,0.0
-template_matching,./test_images_cone/test15.jpg,0.0
-template_matching,./test_images_cone/test16.jpg,0.0
-template_matching,./test_images_cone/test17.jpg,0.0
-template_matching,./test_images_cone/test18.jpg,0.0
-template_matching,./test_images_cone/test19.jpg,0.0
-template_matching,./test_images_cone/test20.jpg,0.0
-color_segmentation,./test_images_cone/test1.jpg,0.0
-color_segmentation,./test_images_cone/test2.jpg,0.0
-color_segmentation,./test_images_cone/test3.jpg,0.0
-color_segmentation,./test_images_cone/test4.jpg,0.0
-color_segmentation,./test_images_cone/test5.jpg,0.0
-color_segmentation,./test_images_cone/test6.jpg,0.0
-color_segmentation,./test_images_cone/test7.jpg,0.0
-color_segmentation,./test_images_cone/test8.jpg,0.0
-color_segmentation,./test_images_cone/test9.jpg,0.0
-color_segmentation,./test_images_cone/test10.jpg,0.0
-color_segmentation,./test_images_cone/test11.jpg,0.0
-color_segmentation,./test_images_cone/test12.jpg,0.0
-color_segmentation,./test_images_cone/test13.jpg,0.0
-color_segmentation,./test_images_cone/test14.jpg,0.0
-color_segmentation,./test_images_cone/test15.jpg,0.0
-color_segmentation,./test_images_cone/test16.jpg,0.0
-color_segmentation,./test_images_cone/test17.jpg,0.0
-color_segmentation,./test_images_cone/test18.jpg,0.0
-color_segmentation,./test_images_cone/test19.jpg,0.0
-color_segmentation,./test_images_cone/test20.jpg,0.0
-SIFT,./test_images_cone/test1.jpg,0.0
-SIFT,./test_images_cone/test2.jpg,0.0
-SIFT,./test_images_cone/test3.jpg,0.0
-SIFT,./test_images_cone/test4.jpg,0.0
-SIFT,./test_images_cone/test5.jpg,0.0
-SIFT,./test_images_cone/test6.jpg,0.0
-SIFT,./test_images_cone/test7.jpg,0.0
-SIFT,./test_images_cone/test8.jpg,0.0
-SIFT,./test_images_cone/test9.jpg,0.0
-SIFT,./test_images_cone/test10.jpg,0.0
-SIFT,./test_images_cone/test11.jpg,0.0
-SIFT,./test_images_cone/test12.jpg,0.0
-SIFT,./test_images_cone/test13.jpg,0.0
-SIFT,./test_images_cone/test14.jpg,0.0
-SIFT,./test_images_cone/test15.jpg,0.0
-SIFT,./test_images_cone/test16.jpg,0.0
-SIFT,./test_images_cone/test17.jpg,0.0
-SIFT,./test_images_cone/test18.jpg,0.0
-SIFT,./test_images_cone/test19.jpg,0.0
-SIFT,./test_images_cone/test20.jpg,0.0
+[SIFT] not enough matches; matches: 0
+[SIFT] not enough matches; matches: 1
+[SIFT] not enough matches; matches: 0
+[SIFT] not enough matches; matches: 0
+[SIFT] not enough matches; matches: 2
+[SIFT] not enough matches; matches: 1
+[SIFT] not enough matches; matches: 3
+[SIFT] not enough matches; matches: 3
+[SIFT] not enough matches; matches: 2
+[SIFT] not enough matches; matches: 0
+[SIFT] not enough matches; matches: 4
+[SIFT] not enough matches; matches: 0
+[SIFT] not enough matches; matches: 1
+[SIFT] not enough matches; matches: 0
+[SIFT] not enough matches; matches: 0
+[SIFT] not enough matches; matches: 0
+[SIFT] not enough matches; matches: 0
+[SIFT] not enough matches; matches: 2
+[SIFT] not enough matches; matches: 1
+[SIFT] not enough matches; matches: 5
+('./test_images_cone/test1.jpg', 0.0)
+('./test_images_cone/test2.jpg', 0.0)
+('./test_images_cone/test3.jpg', 0.0)
+('./test_images_cone/test4.jpg', 0.0)
+('./test_images_cone/test5.jpg', 0.0)
+('./test_images_cone/test6.jpg', 0.0)
+('./test_images_cone/test7.jpg', 0.0)
+('./test_images_cone/test8.jpg', 0.0)
+('./test_images_cone/test9.jpg', 0.0)
+('./test_images_cone/test10.jpg', 0.0)
+('./test_images_cone/test11.jpg', 0.0)
+('./test_images_cone/test12.jpg', 0.0)
+('./test_images_cone/test13.jpg', 0.0)
+('./test_images_cone/test14.jpg', 0.0)
+('./test_images_cone/test15.jpg', 0.0)
+('./test_images_cone/test16.jpg', 0.0)
+('./test_images_cone/test17.jpg', 0.0)
+('./test_images_cone/test18.jpg', 0.0)
+('./test_images_cone/test19.jpg', 0.0)
+('./test_images_cone/test20.jpg', 0.0)
+
+Template
+('./test_images_cone/test1.jpg', 0.9706281624089843)
+('./test_images_cone/test2.jpg', 0.032642698463072946)
+('./test_images_cone/test3.jpg', 0.0)
+('./test_images_cone/test4.jpg', 0.42102044382316967)
+('./test_images_cone/test5.jpg', 0.0)
+('./test_images_cone/test6.jpg', 0.2543108122763258)
+('./test_images_cone/test7.jpg', 0.0)
+('./test_images_cone/test8.jpg', 0.8868479059515062)
+('./test_images_cone/test9.jpg', 0.0)
+('./test_images_cone/test10.jpg', 0.0)
+('./test_images_cone/test11.jpg', 0.0)
+('./test_images_cone/test12.jpg', 0.0)
+('./test_images_cone/test13.jpg', 0.24392014519056263)
+('./test_images_cone/test14.jpg', 0.0)
+('./test_images_cone/test15.jpg', 0.0)
+('./test_images_cone/test16.jpg', 0.0)
+('./test_images_cone/test17.jpg', 0.0)
+('./test_images_cone/test18.jpg', 0.0)
+('./test_images_cone/test19.jpg', 0.8928355196770938)
+('./test_images_cone/test20.jpg', 0.0)
