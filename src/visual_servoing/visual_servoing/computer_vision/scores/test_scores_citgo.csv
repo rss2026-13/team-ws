@@ -1,0 +1,33 @@
+[SIFT] not enough matches; matches: 2
+[SIFT] not enough matches; matches: 8
+[SIFT] not enough matches; matches: 8
+('./test_images_citgo/citgo1.jpeg', 0.7735889702714347)
+('./test_images_citgo/citgo2.jpeg', 0.6287878787878788)
+('./test_images_citgo/citgo3.jpeg', 0.7710727969348659)
+('./test_images_citgo/citgo4.jpeg', 0.0)
+('./test_images_citgo/citgo5.jpeg', 0.0)
+('./test_images_citgo/citgo6.jpeg', 0.640294388224471)
+('./test_images_citgo/citgo7.jpeg', 0.6195652173913043)
+('./test_images_citgo/citgo8.jpeg', 0.765843179377014)
+('./test_images_citgo/citgo9.jpeg', 0.7003787878787879)
+('./test_images_citgo/citgo10.jpeg', 0.7740384615384616)
+('./test_images_citgo/citgo11.jpeg', 0.9089433826181031)
+('./test_images_citgo/citgo12.jpeg', 0.0)
+('./test_images_citgo/citgo13.jpeg', 0.0)
+('./test_images_citgo/citgo14.jpeg', 0.8659638554216867)
+
+Template:
+('./test_images_citgo/citgo1.jpeg', 0.6633906633906634)
+('./test_images_citgo/citgo2.jpeg', 0.7730409446403925)
+('./test_images_citgo/citgo3.jpeg', 0.8319553534518396)
+('./test_images_citgo/citgo4.jpeg', 0.0)
+('./test_images_citgo/citgo5.jpeg', 0.0)
+('./test_images_citgo/citgo6.jpeg', 0.7171824973319103)
+('./test_images_citgo/citgo7.jpeg', 0.6050125313283208)
+('./test_images_citgo/citgo8.jpeg', 0.8144049894376824)
+('./test_images_citgo/citgo9.jpeg', 0.008153404801449495)
+('./test_images_citgo/citgo10.jpeg', 0.8476658476658476)
+('./test_images_citgo/citgo11.jpeg', 0.872471098265896)
+('./test_images_citgo/citgo12.jpeg', 0.04361370716510903)
+('./test_images_citgo/citgo13.jpeg', 0.0)
+('./test_images_citgo/citgo14.jpeg', 0.03326047705027083)
