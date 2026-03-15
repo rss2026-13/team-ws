@@ -1,0 +1,4 @@
+bag,group,count,mean,std,min,max,mean_abs_error
+Right slow 1,Right slow,2198,2.221681,5.457124,0.346300,45.932745,1.672698
+Right slow 2,Right slow,2091,1.993881,4.186168,0.203131,46.917110,1.484648
+Right slow 3,Right slow,1482,1.198242,0.899554,0.076534,6.121487,0.715262
