@@ -78,9 +78,9 @@ class Path(Node):
 
        marker = Marker()
        marker.header.stamp = self.get_clock().now().to_msg()
-       marker.header.frame_id = (
-           msg.header.frame_id if msg.header.frame_id else self.TRAJECTORY_FRAME_ID
-       )
+       # Use a predictable frame for the marker. RViz visibility depends on TF
+       # availability from RViz Fixed Frame -> this frame.
+       marker.header.frame_id = self.TRAJECTORY_FRAME_ID
        # RViz expects a valid quaternion. `Marker()` initializes orientation.w to 0,
        # which is not a valid identity rotation.
        marker.pose.orientation.w = 1.0
