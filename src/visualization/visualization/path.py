@@ -81,6 +81,9 @@ class Path(Node):
        marker.header.frame_id = (
            msg.header.frame_id if msg.header.frame_id else self.TRAJECTORY_FRAME_ID
        )
+       # RViz expects a valid quaternion. `Marker()` initializes orientation.w to 0,
+       # which is not a valid identity rotation.
+       marker.pose.orientation.w = 1.0
        marker.ns = self._trajectory_marker_ns
        marker.id = self._trajectory_marker_id
        marker.type = Marker.LINE_LIST
