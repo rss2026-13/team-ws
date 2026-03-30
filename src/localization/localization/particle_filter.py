@@ -52,9 +52,12 @@ class ParticleFilter(Node):
         )
 
         self.click_sub = self.create_subscription(
-            PointStamped, "/clicked_point", self.pose_callback, 1
+            PointStamped, "/clicked_point", self.pose_callback_global, 1
         )
 
+        self.global_sub = self.create_subscription(
+            PointStamped, "/goal_pose", self.pose_callback, 1
+        )
         self.odom_pub = self.create_publisher(Odometry, "/pf/pose/odom", 1)
         self.particle_pub = self.create_publisher(PoseArray, "/pf/particles", 1)
         if self.debug:
@@ -79,15 +82,12 @@ class ParticleFilter(Node):
 
     def pose_callback(self, msg):
         if isinstance(msg, PointStamped):
-            # x = msg.point.x
-            # y = msg.point.y
-            # theta = 0.0
-            # self.initialize_particles(x, y, theta, True)
-            # self.publish_pose()
-            # self.get_logger().info("Initialized particles at point: %f, %f" % (x, y))
-            self.initialize_particles_global()
+            x = msg.point.x
+            y = msg.point.y
+            theta = 0.0
+            self.initialize_particles(x, y, theta, True)
             self.publish_pose()
-            self.get_logger().info("Initialized particles globally based on map")
+            self.get_logger().info("Initialized particles at point: %f, %f" % (x, y))
         if isinstance(msg, PoseWithCovarianceStamped):
             x = msg.pose.pose.position.x
             y = msg.pose.pose.position.y
@@ -101,6 +101,11 @@ class ParticleFilter(Node):
             self.get_logger().info(
                 "Initialized particles at pose: %f, %f, %f" % (x, y, theta)
             )
+
+    def pose_callback_global(self, msg):
+        self.initialize_particles_global()
+        self.publish_pose()
+        self.get_logger().info("Initialized particles globally based on map")
 
     def initialize_particles_global(self):
         if not self.sensor_model.map_set:
