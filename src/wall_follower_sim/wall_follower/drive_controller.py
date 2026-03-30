@@ -41,35 +41,34 @@ class DriveController:
         self.prev_front_error = 0
         self.prev_closest_dist = 0
 
-    def update(self, walls):
+    def update(self, walls, laser_scan):
         if len(walls) == 0:
             drive_msg = AckermannDriveStamped()
             drive_msg.drive.speed = self.velocity
             self.drive_publisher.publish(drive_msg)
             return
 
-        closest_dist = np.inf
-        if self.side == 1:
-            angles = np.linspace(
-                np.pi / 2 - self.side_spread,
-                np.pi / 2,
-                self.side_samples,
-            )
-        else:
-            angles = np.linspace(
-                -np.pi / 2,
-                -np.pi / 2 + self.side_spread,
-                self.side_samples,
-            )
-        for angle in angles:
-            for wall in walls:
-                dist = point_dir(wall, (np.cos(angle), np.sin(angle)), 0.1)
-                if dist is not None:
-                    closest_dist = min(closest_dist, np.linalg.norm(dist))
-        if closest_dist == np.inf:
-            closest_dist = self.prev_closest_dist
-        self.prev_closest_dist = closest_dist
-        side_error = closest_dist - self.desired_distance
+        ranges = np.array(laser_scan.ranges, dtype="float32")
+
+        angles = np.linspace(
+            laser_scan.angle_min, laser_scan.angle_max, num=ranges.shape[0]
+        )
+
+        # Convert the ranges to Cartesian coordinates.
+        # Consider the robot to be facing in the positive x direction.
+        x = ranges * np.cos(angles)
+        y = ranges * np.sin(angles)
+
+        # Filter out values that are out of range
+        # and values on the wrong side
+        valid_points = self.side * y > 0
+        valid_points = np.logical_and(valid_points, x < 1.5)
+        valid_points = np.logical_and(valid_points, x > 0.0)
+
+        # Compute the average distance
+        dists = np.abs(y[valid_points])
+        dist = np.sum(dists) / dists.shape[0]
+        side_error = dist - self.desired_distance
         forward_dist = np.inf
         angles = np.linspace(
             -self.front_spread,
