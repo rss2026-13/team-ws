@@ -69,7 +69,7 @@ class ParticleFilter(Node):
         self.tf_broadcaster = TransformBroadcaster(self)
         self.failure_time = 0
 
-        self.softening_factor_min = 2.5
+        self.softening_factor_min = 10
         self.softening_factor_max = 50.0
         self.softening_factor = self.softening_factor_min
         self.softening_factor_steps = 200
@@ -219,11 +219,8 @@ class ParticleFilter(Node):
         dt = (self.clock.now() - self.last_odom_time).nanoseconds / 1e9
         self.last_odom_time = self.clock.now()
         odometry = [linear.x * dt, linear.y * dt, angular.z * dt]
-        self.particles = self.motion_model.evaluate(
-            self.particles, odometry, desperation=0
-        )
+        self.particles = self.motion_model.evaluate(self.particles, odometry)
         self.publish_pose()
-        self.publish_particles()
 
     def update_softening_factor(self):
         if self.softening_factor_current_step > 0:
@@ -247,26 +244,6 @@ class ParticleFilter(Node):
             [ranges[int((i + 0.5) * len(ranges) / num_beams)] for i in range(num_beams)]
         )
         probabilities = self.sensor_model.evaluate(self.particles, ranges)
-        # self.get_logger().info(
-        #     "\nHighest probability raw: %e\nSoftening_factor: %e"
-        #     % (np.max(probabilities), self.softening_factor)
-        # )
-        # dt = (self.clock.now() - self.last_laser_time).nanoseconds / 1e9
-        # self.last_laser_time = self.clock.now()
-        # if self.softening_factor_current_step == 0:
-        #     if np.max(probabilities) < 1e-170:
-        #         self.failure_time += dt
-        #     else:
-        #         self.failure_time = max(0, self.failure_time - dt)
-        #     if self.failure_time > 1.0:
-        #         self.get_logger().warn(
-        #             "Convergence failure! Highest probability: %e. Resetting particles globally based on map."
-        #         )
-        #         self.initialize_particles_global()
-        #         self.publish_pose()
-        #         self.publish_particles()
-        #         return
-
         self.update_softening_factor()
         probabilities = probabilities ** (1 / self.softening_factor)
         self.particles = self.particles[
