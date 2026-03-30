@@ -256,7 +256,7 @@ class ParticleFilter(Node):
                 self.failure_time += dt
             else:
                 self.failure_time = max(0, self.failure_time - dt)
-            if self.failure_time > 1.0:
+            if self.failure_time > 3.0:
                 self.get_logger().warn(
                     "Convergence failure! Highest probability: %e. Resetting particles globally based on map."
                 )
