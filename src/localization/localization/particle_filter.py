@@ -247,10 +247,10 @@ class ParticleFilter(Node):
             [ranges[int((i + 0.5) * len(ranges) / num_beams)] for i in range(num_beams)]
         )
         probabilities = self.sensor_model.evaluate(self.particles, ranges)
-        self.get_logger().info(
-            "\nHighest probability raw: %e\nSoftening_factor: %e"
-            % (np.max(probabilities), self.softening_factor)
-        )
+        # self.get_logger().info(
+        #     "\nHighest probability raw: %e\nSoftening_factor: %e"
+        #     % (np.max(probabilities), self.softening_factor)
+        # )
         # dt = (self.clock.now() - self.last_laser_time).nanoseconds / 1e9
         # self.last_laser_time = self.clock.now()
         # if self.softening_factor_current_step == 0:
@@ -277,7 +277,7 @@ class ParticleFilter(Node):
             )
         ]
         self.publish_pose()
-        self.publish_particles()
+        # self.publish_particles()
 
 
 def main(args=None):
