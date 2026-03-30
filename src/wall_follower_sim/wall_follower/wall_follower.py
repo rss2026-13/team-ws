@@ -66,13 +66,13 @@ class WallFollower(Node):
             side=self.side,
             side_spread=45.0,
             side_samples=11,
-            front_spread=15.0,
+            front_spread=5.0,
             front_samples=11,
             velocity=self.velocity,
             desired_distance=self.desired_distance,
             drive_publisher=self.drive_publisher,
-            front_treshold=self.desired_distance * 3.0,
-            front_error_ratio=3,
+            front_treshold=self.desired_distance * 3.0 + 1.0,
+            front_error_ratio=2,
             clock=rclpy.clock.Clock(),
         )
 
@@ -89,7 +89,7 @@ class WallFollower(Node):
     def scan_callback(self, laser_scan):
         walls = detect_walls(laser_scan, min_points=10, D_t=0.1)
         self.visualization_tools.plot_walls(walls, laser_scan.header.stamp)
-        self.drive_controller.update(walls)
+        self.drive_controller.update(walls, laser_scan)
 
 
 def main():

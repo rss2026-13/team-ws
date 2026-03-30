@@ -1,6 +1,6 @@
 particle_filter:
   ros__parameters:
-    num_particles: 200
+    num_particles: 2000
 
     # The number of lidar beams emitted from
     # each particle. This doesn't need to be
@@ -20,9 +20,16 @@ particle_filter:
     odom_topic: "/odom"
 
     # The frame you should publish your transform to
-    particle_filter_frame: "/base_link_pf"
+    particle_filter_frame: "base_link_pf"
 
     # Deterministic flag; set to true to remove all added noise
     deterministic: false
 
     lidar_scale_to_map_scale: 1.0
+
+    debug: true
+
+    motion_model:
+      sigma_x: 0.06
+      sigma_y: 0.02
+      sigma_theta: 0.1

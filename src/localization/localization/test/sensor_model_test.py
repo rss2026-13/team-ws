@@ -4,9 +4,19 @@ from nav_msgs.msg import OccupancyGrid
 from rclpy.node import Node
 
 from localization.sensor_model import SensorModel
+<<<<<<< HEAD
 from localization.test import TEST_PRECOMPUTED_TABLE, TEST_SENSOR_MODEL_OUTPUT_PROBABILITIES, \
     TEST_SENSOR_MODEL_INPUT_SCANS, \
     TEST_PARTICLES_2, TEST_MAP_ARRAY
+=======
+from localization.test import (
+    TEST_MAP_ARRAY,
+    TEST_PARTICLES_2,
+    TEST_PRECOMPUTED_TABLE,
+    TEST_SENSOR_MODEL_INPUT_SCANS,
+    TEST_SENSOR_MODEL_OUTPUT_PROBABILITIES,
+)
+>>>>>>> 5bf44b6 (All of localization lol)
 
 
 class Args:
@@ -23,7 +33,11 @@ class Args:
 class SensorModelTest(Node):
     def __init__(self):
         # Hack: particle filter
+<<<<<<< HEAD
         super().__init__('particle_filter')
+=======
+        super().__init__("particle_filter")
+>>>>>>> 5bf44b6 (All of localization lol)
 
         try:
             self.sensor_model = SensorModel(self)
@@ -41,6 +55,7 @@ class SensorModelTest(Node):
 
         self.tol = Args.tolerance
 
+<<<<<<< HEAD
         map_topic = self.get_parameter('map_topic').get_parameter_value().string_value
 
         self.map_subscriber = self.create_subscription(
@@ -48,6 +63,13 @@ class SensorModelTest(Node):
             map_topic,
             self.map_cb,
             1)
+=======
+        map_topic = self.get_parameter("map_topic").get_parameter_value().string_value
+
+        self.map_subscriber = self.create_subscription(
+            OccupancyGrid, map_topic, self.map_cb, 1
+        )
+>>>>>>> 5bf44b6 (All of localization lol)
 
         self.num_passed = 0
 
@@ -74,7 +96,13 @@ class SensorModelTest(Node):
         except AssertionError as e:
             self.get_logger().error(f"Map callback test failed :( {e}")
         except Exception as e:
+<<<<<<< HEAD
             self.get_logger().error(f"Map callback test errored out for some other reason :( {e}")
+=======
+            self.get_logger().error(
+                f"Map callback test errored out for some other reason :( {e}"
+            )
+>>>>>>> 5bf44b6 (All of localization lol)
 
         try:
             self.test_precompute()
@@ -82,7 +110,13 @@ class SensorModelTest(Node):
         except AssertionError as e:
             self.get_logger().error(f"Precompute test failed :( {e}")
         except Exception as e:
+<<<<<<< HEAD
             self.get_logger().error(f"Precompute test errored out for some other reason :( {e}")
+=======
+            self.get_logger().error(
+                f"Precompute test errored out for some other reason :( {e}"
+            )
+>>>>>>> 5bf44b6 (All of localization lol)
 
         try:
             self.test_evaluate()
@@ -90,7 +124,13 @@ class SensorModelTest(Node):
         except AssertionError as e:
             self.get_logger().error(f"Evaluate test failed :( {e}")
         except Exception as e:
+<<<<<<< HEAD
             self.get_logger().error(f"Evaluate test errored out for some other reason :( {e}")
+=======
+            self.get_logger().error(
+                f"Evaluate test errored out for some other reason :( {e}"
+            )
+>>>>>>> 5bf44b6 (All of localization lol)
 
         if self.num_passed == 3:
             self.get_logger().info("All tests passed :)")
@@ -99,21 +139,40 @@ class SensorModelTest(Node):
         expected = np.array(TEST_PRECOMPUTED_TABLE)
         actual = self.sensor_model.sensor_model_table
 
+<<<<<<< HEAD
         assert actual.shape == expected.shape, f"Wrong shape of the precomputed table. Expected {expected.shape}, got {actual.shape}"
 
         assert np.allclose(actual, expected,
                            atol=self.tol), f"Wrong values in the precomputed table. First row: {actual[0, :]}, expected {expected[0, :]}"
+=======
+        assert actual.shape == expected.shape, (
+            f"Wrong shape of the precomputed table. Expected {expected.shape}, got {actual.shape}"
+        )
+
+        assert np.allclose(actual, expected, atol=self.tol), (
+            f"Wrong values in the precomputed table. First row: {actual[0, :]}, expected {expected[0, :]}"
+        )
+>>>>>>> 5bf44b6 (All of localization lol)
 
         self.get_logger().info("Precompute test passed :)")
 
     def test_evaluate(self):
         expected_probabilities = np.array(TEST_SENSOR_MODEL_OUTPUT_PROBABILITIES)
         actual_probabilities = self.sensor_model.evaluate(
+<<<<<<< HEAD
             np.array(TEST_PARTICLES_2), np.array(TEST_SENSOR_MODEL_INPUT_SCANS))
 
         assert np.allclose(expected_probabilities,
                            actual_probabilities,
                            rtol=self.tol), f"Expected {expected_probabilities}, got {actual_probabilities}"
+=======
+            np.array(TEST_PARTICLES_2), np.array(TEST_SENSOR_MODEL_INPUT_SCANS)
+        )
+
+        assert np.allclose(
+            expected_probabilities, actual_probabilities, rtol=self.tol
+        ), f"Expected {expected_probabilities}, got {actual_probabilities}"
+>>>>>>> 5bf44b6 (All of localization lol)
 
         self.get_logger().info("Evaluate test passed :)")
 
@@ -121,7 +180,13 @@ class SensorModelTest(Node):
         expected_map = np.array(TEST_MAP_ARRAY)
         actual_map = self.sensor_model.map
 
+<<<<<<< HEAD
         assert np.allclose(expected_map, actual_map, atol=self.tol), "Map does not match exactly"
+=======
+        assert np.allclose(expected_map, actual_map, atol=self.tol), (
+            "Map does not match exactly"
+        )
+>>>>>>> 5bf44b6 (All of localization lol)
 
         self.get_logger().info("Map callback test passed :)")
 
@@ -129,6 +194,12 @@ class SensorModelTest(Node):
 def main(args=None):
     rclpy.init(args=args)
     pf = SensorModelTest()
+<<<<<<< HEAD
     pf.get_logger().info("Waiting for map, please run localization.test_map.launch.xml in a few seconds...")
+=======
+    pf.get_logger().info(
+        "Waiting for map, please run localization.test_map.launch.xml in a few seconds..."
+    )
+>>>>>>> 5bf44b6 (All of localization lol)
     rclpy.spin(pf)
     rclpy.shutdown()

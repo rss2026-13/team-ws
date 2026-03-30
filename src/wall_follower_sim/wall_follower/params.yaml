@@ -2,11 +2,11 @@ wall_follower:
   ros__parameters:
     topics:
       scan: "/scan"
-      drive: "/vesc/input/navigation"
+      drive: "/drive"
       wall: "/wall"
     controller:
       side: 1
-      velocity: 0.8
+      velocity: 1.5
       desired_distance: 0.5
       pid:
         kp: 0.45
