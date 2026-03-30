@@ -79,15 +79,15 @@ class ParticleFilter(Node):
 
     def pose_callback(self, msg):
         if isinstance(msg, PointStamped):
-            # x = msg.point.x
-            # y = msg.point.y
-            # theta = 0.0
-            # self.initialize_particles(x, y, theta, True)
-            # self.publish_pose()
-            # self.get_logger().info("Initialized particles at point: %f, %f" % (x, y))
-            self.initialize_particles_global()
+            x = msg.point.x
+            y = msg.point.y
+            theta = 0.0
+            self.initialize_particles(x, y, theta, True)
             self.publish_pose()
-            self.get_logger().info("Initialized particles globally based on map")
+            self.get_logger().info("Initialized particles at point: %f, %f" % (x, y))
+            # self.initialize_particles_global()
+            # self.publish_pose()
+            # self.get_logger().info("Initialized particles globally based on map")
         if isinstance(msg, PoseWithCovarianceStamped):
             x = msg.pose.pose.position.x
             y = msg.pose.pose.position.y
@@ -239,6 +239,8 @@ class ParticleFilter(Node):
             self.softening_factor = self.softening_factor_min
 
     def laser_callback(self, msg):
+        if not self.sensor_model.map_set:
+            return
         ranges = msg.ranges
         num_beams = self.sensor_model.num_beams_per_particle
         ranges = np.array(
@@ -249,21 +251,21 @@ class ParticleFilter(Node):
             "\nHighest probability raw: %e\nSoftening_factor: %e"
             % (np.max(probabilities), self.softening_factor)
         )
-        dt = (self.clock.now() - self.last_laser_time).nanoseconds / 1e9
-        self.last_laser_time = self.clock.now()
-        if self.softening_factor_current_step == 0:
-            if np.max(probabilities) < 1e-170:
-                self.failure_time += dt
-            else:
-                self.failure_time = max(0, self.failure_time - dt)
-            if self.failure_time > 1.0:
-                self.get_logger().warn(
-                    "Convergence failure! Highest probability: %e. Resetting particles globally based on map."
-                )
-                self.initialize_particles_global()
-                self.publish_pose()
-                self.publish_particles()
-                return
+        # dt = (self.clock.now() - self.last_laser_time).nanoseconds / 1e9
+        # self.last_laser_time = self.clock.now()
+        # if self.softening_factor_current_step == 0:
+        #     if np.max(probabilities) < 1e-170:
+        #         self.failure_time += dt
+        #     else:
+        #         self.failure_time = max(0, self.failure_time - dt)
+        #     if self.failure_time > 1.0:
+        #         self.get_logger().warn(
+        #             "Convergence failure! Highest probability: %e. Resetting particles globally based on map."
+        #         )
+        #         self.initialize_particles_global()
+        #         self.publish_pose()
+        #         self.publish_particles()
+        #         return
 
         self.update_softening_factor()
         probabilities = probabilities ** (1 / self.softening_factor)
