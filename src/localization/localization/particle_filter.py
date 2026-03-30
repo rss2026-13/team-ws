@@ -4,6 +4,7 @@ from geometry_msgs.msg import (
     PointStamped,
     Pose,
     PoseArray,
+    PoseStamped,
     PoseWithCovarianceStamped,
     TransformStamped,
 )
@@ -56,7 +57,7 @@ class ParticleFilter(Node):
         )
 
         self.global_sub = self.create_subscription(
-            PointStamped, "/goal_pose", self.pose_callback, 1
+            PoseStamped, "/goal_pose", self.pose_callback, 1
         )
         self.odom_pub = self.create_publisher(Odometry, "/pf/pose/odom", 1)
         self.particle_pub = self.create_publisher(PoseArray, "/pf/particles", 1)
@@ -81,26 +82,28 @@ class ParticleFilter(Node):
         self.get_logger().info("=============+READY+=============")
 
     def pose_callback(self, msg):
-        if isinstance(msg, PointStamped):
-            x = msg.point.x
-            y = msg.point.y
-            theta = 0.0
-            self.initialize_particles(x, y, theta, True)
-            self.publish_pose()
-            self.get_logger().info("Initialized particles at point: %f, %f" % (x, y))
+        pose = None
         if isinstance(msg, PoseWithCovarianceStamped):
-            x = msg.pose.pose.position.x
-            y = msg.pose.pose.position.y
-            z = msg.pose.pose.orientation.z
-            w = msg.pose.pose.orientation.w
-            theta = np.arctan2(2 * (w * z), 1 - 2 * (z**2))
-            self.initialize_particles(x, y, theta, True)
-            self.publish_pose()
-            self.softening_factor = self.softening_factor_min
-            self.softening_factor_current_step = 0
-            self.get_logger().info(
-                "Initialized particles at pose: %f, %f, %f" % (x, y, theta)
+            pose = msg.pose.pose
+        if isinstance(msg, PoseStamped):
+            pose = msg.pose
+        if pose is None:
+            self.get_logger().error(
+                "Received unsupported message type in pose_callback"
             )
+            return
+        x = pose.position.x
+        z = pose.orientation.z
+        y = pose.position.y
+        w = pose.orientation.w
+        theta = np.arctan2(2 * (w * z), 1 - 2 * (z**2))
+        self.initialize_particles(x, y, theta, True)
+        self.publish_pose()
+        self.softening_factor = self.softening_factor_min
+        self.softening_factor_current_step = 0
+        self.get_logger().info(
+            "Initialized particles at pose: %f, %f, %f" % (x, y, theta)
+        )
 
     def pose_callback_global(self, msg):
         self.initialize_particles_global()
