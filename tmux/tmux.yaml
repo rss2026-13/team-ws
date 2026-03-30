@@ -1,0 +1,20 @@
+session_name: rss_tmux_ansisg
+windows:
+  - window_name: main
+    layout: tiled
+    shell_command_before:
+      - source /opt/ros/humble/setup.bash
+      - source /home/racecar/.bashrc
+      - cd ~/racecar_ws
+      - colcon build --symlink-install
+      - source install/setup.bash
+    panes:
+      - shell_command:
+          - git status
+
+      - shell_command:
+          - ros2 topic list
+
+      - shell_command:
+          - ros2 topic hz /drive
+      -
