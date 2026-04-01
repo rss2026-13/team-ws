@@ -74,7 +74,7 @@ class ParticleFilter(Node):
         self.failure_time = 0
 
         self.softening_factor_min = 2.5
-        self.softening_factor_max = 50.0
+        self.softening_factor_max = 100.0
         self.softening_factor = self.softening_factor_min
         self.softening_factor_steps = 200
         self.softening_factor_current_step = 0
@@ -262,7 +262,7 @@ class ParticleFilter(Node):
         )
         dt = (self.clock.now() - self.last_laser_time).nanoseconds / 1e9
         self.last_laser_time = self.clock.now()
-        if self.softening_factor_current_step == 0:
+        if self.softening_factor_current_step <= 150:
             if np.max(probabilities) < 1e-170:
                 self.failure_time += dt
             else:
