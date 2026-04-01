@@ -1,5 +1,6 @@
 import numpy as np
 from geometry_msgs.msg import Point, Transform
+from rclpy.time import Time
 from scipy.spatial.transform import Rotation as R
 from tf2_ros import TransformException
 from visualization_msgs.msg import Marker
@@ -70,7 +71,7 @@ class VisualizationTools:
         line_strip.color.a = 1.0
         line_strip.color.r = color[0]
         line_strip.color.g = color[1]
-        line_strip.color.g = color[2]
+        line_strip.color.b = color[2]
 
         # Fill the line with the desired values
         for xi, yi in points:
@@ -87,13 +88,35 @@ class VisualizationTools:
         for wall in walls:
             points.append(wall[0])
             points.append(wall[1])
+        if not points:
+            # Publish an empty marker so callers don't crash when no walls are found.
+            self.plot_line([], self.frame, color=color)
+            return
         points = np.array(points)
         target_frame = "base_link"
-        try:
-            t = self.tf_buffer.lookup_transform(target_frame, self.frame, timestamp)
+        source_frames = [self.frame]
+        if self.frame == "laser":
+            # Some simulator setups publish laser as laser_model in TF.
+            source_frames.append("laser_model")
 
-        except TransformException as ex:
-            print(f"Could not transform {target_frame} to {self.frame}: {ex}")
+        t = None
+        first_exception = None
+        for source_frame in source_frames:
+            try:
+                t = self.tf_buffer.lookup_transform(target_frame, source_frame, timestamp)
+                break
+            except TransformException as ex:
+                if first_exception is None:
+                    first_exception = ex
+                try:
+                    # If the requested scan stamp is slightly ahead of TF, use latest available.
+                    t = self.tf_buffer.lookup_transform(target_frame, source_frame, Time())
+                    break
+                except TransformException:
+                    continue
+
+        if t is None:
+            # Keep node functional even if TF is briefly unavailable.
             self.plot_line(points, self.frame, color=color)
             return
 

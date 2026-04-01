@@ -2,6 +2,7 @@
 import rclpy
 from ackermann_msgs.msg import AckermannDriveStamped
 from rcl_interfaces.msg import ParameterEvent
+from rclpy.executors import ExternalShutdownException
 from rclpy.node import Node
 from sensor_msgs.msg import LaserScan
 from tf2_ros.buffer import Buffer
@@ -87,6 +88,8 @@ class WallFollower(Node):
         self.post_init()
 
     def scan_callback(self, laser_scan):
+        if laser_scan.header.frame_id:
+            self.visualization_tools.frame = laser_scan.header.frame_id
         walls = detect_walls(laser_scan, min_points=10, D_t=0.1)
         self.visualization_tools.plot_walls(walls, laser_scan.header.stamp)
         self.drive_controller.update(walls, laser_scan)
@@ -95,7 +98,10 @@ class WallFollower(Node):
 def main():
     rclpy.init()
     wall_follower = WallFollower()
-    rclpy.spin(wall_follower)
+    try:
+        rclpy.spin(wall_follower)
+    except (KeyboardInterrupt, ExternalShutdownException):
+        pass
     wall_follower.destroy_node()
     rclpy.shutdown()
 

@@ -253,6 +253,9 @@ class ParticleFilter(Node):
             [ranges[int((i + 0.5) * len(ranges) / num_beams)] for i in range(num_beams)]
         )
         probabilities = self.sensor_model.evaluate(self.particles, ranges)
+        if probabilities is None:
+            # Map has not been received yet; skip update safely.
+            return
         self.get_logger().info(
             "\nHighest probability raw: %e\nSoftening_factor: %e"
             % (np.max(probabilities), self.softening_factor)

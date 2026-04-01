@@ -4,8 +4,8 @@ import numpy as np
 class MotionModel:
     def __init__(self, node):
         node.declare_parameter("deterministic", False)
-        node.declare_parameter("motion_model.sigma_x", 0.1)
-        node.declare_parameter("motion_model.sigma_y", 0.1)
+        node.declare_parameter("motion_model.sigma_x", 0.2)
+        node.declare_parameter("motion_model.sigma_y", 0.2)
         node.declare_parameter("motion_model.sigma_theta", 0.002)
 
         self.deterministic = (
