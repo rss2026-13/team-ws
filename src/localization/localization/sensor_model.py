@@ -52,7 +52,7 @@ class SensorModel:
 
         # Your sensor table will be a `table_width` x `table_width` np array:
         self.table_width = 201
-
+        self.softening_factor = 10.0
         self.DEBUG = False
         ####################################
 
@@ -122,6 +122,7 @@ class SensorModel:
             + self.alpha_rand * p_rand
         )
         self.sensor_model_table /= np.sum(self.sensor_model_table, axis=0)
+        self.sensor_model_table = self.sensor_model_table ** (1 / self.softening_factor)
 
         if self.DEBUG:
             plt.imshow(self.sensor_model_table, origin="lower")

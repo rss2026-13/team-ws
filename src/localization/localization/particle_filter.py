@@ -67,13 +67,6 @@ class ParticleFilter(Node):
         self.last_laser_time = self.clock.now()
         self.particles = np.zeros((self.num_particles, 3))
         self.tf_broadcaster = TransformBroadcaster(self)
-        self.failure_time = 0
-
-        self.softening_factor_min = 10
-        self.softening_factor_max = 50.0
-        self.softening_factor = self.softening_factor_min
-        self.softening_factor_steps = 200
-        self.softening_factor_current_step = 0
 
         self.get_logger().info("=============+READY+=============")
 
@@ -85,9 +78,6 @@ class ParticleFilter(Node):
             self.initialize_particles(x, y, theta, True)
             self.publish_pose()
             self.get_logger().info("Initialized particles at point: %f, %f" % (x, y))
-            # self.initialize_particles_global()
-            # self.publish_pose()
-            # self.get_logger().info("Initialized particles globally based on map")
         if isinstance(msg, PoseWithCovarianceStamped):
             x = msg.pose.pose.position.x
             y = msg.pose.pose.position.y
@@ -96,49 +86,9 @@ class ParticleFilter(Node):
             theta = np.arctan2(2 * (w * z), 1 - 2 * (z**2))
             self.initialize_particles(x, y, theta, True)
             self.publish_pose()
-            self.softening_factor = self.softening_factor_min
-            self.softening_factor_current_step = 0
             self.get_logger().info(
                 "Initialized particles at pose: %f, %f, %f" % (x, y, theta)
             )
-
-    def initialize_particles_global(self):
-        if not self.sensor_model.map_set:
-            pass
-        map = 1 - self.sensor_model.map
-        indices = np.argwhere(map > 0.5)[:, 0]
-        chosen_indices = indices[np.random.choice(len(indices), self.num_particles)]
-        x = (
-            chosen_indices
-            % self.sensor_model.map_info.width
-            * self.sensor_model.resolution
-        )
-        y = (
-            chosen_indices
-            // self.sensor_model.map_info.width
-            * self.sensor_model.resolution
-        )
-        rot_matrix = np.array(
-            [
-                [
-                    np.cos(self.sensor_model.origin[2]),
-                    -np.sin(self.sensor_model.origin[2]),
-                ],
-                [
-                    np.sin(self.sensor_model.origin[2]),
-                    np.cos(self.sensor_model.origin[2]),
-                ],
-            ]
-        )
-        xy = np.stack((x, y), axis=1) @ rot_matrix.T
-        x, y = (
-            xy[:, 0] + self.sensor_model.origin[0],
-            xy[:, 1] + self.sensor_model.origin[1],
-        )
-        theta = np.random.uniform(-np.pi, np.pi, size=self.num_particles)
-        self.particles = np.stack((x, y, theta), axis=1)
-        self.softening_factor_current_step = self.softening_factor_steps
-        self.softening_factor = self.softening_factor_max
 
     def initialize_particles(self, x, y, theta, noisy=True):
         self.particles = np.array(
@@ -222,19 +172,6 @@ class ParticleFilter(Node):
         self.particles = self.motion_model.evaluate(self.particles, odometry)
         self.publish_pose()
 
-    def update_softening_factor(self):
-        if self.softening_factor_current_step > 0:
-            self.softening_factor_current_step -= 1
-            self.softening_factor = self.softening_factor_min + (
-                self.softening_factor_max - self.softening_factor_min
-            ) * np.cos(
-                (1 - self.softening_factor_current_step / self.softening_factor_steps)
-                * np.pi
-                / 2
-            )
-        else:
-            self.softening_factor = self.softening_factor_min
-
     def laser_callback(self, msg):
         if not self.sensor_model.map_set:
             return
@@ -244,17 +181,23 @@ class ParticleFilter(Node):
             [ranges[int((i + 0.5) * len(ranges) / num_beams)] for i in range(num_beams)]
         )
         probabilities = self.sensor_model.evaluate(self.particles, ranges)
-        self.update_softening_factor()
-        probabilities = probabilities ** (1 / self.softening_factor)
         self.particles = self.particles[
             np.random.choice(
                 self.num_particles,
                 self.num_particles,
-                p=probabilities / np.sum(probabilities),
+                p=probabilities,
             )
         ]
+        self.particles += np.stack(
+            (
+                np.random.normal(0, 0.03, size=self.num_particles),
+                np.random.normal(0, 0.01, size=self.num_particles),
+                np.random.normal(0, 0.04, size=self.num_particles),
+            ),
+            axis=1,
+        )
         self.publish_pose()
-        # self.publish_particles()
+        self.publish_particles()
 
 
 def main(args=None):

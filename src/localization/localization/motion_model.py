@@ -28,7 +28,7 @@ class MotionModel:
         )
         self.logger = node.get_logger()
 
-    def evaluate(self, particles, odometry, desperation=0.0):
+    def evaluate(self, particles, odometry):
         """
         Update the particles to reflect probable
         future states given the odometry data.
@@ -58,18 +58,9 @@ class MotionModel:
                 axis=1,
             )
         else:
-            desperation_factor = 1 + max(0, desperation - 5)
-            # self.logger.info(f"Desperation factor: {desperation_factor}")
-            sigma_x = np.random.uniform(self.sigma_x, self.sigma_x * desperation_factor)
-            sigma_y = np.random.uniform(
-                self.sigma_y, self.sigma_y * (1 + desperation_factor)
-            )
-            sigma_theta = np.random.uniform(
-                self.sigma_theta, self.sigma_theta * (1 + desperation_factor)
-            )
-            dx_noisy = dx + np.random.normal(0, sigma_x, size=x.shape)
-            dy_noisy = dy + np.random.normal(0, sigma_y, size=y.shape)
-            theta_noise = np.random.normal(0, sigma_theta, size=theta.shape)
+            dx_noisy = dx + np.random.normal(0, self.sigma_x, size=x.shape)
+            dy_noisy = dy + np.random.normal(0, self.sigma_y, size=y.shape)
+            theta_noise = np.random.normal(0, self.sigma_theta, size=theta.shape)
             return np.stack(
                 (
                     x
