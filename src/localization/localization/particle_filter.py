@@ -168,7 +168,7 @@ class ParticleFilter(Node):
         angular = msg.twist.twist.angular
         dt = (self.clock.now() - self.last_odom_time).nanoseconds / 1e9
         self.last_odom_time = self.clock.now()
-        odometry = [linear.x * dt, linear.y * dt, angular.z * dt]
+        odometry = np.array([linear.x * dt, linear.y * dt, angular.z * dt])
         self.particles = self.motion_model.evaluate(self.particles, odometry)
         self.publish_pose()
 
