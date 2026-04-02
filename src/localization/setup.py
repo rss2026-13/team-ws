@@ -27,6 +27,7 @@ setup(
         ('share/' + package_name, ['package.xml', 'localization/params.yaml', 'localization/test/test_params.yaml', 'localization/real_params.yaml']),
         ('share/localization/launch',
          glob.glob(os.path.join('launch', '*launch.*')) + glob.glob(os.path.join('launch/unit_tests', '*launch.*'))),
+        ('share/localization/maps', glob.glob(os.path.join('maps', '*'))),
         ('share/localization/test_map', glob.glob(os.path.join('test_map', '*'))),
     ],
     install_requires=['setuptools', "Cython"],
