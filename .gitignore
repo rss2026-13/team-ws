@@ -55,3 +55,7 @@ qtcreator-*
 
 # Catkin custom files
 CATKIN_IGNORE
+gmapping_data_active_only/
+my_first_bag/
+*.db3
+*.mcap
