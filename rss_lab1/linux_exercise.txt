@@ -1,0 +1,129 @@
+<====Navigation====>
+
+#####1a#######
+cd /
+#####End of Question#######
+
+#####1b#######
+cd
+#####End of Question#######
+
+#####1c#######
+cd ..
+#####End of Question#######
+
+#####1d#######
+mkdir ~/test
+#####End of Question#######
+
+#####1e#######
+ls -la ~
+#####End of Question#######
+
+#####1f#######
+pwd
+#####End of Question#######
+
+#####1g#######
+rmdir ~/test
+#####End of Question#######
+
+#####1h#######
+cat /etc/bash.bashrc 
+#####End of Question#######
+
+<====Managing and Using programs====>
+
+#####2a#######
+sudo apt install inxi
+#####End of Question#######
+
+#####2b#######
+inxi -h
+#####End of Question#######
+
+#####2c#######
+man inxi
+#####End of Question#######
+
+#####2d#######
+inxi -D
+#####End of Question#######
+
+#####2e#######
+sudo apt remove inxi
+#####End of Question#######
+
+#####2f#######
+sudo apt update
+#####End of Question#######
+
+#####2g#######
+sudo apt upgrade
+#####End of Question#######
+
+<====ssh====>
+
+#####3a#######
+ssh tissany@athena.dialup.mit.edu
+#####End of Question#######
+
+#####3b#######
+wget -O ~/pic.png https://tinyurl.com/ya67uga4
+#####End of Question#######
+
+#####3c#######
+exit
+#####End of Question#######
+
+#####3d#######
+scp tissany@athena.dialup.mit.edu:~/pic.png ~/racecar_ws
+#####End of Question#######
+
+<====Tmux====>
+
+#####4a#######
+tmux new -s racecar
+#####End of Question#######
+
+#####4b#######
+Ctrl+b d
+#####End of Question#######
+
+#####4c#######
+tmux ls
+#####End of Question#######
+
+#####4d#######
+tmux attach
+#####End of Question#######
+
+#####4e#######
+tmux kill-session
+#####End of Question#######
+
+#####4f#######
+echo 'alias tks="tmux kill-session"' >> ~/.bashrc
+#####End of Question#######
+
+#####4g#######
+echo "set -g mouse on" >> ~/.tmux.conf
+#####End of Question#######
+
+#####4h#######
+tmuxp load tmux_template.yaml
+#####End of Question#######
+
+<====Environment Variables====>
+
+#####5a#######
+echo $HOME
+#####End of Question#######
+
+#####5b#######
+export HOME=/home/racecar/racecar_ws
+#####End of Question#######
+
+#####5c#######
+env
+#####End of Question#######

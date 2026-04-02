@@ -1,0 +1,16 @@
+digraph G {
+"map" -> "base_link"[label=" Broadcaster: default_authority\nAverage rate: 50.203\nBuffer length: 5.0\nMost recent transform: 1775098277.795235\nOldest transform: 1775098272.795583\n"];
+"base_link" -> "back_left_wheel"[label=" Broadcaster: default_authority\nAverage rate: 10000.0\nBuffer length: 0.0\nMost recent transform: 0.0\nOldest transform: 0.0\n"];
+"base_link" -> "back_right_wheel"[label=" Broadcaster: default_authority\nAverage rate: 10000.0\nBuffer length: 0.0\nMost recent transform: 0.0\nOldest transform: 0.0\n"];
+"base_link" -> "front_left_hinge"[label=" Broadcaster: default_authority\nAverage rate: 10000.0\nBuffer length: 0.0\nMost recent transform: 0.0\nOldest transform: 0.0\n"];
+"base_link" -> "front_right_hinge"[label=" Broadcaster: default_authority\nAverage rate: 10000.0\nBuffer length: 0.0\nMost recent transform: 0.0\nOldest transform: 0.0\n"];
+"base_link" -> "laser_model"[label=" Broadcaster: default_authority\nAverage rate: 10000.0\nBuffer length: 0.0\nMost recent transform: 0.0\nOldest transform: 0.0\n"];
+"front_left_hinge" -> "front_left_wheel"[label=" Broadcaster: default_authority\nAverage rate: 100.238\nBuffer length: 5.008\nMost recent transform: 1775098277.803683\nOldest transform: 1775098272.795583\n"];
+"front_right_hinge" -> "front_right_wheel"[label=" Broadcaster: default_authority\nAverage rate: 100.238\nBuffer length: 5.008\nMost recent transform: 1775098277.803683\nOldest transform: 1775098272.795583\n"];
+"base_link" -> "laser"[label=" Broadcaster: default_authority\nAverage rate: 50.203\nBuffer length: 5.0\nMost recent transform: 1775098277.795235\nOldest transform: 1775098272.795583\n"];
+"map" -> "base_link_pf"[label=" Broadcaster: default_authority\nAverage rate: 5.657\nBuffer length: 4.596\nMost recent transform: 1775098277.462073\nOldest transform: 1775098272.866052\n"];
+edge [style=invis];
+ subgraph cluster_legend { style=bold; color=black; label ="view_frames Result";
+"Recorded at time: 1775102801.6566136"[ shape=plaintext ] ;
+}->"map";
+}

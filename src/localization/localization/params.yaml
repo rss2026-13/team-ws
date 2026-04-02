@@ -1,6 +1,6 @@
 particle_filter:
   ros__parameters:
-    num_particles: 2000
+    num_particles: 200
 
     # The number of lidar beams emitted from
     # each particle. This doesn't need to be
@@ -30,6 +30,6 @@ particle_filter:
     debug: true
 
     motion_model:
-      sigma_x: 0.06
-      sigma_y: 0.02
-      sigma_theta: 0.1
+      sigma_x: 0.1
+      sigma_y: 0.1
+      sigma_theta: 0.2
