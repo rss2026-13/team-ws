@@ -185,7 +185,7 @@ class ParticleFilter(Node):
             np.random.choice(
                 self.num_particles,
                 self.num_particles,
-                p=probabilities,
+                p=probabilities / np.sum(probabilities),
             )
         ]
         self.particles += np.stack(
