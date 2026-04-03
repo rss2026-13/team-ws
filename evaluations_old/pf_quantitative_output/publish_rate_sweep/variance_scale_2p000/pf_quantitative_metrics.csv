@@ -1,0 +1,13 @@
+bag,run_id,confidence_source,published_msgs,publish_rate_hz,particle_msgs,converged,convergence_time_s,post_convergence_confidence,min_confidence
+corridor1,1,particles,1795,90.103280,798,True,2.019286,0.131989,0.071563
+corridor1,2,odom_jitter,942,50.024718,0,True,1.986114,0.042092,0.011241
+corridor1,3,odom_jitter,942,50.009914,0,True,1.986462,0.027511,0.005651
+corridor2,1,odom_jitter,616,50.041244,0,True,1.980667,0.033251,0.002639
+corridor2,2,odom_jitter,615,49.989706,0,True,1.959924,0.027571,0.003004
+corridor2,3,odom_jitter,617,50.099933,0,True,2.001507,0.019450,0.005917
+corridor3,1,odom_jitter,1371,50.034277,0,True,1.996941,0.024339,0.003369
+corridor3,2,odom_jitter,1372,49.986785,0,True,1.979670,0.025453,0.001810
+corridor3,3,particles,2543,88.115439,1154,True,2.017992,0.141179,0.058469
+corridor4,1,odom_jitter,1020,50.049702,0,True,2.004122,0.022690,0.003607
+corridor4,2,odom_jitter,1018,50.024438,0,True,1.979600,0.020940,0.003239
+corridor4,3,odom_jitter,1018,50.021247,0,True,2.002426,0.037596,0.004016
