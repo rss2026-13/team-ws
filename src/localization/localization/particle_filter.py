@@ -64,19 +64,17 @@ class ParticleFilter(Node):
         if self.debug:
             self.scan_pub = self.create_publisher(LaserScan, "/pf/scan_sim", 1)
         self.motion_model = MotionModel(self)
-        self.sensor_model = SensorModel(self)
-
+        self.sensor_model = SensorModel(self, self.num_particles)
         self.clock = rclpy.clock.Clock()
         self.last_odom_time = self.clock.now()
         self.last_laser_time = self.clock.now()
-        self.particles = np.zeros((self.num_particles, 3))
+        self.particles = np.zeros((self.num_particles, 3), dtype=np.float32)
         self.tf_broadcaster = TransformBroadcaster(self)
         self.failure_time = 0
-
         self.softening_factor_min = 2.5
-        self.softening_factor_max = 100.0
+        self.softening_factor_max = 40.0
         self.softening_factor = self.softening_factor_min
-        self.softening_factor_steps = 200
+        self.softening_factor_steps = 50
         self.softening_factor_current_step = 0
 
         self.get_logger().info("=============+READY+=============")
@@ -157,7 +155,8 @@ class ParticleFilter(Node):
                     theta + np.random.uniform(-np.pi, np.pi) if noisy else theta,
                 ]
                 for _ in range(self.num_particles)
-            ]
+            ],
+            dtype=np.float32,
         )
         self.get_logger().info("Sample particle: %s" % (self.particles[0],))
 
@@ -189,25 +188,26 @@ class ParticleFilter(Node):
         odom_msg.pose.pose.orientation.w = np.cos(avg_theta / 2)
         self.odom_pub.publish(odom_msg)
 
-        if self.debug and self.sensor_model.map_set:
-            scan = self.sensor_model.scan_sim.scan(
-                np.array([[avg_x, avg_y, avg_theta]])
-            )
-            msg = LaserScan()
-            msg.header.stamp = self.clock.now().to_msg()
-            msg.header.frame_id = self.particle_filter_frame
-            msg.angle_min = -self.sensor_model.scan_field_of_view / 2
-            msg.angle_max = self.sensor_model.scan_field_of_view / 2
-            msg.angle_increment = self.sensor_model.scan_field_of_view / (
-                self.sensor_model.num_beams_per_particle - 1
-            )
-            msg.range_min = 0.0
-            msg.range_max = 100.0
-            msg.ranges = scan[0].tolist()
-            msg.intensities = scan[0].tolist()
-            self.scan_pub.publish(msg)
+        # if self.debug and self.sensor_model.map_set:
+        #     scan = self.sensor_model.scan_sim.scan(
+        #         np.array([[avg_x, avg_y, avg_theta]])
+        #     )
+        #     msg = LaserScan()
+        #     msg.header.stamp = self.clock.now().to_msg()
+        #     msg.header.frame_id = self.particle_filter_frame
+        #     msg.angle_min = -self.sensor_model.scan_field_of_view / 2
+        #     msg.angle_max = self.sensor_model.scan_field_of_view / 2
+        #     msg.angle_increment = self.sensor_model.scan_field_of_view / (
+        #         self.sensor_model.num_beams_per_particle - 1
+        #     )
+        #     msg.range_min = 0.0
+        #     msg.range_max = 100.0
+        #     msg.ranges = scan[0].tolist()
+        #     msg.intensities = scan[0].tolist()
+        #     self.scan_pub.publish(msg)
 
     def publish_particles(self):
+        return
         pose_array_msg = PoseArray()
         pose_array_msg.header.stamp = self.clock.now().to_msg()
         pose_array_msg.header.frame_id = "map"
@@ -249,35 +249,28 @@ class ParticleFilter(Node):
     def laser_callback(self, msg):
         ranges = msg.ranges
         num_beams = self.sensor_model.num_beams_per_particle
+        if not isinstance(self.sensor_model.laser_angles, np.ndarray):
+            self.sensor_model.laser_angles = np.linspace(
+                msg.angle_min, msg.angle_max, len(ranges)
+            )
+            self.sensor_model.downsampled_angles = np.array(
+                [
+                    self.sensor_model.laser_angles[
+                        int((i + 0.5) * len(ranges) / num_beams)
+                    ]
+                    for i in range(num_beams)
+                ],
+                dtype=np.float32,
+            )
         ranges = np.array(
-            [ranges[int((i + 0.5) * len(ranges) / num_beams)] for i in range(num_beams)]
+            [
+                ranges[int((i + 0.5) * len(ranges) / num_beams)]
+                for i in range(num_beams)
+            ],
+            dtype=np.float32,
         )
-        probabilities = self.sensor_model.evaluate(self.particles, ranges)
-        if probabilities is None:
-            # Map has not been received yet; skip update safely.
-            return
-        self.get_logger().info(
-            "\nHighest probability raw: %e\nSoftening_factor: %e"
-            % (np.max(probabilities), self.softening_factor)
-        )
-        dt = (self.clock.now() - self.last_laser_time).nanoseconds / 1e9
-        self.last_laser_time = self.clock.now()
-        if self.softening_factor_current_step <= 150:
-            if np.max(probabilities) < 1e-170:
-                self.failure_time += dt
-            else:
-                self.failure_time = max(0, self.failure_time - dt)
-            if self.failure_time > 3.0:
-                self.get_logger().warn(
-                    "Convergence failure! Highest probability: %e. Resetting particles globally based on map."
-                )
-                self.initialize_particles_global()
-                self.publish_pose()
-                self.publish_particles()
-                return
-
-        self.update_softening_factor()
-        probabilities = probabilities ** (1 / self.softening_factor)
+        self.sensor_model.evaluate(self.particles, ranges)
+        probabilities = self.sensor_model.weights ** (1 / self.softening_factor)
         self.particles = self.particles[
             np.random.choice(
                 self.num_particles,
