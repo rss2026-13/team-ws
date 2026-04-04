@@ -12,6 +12,16 @@ Ranking criteria (in order):
 - Mean post-convergence spread: n/a
 - Mean publish rate: 66.924 Hz
 
+## Second-best overall (best converging setting)
+
+- Setting: `pr_combo_p200_r150`
+- Rank: #2 overall
+- Endpoint success: 9/12 (0.750)
+- Mean post-convergence spread: 0.109
+- Mean publish rate: 89.871 Hz
+- Settings: `num_particles = 200`, `num_beams_per_particle = 150`, `sigma_x = 0.030`, `sigma_y = 0.010`, `sigma_theta = 0.040`
+- Note: This is the highest-ranked setting with a valid convergence metric (`mean_post_conf` is not `n/a`).
+
 ### What this setting means
 
 - `num_particles = 2000`
