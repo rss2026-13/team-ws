@@ -1,5 +1,0 @@
-corridor,total_duration_sec,recommended_start_sec,recommended_end_sec,selected_start_sec,selected_end_sec,known_start_x,known_start_y,known_start_yaw,status,notes
-corridor1,20.02,0.0,20.0,0.0,20.02,-5.36,22.2,0.0,selected,"known start from user (yaw placeholder)"
-corridor2,22.04,0.0,22.0,3.0,15.0,-5.36,22.2,0.0,selected,"known start from user (yaw placeholder)"
-corridor3,87.08,0.0,87.0,35.0,62.0,-7.86,26.0,0.0,selected,"known start from user (yaw placeholder)"
-corridor4,76.35,0.0,76.0,38.0,58.0,-19.0,26.0,0.0,selected,"known start from user (yaw placeholder)"
