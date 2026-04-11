@@ -1,27 +1,29 @@
-import heapq
+import math
+import random
 import time
-from queue import PriorityQueue
 
 import numpy as np
 import rclpy
-from geometry_msgs.msg import PoseArray, PoseStamped
+from geometry_msgs.msg import Point, PoseArray, PoseStamped
 from nav_msgs.msg import OccupancyGrid, Odometry
+from path_planning.utils import LineTrajectory
 from rclpy.node import Node
-from scipy.signal import convolve2d
-from scipy.spatial.transform import Rotation as R
-
-from path_planning.utils import *
+from rclpy.qos import DurabilityPolicy, QoSProfile, ReliabilityPolicy
+from visualization_msgs.msg import Marker
 
 
 class PathPlan(Node):
-    """Listens for goal pose published by RViz and uses it to plan a path from
-    current car pose.
-    """
+    """Listens for goal pose published by RViz and plans a path."""
 
     def __init__(self):
         super().__init__("trajectory_planner")
         self.declare_parameter("odom_topic", "default")
         self.declare_parameter("map_topic", "default")
+        self.declare_parameter("wall_buffer_m", 0.12)
+        self.declare_parameter("rrt_phase_a_iterations", 5000)
+        self.declare_parameter("rrt_phase_b_iterations", 4000)
+        # Wall-clock cap for phase B (optimization). <= 0 means no time limit (only iteration cap).
+        self.declare_parameter("rrt_phase_b_max_seconds", 7.0)
 
         self.odom_topic = (
             self.get_parameter("odom_topic").get_parameter_value().string_value
@@ -30,121 +32,140 @@ class PathPlan(Node):
             self.get_parameter("map_topic").get_parameter_value().string_value
         )
 
+        map_qos = QoSProfile(
+            depth=1,
+            reliability=ReliabilityPolicy.RELIABLE,
+            durability=DurabilityPolicy.TRANSIENT_LOCAL,
+        )
+
         self.map_sub = self.create_subscription(
-            OccupancyGrid, self.map_topic, self.map_cb, 1
+            OccupancyGrid,
+            self.map_topic,
+            self.map_cb,
+            map_qos,
         )
 
         self.goal_sub = self.create_subscription(
-            PoseStamped, "/goal_pose", self.goal_cb, 10
+            PoseStamped,
+            "/goal_pose",
+            self.goal_cb,
+            10,
         )
 
-        self.traj_pub = self.create_publisher(PoseArray, "/trajectory/current", 10)
+        self.traj_pub = self.create_publisher(
+            PoseArray,
+            "/trajectory/current",
+            10,
+        )
+        self.tree_pub = self.create_publisher(
+            Marker,
+            "/planned_trajectory/tree",
+            1,
+        )
 
         self.pose_sub = self.create_subscription(
-            Odometry, self.odom_topic, self.pose_cb, 10
+            Odometry,
+            self.odom_topic,
+            self.pose_cb,
+            10,
         )
+
+        self.trajectory = LineTrajectory(node=self, viz_namespace="/planned_trajectory")
 
         self.pose = None
         self.goal = None
-        self.map = None
+        self.map_grid = None
+        self.map_info = None
+        self.map_height = 0
+        self.map_width = 0
+        self.map_resolution = 0.0
+        self.map_origin_x = 0.0
+        self.map_origin_y = 0.0
+        self.map_origin_yaw = 0.0
+        self.cos_yaw = 1.0
+        self.sin_yaw = 0.0
+        self.ready_logged = False
 
-        self.height = None
-        self.width = None
-
-        # 8-connected neighbors
-        self.NEIGHBORS = [
-            (-1, -1),
-            (0, -1),
-            (1, -1),
-            (-1, 0),
-            (1, 0),
-            (-1, 1),
-            (0, 1),
-            (1, 1),
-        ]
-
-        self.blur_radius = 10
-        self.downsample_factor = 3
-        self.trajectory = LineTrajectory(node=self, viz_namespace="/planned_trajectory")
+        self.phase_a_iterations = (
+            self.get_parameter("rrt_phase_a_iterations")
+            .get_parameter_value()
+            .integer_value
+        )
+        self.phase_b_iterations = (
+            self.get_parameter("rrt_phase_b_iterations")
+            .get_parameter_value()
+            .integer_value
+        )
+        self.phase_b_max_seconds = (
+            self.get_parameter("rrt_phase_b_max_seconds")
+            .get_parameter_value()
+            .double_value
+        )
+        self.goal_bias = 0.1
+        self.wall_buffer_m = (
+            self.get_parameter("wall_buffer_m").get_parameter_value().double_value
+        )
+        self.last_start_point = None
+        self.last_end_point = None
 
     def map_cb(self, msg):
-        map_data = np.array(msg.data, np.double)
-        width, height = msg.info.width, msg.info.height
-        # self.get_logger().info(f"Map received: width={width}, height={height}")
-        map_data = map_data.reshape((height, width))
-        # self.get_logger().info(f"Map reshaped to: {map_data.shape}")
-        map_data[map_data != 0] = 1.0
-        radius = self.blur_radius
-        y, x = np.ogrid[-radius : radius + 1, -radius : radius + 1]
-        mask = x**2 + y**2 <= radius**2
-        map_data = convolve2d(
-            map_data, mask, mode="same", boundary="fill", fillvalue=1.0
+        grid = np.array(msg.data, dtype=np.int16).reshape(
+            (msg.info.height, msg.info.width)
         )
-        # self.get_logger().info(f"Map convolved to: {map_data.shape}")
-        self.map = map_data[:: self.downsample_factor, :: self.downsample_factor]
-        self.map = self.map != 0
-        self.height, self.width = self.map.shape
+        # Unknown is treated as occupied for safer paths.
+        occupancy = np.logical_or(grid == -1, grid > 50)
+        buffer_pixels = max(0, int(math.ceil(self.wall_buffer_m / msg.info.resolution)))
+        self.map_grid = self.inflate_obstacles(occupancy, buffer_pixels)
         self.map_info = msg.info
-        origin_p = msg.info.origin.position
-        origin_o = msg.info.origin.orientation
-        quat = [origin_o.x, origin_o.y, origin_o.z, origin_o.w]
-        yaw = R.from_quat(quat).as_euler("xyz")[2]
+        self.map_height = msg.info.height
+        self.map_width = msg.info.width
+        self.map_resolution = msg.info.resolution
+        self.map_origin_x = msg.info.origin.position.x
+        self.map_origin_y = msg.info.origin.position.y
 
-        self.origin = (origin_p.x, origin_p.y, yaw)
-        self.rot_matrix = np.array(
-            [
-                [
-                    np.cos(self.origin[2]),
-                    -np.sin(self.origin[2]),
-                ],
-                [
-                    np.sin(self.origin[2]),
-                    np.cos(self.origin[2]),
-                ],
-            ]
+        q = msg.info.origin.orientation
+        self.map_origin_yaw = math.atan2(
+            2.0 * (q.w * q.z + q.x * q.y),
+            1.0 - 2.0 * (q.y * q.y + q.z * q.z),
         )
-        self.get_logger().info(f"Map received: {self.map.shape}")
-        self.get_logger().info("Map received and processed")
+        self.cos_yaw = math.cos(self.map_origin_yaw)
+        self.sin_yaw = math.sin(self.map_origin_yaw)
 
-    def pixel_to_world(self, x_pixel, y_pixel):
-        if self.map is None:
-            raise ValueError(
-                "Map info is not set. Cannot convert pixel to world coordinates."
+        if not self.ready_logged:
+            self.get_logger().info(
+                f"Received map ({self.map_width}x{self.map_height}) for RRT*."
             )
-        if isinstance(x_pixel, int):
-            x_pixel = np.array([x_pixel])
-        if isinstance(y_pixel, int):
-            y_pixel = np.array([y_pixel])
-        xy = (
-            np.stack((x_pixel, y_pixel), axis=1)
-            * self.map_info.resolution
-            * self.downsample_factor
-            @ self.rot_matrix.T
-        )
-        return (
-            xy[:, 0] + self.origin[0],
-            xy[:, 1] + self.origin[1],
-        )
+            self.ready_logged = True
+        self.plan_path()
 
-    def world_to_pixel(self, x_world, y_world):
-        if self.map is None:
-            raise ValueError(
-                "Map info is not set. Cannot convert world to pixel coordinates."
-            )
-        if isinstance(x_world, (int, float)):
-            x_world = np.array([x_world])
-        if isinstance(y_world, (int, float)):
-            y_world = np.array([y_world])
-        xy = np.stack((x_world, y_world), axis=1) - np.array(self.origin[:2])
-        xy = xy @ self.rot_matrix
-        return (
-            np.round(
-                xy[:, 0] / self.map_info.resolution / self.downsample_factor
-            ).astype(int),
-            np.round(
-                xy[:, 1] / self.map_info.resolution / self.downsample_factor
-            ).astype(int),
-        )
+    def inflate_obstacles(self, occupancy_grid, radius_pixels):
+        """Inflate occupied cells by a circular radius in pixels."""
+        if radius_pixels <= 0:
+            return occupancy_grid
+
+        h, w = occupancy_grid.shape
+        inflated = occupancy_grid.copy()
+
+        for dy in range(-radius_pixels, radius_pixels + 1):
+            for dx in range(-radius_pixels, radius_pixels + 1):
+                if dx * dx + dy * dy > radius_pixels * radius_pixels:
+                    continue
+
+                x_src_start = max(0, -dx)
+                x_src_end = min(w, w - dx)
+                y_src_start = max(0, -dy)
+                y_src_end = min(h, h - dy)
+
+                x_dst_start = max(0, dx)
+                x_dst_end = min(w, w + dx)
+                y_dst_start = max(0, dy)
+                y_dst_end = min(h, h + dy)
+
+                inflated[y_dst_start:y_dst_end, x_dst_start:x_dst_end] |= occupancy_grid[
+                    y_src_start:y_src_end, x_src_start:x_src_end
+                ]
+
+        return inflated
 
     def pose_cb(self, pose):
         self.pose = pose.pose.pose
@@ -154,291 +175,314 @@ class PathPlan(Node):
         self.goal = msg.pose
         self.plan_path()
 
-    def heuristic(self, a, b):
-        dx = a[0] - b[0]
-        dy = a[1] - b[1]
-        return (dx * dx + dy * dy) ** 0.5
+    def world_to_map(self, x_world, y_world):
+        dx = x_world - self.map_origin_x
+        dy = y_world - self.map_origin_y
+        local_x = self.cos_yaw * dx + self.sin_yaw * dy
+        local_y = -self.sin_yaw * dx + self.cos_yaw * dy
+        mx = int(round(local_x / self.map_resolution))
+        my = int(round(local_y / self.map_resolution))
+        return mx, my
 
-    def line_of_sight(self, a, b):
-        # bresenham's line algorithm
-        x0, y0 = a
-        x1, y1 = b
-        dx = abs(x1 - x0)
-        dy = abs(y1 - y0)
-        sx = 1 if x0 < x1 else -1
-        sy = 1 if y0 < y1 else -1
-        err = dx - dy
-        while True:
-            if self.map[y0, x0]:
+    def map_to_world(self, mx, my):
+        local_x = mx * self.map_resolution
+        local_y = my * self.map_resolution
+        wx = self.cos_yaw * local_x - self.sin_yaw * local_y + self.map_origin_x
+        wy = self.sin_yaw * local_x + self.cos_yaw * local_y + self.map_origin_y
+        return wx, wy
+
+    def in_bounds(self, mx, my):
+        return 0 <= mx < self.map_width and 0 <= my < self.map_height
+
+    def is_free(self, mx, my):
+        return self.in_bounds(mx, my) and not self.map_grid[my, mx]
+
+    def line_is_free(self, p0, p1):
+        x0, y0 = p0
+        x1, y1 = p1
+        distance = math.hypot(x1 - x0, y1 - y0)
+        steps = max(1, int(distance))
+        for i in range(steps + 1):
+            t = i / steps
+            x = int(round(x0 + t * (x1 - x0)))
+            y = int(round(y0 + t * (y1 - y0)))
+            if not self.is_free(x, y):
                 return False
-            if x0 == x1 and y0 == y1:
-                break
-            err2 = err * 2
-            if err2 > -dy:
-                err -= dy
-                x0 += sx
-            if err2 < dx:
-                err += dx
-                y0 += sy
         return True
 
-    def iter_neighbors(self, x, y):
-        for dx, dy in self.NEIGHBORS:
-            nx = x + dx
-            ny = y + dy
-            if 0 <= nx < self.width and 0 <= ny < self.height:
-                if not self.map[ny, nx]:
-                    yield nx, ny
+    def steer(self, from_node, to_node, step_size):
+        fx, fy = from_node
+        tx, ty = to_node
+        dx = tx - fx
+        dy = ty - fy
+        distance = math.hypot(dx, dy)
+        if distance <= step_size:
+            return tx, ty
+        ratio = step_size / distance
+        return int(round(fx + ratio * dx)), int(round(fy + ratio * dy))
 
-    def reconstruct_path(self, parent, current_idx):
-        path = []
-        while True:
-            x = current_idx % self.width
-            y = current_idx // self.width
-            path.append((x, y))
-            if parent[current_idx] == current_idx:
+    def nearest_index(self, nodes, target):
+        tx, ty = target
+        best_idx = 0
+        best_dist = float("inf")
+        for i, (nx, ny) in enumerate(nodes):
+            dist_sq = (nx - tx) ** 2 + (ny - ty) ** 2
+            if dist_sq < best_dist:
+                best_dist = dist_sq
+                best_idx = i
+        return best_idx
+
+    def near_indices(self, nodes, target, radius):
+        tx, ty = target
+        radius_sq = radius * radius
+        near = []
+        for i, (nx, ny) in enumerate(nodes):
+            dist_sq = (nx - tx) ** 2 + (ny - ty) ** 2
+            if dist_sq <= radius_sq:
+                near.append(i)
+        return near
+
+    def _rrt_star_one_iteration(
+        self,
+        nodes,
+        parents,
+        costs,
+        goal,
+        step_size,
+        neighbor_radius,
+        goal_radius,
+        goal_idx,
+        optimize_goal,
+    ):
+        """One RRT* grow step. If optimize_goal and goal_idx set, improve goal parent when cheaper."""
+        if random.random() < self.goal_bias:
+            sample = goal
+        else:
+            sample = (
+                random.randint(0, self.map_width - 1),
+                random.randint(0, self.map_height - 1),
+            )
+            if not self.is_free(sample[0], sample[1]):
+                return goal_idx
+
+        nearest_idx = self.nearest_index(nodes, sample)
+        nearest_node = nodes[nearest_idx]
+        new_node = self.steer(nearest_node, sample, step_size)
+
+        if not self.is_free(new_node[0], new_node[1]):
+            return goal_idx
+        if not self.line_is_free(nearest_node, new_node):
+            return goal_idx
+
+        near = self.near_indices(nodes, new_node, neighbor_radius)
+        best_parent = nearest_idx
+        best_cost = costs[nearest_idx] + math.hypot(
+            new_node[0] - nearest_node[0],
+            new_node[1] - nearest_node[1],
+        )
+
+        for idx in near:
+            candidate = nodes[idx]
+            if not self.line_is_free(candidate, new_node):
+                continue
+            candidate_cost = costs[idx] + math.hypot(
+                new_node[0] - candidate[0],
+                new_node[1] - candidate[1],
+            )
+            if candidate_cost < best_cost:
+                best_cost = candidate_cost
+                best_parent = idx
+
+        nodes.append(new_node)
+        parents.append(best_parent)
+        costs.append(best_cost)
+        new_idx = len(nodes) - 1
+
+        for idx in near:
+            candidate = nodes[idx]
+            if not self.line_is_free(new_node, candidate):
+                continue
+            rewired_cost = best_cost + math.hypot(
+                candidate[0] - new_node[0],
+                candidate[1] - new_node[1],
+            )
+            if rewired_cost < costs[idx]:
+                parents[idx] = new_idx
+                costs[idx] = rewired_cost
+
+        if (
+            math.hypot(new_node[0] - goal[0], new_node[1] - goal[1]) <= goal_radius
+            and self.line_is_free(new_node, goal)
+        ):
+            edge_to_goal = math.hypot(goal[0] - new_node[0], goal[1] - new_node[1])
+            conn_cost = costs[new_idx] + edge_to_goal
+            if goal_idx is None:
+                nodes.append(goal)
+                parents.append(new_idx)
+                costs.append(conn_cost)
+                goal_idx = len(nodes) - 1
+            elif optimize_goal and conn_cost < costs[goal_idx]:
+                parents[goal_idx] = new_idx
+                costs[goal_idx] = conn_cost
+
+        return goal_idx
+
+    def _rrt_recompute_costs_from_root(self, nodes, parents, costs):
+        """Propagate costs along the tree after rewiring (root = index 0)."""
+        n = len(nodes)
+        if n == 0:
+            return
+        children = [[] for _ in range(n)]
+        for i in range(1, n):
+            children[parents[i]].append(i)
+        costs[0] = 0.0
+        queue = [0]
+        head = 0
+        while head < len(queue):
+            u = queue[head]
+            head += 1
+            for v in children[u]:
+                costs[v] = costs[u] + math.hypot(
+                    nodes[v][0] - nodes[u][0],
+                    nodes[v][1] - nodes[u][1],
+                )
+                queue.append(v)
+
+    def rrt_star(self, start, goal):
+        step_size = max(2, int(0.6 / self.map_resolution))
+        neighbor_radius = max(step_size + 1, int(1.2 / self.map_resolution))
+        goal_radius = max(2, int(0.7 / self.map_resolution))
+
+        nodes = [start]
+        parents = [0]
+        costs = [0.0]
+        goal_idx = None
+
+        # Phase A: first feasible path to goal (stop as soon as goal is connected).
+        for _ in range(self.phase_a_iterations):
+            goal_idx = self._rrt_star_one_iteration(
+                nodes,
+                parents,
+                costs,
+                goal,
+                step_size,
+                neighbor_radius,
+                goal_radius,
+                goal_idx,
+                optimize_goal=False,
+            )
+            if goal_idx is not None:
                 break
-            current_idx = parent[current_idx]
+
+        if goal_idx is None:
+            near_goal_idx = self.nearest_index(nodes, goal)
+            if self.line_is_free(nodes[near_goal_idx], goal):
+                nodes.append(goal)
+                parents.append(near_goal_idx)
+                goal_idx = len(nodes) - 1
+            else:
+                return [], nodes, parents
+
+        # Phase B: optimize until iteration budget or wall-clock max (whichever first).
+        t_phase_b = time.perf_counter()
+        b_iter = 0
+        while b_iter < self.phase_b_iterations:
+            if self.phase_b_max_seconds > 0.0 and (
+                time.perf_counter() - t_phase_b >= self.phase_b_max_seconds
+            ):
+                break
+            goal_idx = self._rrt_star_one_iteration(
+                nodes,
+                parents,
+                costs,
+                goal,
+                step_size,
+                neighbor_radius,
+                goal_radius,
+                goal_idx,
+                optimize_goal=True,
+            )
+            b_iter += 1
+        self._rrt_recompute_costs_from_root(nodes, parents, costs)
+
+        path = []
+        idx = goal_idx
+        while True:
+            path.append(nodes[idx])
+            if idx == 0:
+                break
+            idx = parents[idx]
         path.reverse()
-        return path
+        return path, nodes, parents
 
-    def to_idx(self, x, y):
-        return y * self.width + x
+    def publish_tree_marker(self, nodes, parents):
+        marker = Marker()
+        marker.header.stamp = self.get_clock().now().to_msg()
+        marker.header.frame_id = "map"
+        marker.ns = "planned_trajectory/tree"
+        marker.id = 0
+        marker.type = Marker.LINE_LIST
+        marker.action = Marker.ADD
+        marker.scale.x = 0.02
+        marker.color.r = 0.2
+        marker.color.g = 0.7
+        marker.color.b = 1.0
+        marker.color.a = 0.45
 
-    def from_idx(self, idx):
-        return (idx % self.width, idx // self.width)
+        for i in range(1, len(nodes)):
+            parent_i = parents[i]
+            x0, y0 = self.map_to_world(nodes[i][0], nodes[i][1])
+            x1, y1 = self.map_to_world(nodes[parent_i][0], nodes[parent_i][1])
 
-    def smooth_path(self, path):
-        if len(path) <= 2:
-            return path
-        smoothed = [path[0]]
-        for i in range(1, len(path) - 1):
-            prev = smoothed[-1]
-            next = path[i + 1]
-            if self.line_of_sight(prev, next):
-                continue
-            smoothed.append(path[i])
-        smoothed.append(path[-1])
-        return smoothed
+            p0 = Point()
+            p0.x = x0
+            p0.y = y0
+            p0.z = 0.02
+            p1 = Point()
+            p1.x = x1
+            p1.y = y1
+            p1.z = 0.02
+            marker.points.append(p0)
+            marker.points.append(p1)
 
-    def A_star(self, start, goal):
-        sx, sy = int(start[0]), int(start[1])
-        gx, gy = int(goal[0]), int(goal[1])
-
-        start_idx = self.to_idx(sx, sy)
-        goal_idx = self.to_idx(gx, gy)
-
-        size = self.width * self.height
-
-        gscore = np.full(size, np.inf, dtype=np.float32)
-        parent = np.full(size, -1, dtype=np.int32)
-        closed = np.zeros(size, dtype=bool)
-
-        gscore[start_idx] = 0.0
-        parent[start_idx] = start_idx
-
-        open_set = []
-        heapq.heappush(open_set, (self.heuristic((sx, sy), (gx, gy)), start_idx))
-
-        while open_set:
-            _, current_idx = heapq.heappop(open_set)
-
-            if closed[current_idx]:
-                continue
-
-            if current_idx == goal_idx:
-                return self.reconstruct_path(parent, current_idx)
-
-            closed[current_idx] = True
-
-            cx, cy = self.from_idx(current_idx)
-
-            for nx, ny in self.iter_neighbors(cx, cy):
-                neighbor_idx = self.to_idx(nx, ny)
-
-                if closed[neighbor_idx]:
-                    continue
-
-                dx = cx - nx
-                dy = cy - ny
-                tentative = gscore[current_idx] + (dx * dx + dy * dy) ** 0.5
-
-                if tentative < gscore[neighbor_idx]:
-                    gscore[neighbor_idx] = tentative
-                    parent[neighbor_idx] = current_idx
-                    f = tentative + self.heuristic((nx, ny), (gx, gy))
-                    heapq.heappush(open_set, (f, neighbor_idx))
-
-        return []
-
-    def Theta_star(self, start, goal):
-        sx, sy = int(start[0]), int(start[1])
-        gx, gy = int(goal[0]), int(goal[1])
-
-        start_idx = self.to_idx(sx, sy)
-        goal_idx = self.to_idx(gx, gy)
-
-        size = self.width * self.height
-
-        gscore = np.full(size, np.inf, dtype=np.float32)
-        parent = np.full(size, -1, dtype=np.int32)
-        closed = np.zeros(size, dtype=bool)
-
-        gscore[start_idx] = 0.0
-        parent[start_idx] = start_idx
-
-        open_set = []
-        heapq.heappush(open_set, (self.heuristic((sx, sy), (gx, gy)), start_idx))
-
-        while open_set:
-            _, current_idx = heapq.heappop(open_set)
-
-            if closed[current_idx]:
-                continue
-
-            if current_idx == goal_idx:
-                return self.reconstruct_path(parent, current_idx)
-
-            closed[current_idx] = True
-
-            cx, cy = self.from_idx(current_idx)
-            parent_idx = parent[current_idx]
-            px, py = self.from_idx(parent_idx)
-
-            for nx, ny in self.iter_neighbors(cx, cy):
-                neighbor_idx = self.to_idx(nx, ny)
-
-                if closed[neighbor_idx]:
-                    continue
-
-                if self.line_of_sight((px, py), (nx, ny)):
-                    dx = px - nx
-                    dy = py - ny
-                    tentative = gscore[parent_idx] + (dx * dx + dy * dy) ** 0.5
-
-                    if tentative < gscore[neighbor_idx]:
-                        gscore[neighbor_idx] = tentative
-                        parent[neighbor_idx] = parent_idx
-                        f = tentative + self.heuristic((nx, ny), (gx, gy))
-                        heapq.heappush(open_set, (f, neighbor_idx))
-
-                else:
-                    dx = cx - nx
-                    dy = cy - ny
-                    tentative = gscore[current_idx] + (dx * dx + dy * dy) ** 0.5
-
-                    if tentative < gscore[neighbor_idx]:
-                        gscore[neighbor_idx] = tentative
-                        parent[neighbor_idx] = current_idx
-                        f = tentative + self.heuristic((nx, ny), (gx, gy))
-                        heapq.heappush(open_set, (f, neighbor_idx))
-
-        return []
-
-    def Lazy_Theta_star(self, start, goal):
-        sx, sy = int(start[0]), int(start[1])
-        gx, gy = int(goal[0]), int(goal[1])
-
-        start_idx = self.to_idx(sx, sy)
-        goal_idx = self.to_idx(gx, gy)
-
-        size = self.width * self.height
-
-        gscore = np.full(size, np.inf, dtype=np.float32)
-        parent = np.full(size, -1, dtype=np.int32)
-        closed = np.zeros(size, dtype=bool)
-
-        gscore[start_idx] = 0.0
-        parent[start_idx] = start_idx
-
-        open_set = []
-        heapq.heappush(open_set, (self.heuristic((sx, sy), (gx, gy)), start_idx))
-
-        while open_set:
-            _, current_idx = heapq.heappop(open_set)
-
-            if closed[current_idx]:
-                continue
-
-            cx, cy = self.from_idx(current_idx)
-
-            # --- LAZY STEP: validate parent LOS only when expanding ---
-            parent_idx = parent[current_idx]
-            if parent_idx != current_idx:
-                px, py = self.from_idx(parent_idx)
-
-                if not self.line_of_sight((px, py), (cx, cy)):
-                    # Fix parent: choose best neighbor in CLOSED
-                    best_g = np.inf
-                    best_parent = -1
-
-                    for nx, ny in self.iter_neighbors(cx, cy):
-                        neighbor_idx = self.to_idx(nx, ny)
-                        if not closed[neighbor_idx]:
-                            continue
-
-                        dx = nx - cx
-                        dy = ny - cy
-                        cost = gscore[neighbor_idx] + (dx * dx + dy * dy) ** 0.5
-
-                        if cost < best_g:
-                            best_g = cost
-                            best_parent = neighbor_idx
-
-                    if best_parent != -1:
-                        parent[current_idx] = best_parent
-                        gscore[current_idx] = best_g
-
-            if current_idx == goal_idx:
-                return self.reconstruct_path(parent, current_idx)
-
-            closed[current_idx] = True
-
-            # --- STANDARD EXPANSION (NO LOS CHECK HERE) ---
-            for nx, ny in self.iter_neighbors(cx, cy):
-                neighbor_idx = self.to_idx(nx, ny)
-
-                if closed[neighbor_idx]:
-                    continue
-
-                # Always assume parent[current] is valid (lazy assumption)
-                parent_idx = parent[current_idx]
-                px, py = self.from_idx(parent_idx)
-
-                dx = px - nx
-                dy = py - ny
-                tentative = gscore[parent_idx] + (dx * dx + dy * dy) ** 0.5
-
-                if tentative < gscore[neighbor_idx]:
-                    gscore[neighbor_idx] = tentative
-                    parent[neighbor_idx] = parent_idx
-                    f = tentative + self.heuristic((nx, ny), (gx, gy))
-                    heapq.heappush(open_set, (f, neighbor_idx))
-
-        return []
+        self.tree_pub.publish(marker)
 
     def plan_path(self):
-        if self.pose is None or self.goal is None or self.map is None:
+        if self.pose is None or self.goal is None or self.map_grid is None:
             return
-        self.get_logger().info("Planning path...")
-        time_start = time.time()
-        start_pixel = self.world_to_pixel(self.pose.position.x, self.pose.position.y)
-        goal_pixel = self.world_to_pixel(self.goal.position.x, self.goal.position.y)
-        path_pixels = self.A_star(start_pixel, goal_pixel)
-        self.get_logger().info(f"Path found with {len(path_pixels)} points")
-        path_pixels = self.smooth_path(path_pixels)
-        path_world = self.pixel_to_world(
-            [p[0] for p in path_pixels], [p[1] for p in path_pixels]
-        )
-        time_end = time.time()
-        self.get_logger().info(
-            f"Path planning took {time_end - time_start:.2f} seconds"
-        )
-        self.get_logger().info(f"Path planned with {len(path_world[0])} points")
 
-        self.trajectory.points = list(zip(path_world[0], path_world[1]))
-        # self.traj_pub.publish(self.trajectory.toPoseArray())
+        start_point = self.world_to_map(self.pose.position.x, self.pose.position.y)
+        end_point = self.world_to_map(self.goal.position.x, self.goal.position.y)
+
+        endpoints_changed = (
+            self.last_start_point != start_point or self.last_end_point != end_point
+        )
+        if not endpoints_changed:
+            return
+
+        if not self.is_free(start_point[0], start_point[1]):
+            self.get_logger().warn("Start point is not free.")
+            return
+        if not self.is_free(end_point[0], end_point[1]):
+            self.get_logger().warn("Goal point is not free.")
+            return
+
+        path_pixels, tree_nodes, tree_parents = self.rrt_star(start_point, end_point)
+        self.publish_tree_marker(tree_nodes, tree_parents)
+        if not path_pixels:
+            self.get_logger().warn("RRT* failed to find a path.")
+            return
+
+        self.trajectory.points = [
+            self.map_to_world(px, py) for (px, py) in path_pixels
+        ]
+        self.traj_pub.publish(self.trajectory.toPoseArray())
         self.trajectory.publish_viz()
+        self.last_start_point = start_point
+        self.last_end_point = end_point
+        self.get_logger().info(
+            f"Published RRT* path with {len(self.trajectory.points)} points."
+        )
 
 
 def main(args=None):
