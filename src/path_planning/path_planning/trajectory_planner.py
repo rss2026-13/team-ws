@@ -25,7 +25,6 @@ class PathPlan(Node):
         self.declare_parameter("rrt_phase_b_max_seconds", 30.0)
         self.declare_parameter("rrt_phase_b_corridor_radius_m", 3.0)
         self.declare_parameter("rrt_phase_b_wall_bias_radius_m", 0.75)
-        self.declare_parameter("rrt_max_leap_m", 3.0)
 
         gp = lambda name: self.get_parameter(name).value
         self.odom_topic = gp("odom_topic")
@@ -67,7 +66,7 @@ class PathPlan(Node):
         self._phase_start_time = None
         self._current_path = []
         self._t_last_viz = 0.0
-        self._step_size = self._neighbor_radius = self._goal_radius = self._corridor_radius_px = self._max_leap = 1
+        self._step_size = self._neighbor_radius_a = self._neighbor_radius_b = self._goal_radius = self._corridor_radius_px = 1
 
         self.create_timer(0.01, self._planning_tick)
 
@@ -166,7 +165,7 @@ class PathPlan(Node):
     # ── RRT* core ─────────────────────────────────────────────────────────────
 
     def _rrt_iter(self, nodes, parents, costs, goal, step, nr, gr, goal_idx,
-                  optimize_goal, forced_sample=None, max_leap=None):
+                  optimize_goal, forced_sample=None):
         if forced_sample is not None:
             sample = forced_sample
         elif random.random() < self.goal_bias:
@@ -180,13 +179,12 @@ class PathPlan(Node):
 
         ni = self.nearest_index(nodes, sample)
         nn = nodes[ni]
-        if max_leap and max_leap > step:
-            leap = self.steer(nn, sample, max_leap)
-            new = leap if self.is_free(*leap) and self.line_is_free(nn, leap) else self.steer(nn, sample, step)
+        if self.line_is_free(nn, sample):
+            new = sample
         else:
             new = self.steer(nn, sample, step)
-        if not self.is_free(*new) or not self.line_is_free(nn, new):
-            return goal_idx
+            if not self.is_free(*new) or not self.line_is_free(nn, new):
+                return goal_idx
 
         near = self.near_indices(nodes, new, nr)
         best_p, best_c = ni, costs[ni] + math.hypot(new[0]-nodes[ni][0], new[1]-nodes[ni][1])
@@ -261,8 +259,8 @@ class PathPlan(Node):
         self._t_last_viz = time.perf_counter()
         res = self.map_resolution
         self._step_size = max(2, int(0.6/res))
-        self._max_leap = max(self._step_size, int(self.get_parameter("rrt_max_leap_m").value/res))
-        self._neighbor_radius = max(self._step_size+1, int(1.2/res))
+        self._neighbor_radius_a = max(self._step_size+1, int(1.2/res))
+        self._neighbor_radius_b = max(self._step_size+1, int(4.0/res))
         self._goal_radius = max(2, int(0.7/res))
         self._corridor_radius_px = int(self.phase_b_corridor_radius_m/res)
         self.get_logger().info("Starting Phase A.")
@@ -277,15 +275,15 @@ class PathPlan(Node):
 
         nodes, parents, costs = self._tree_nodes, self._tree_parents, self._tree_costs
         goal = self._tree_goal
-        step, nr, gr = self._step_size, self._neighbor_radius, self._goal_radius
+        step, gr = self._step_size, self._goal_radius
+        nr = self._neighbor_radius_a if self._phase == 'A' else self._neighbor_radius_b
         goal_idx = self._tree_goal_idx
 
         for _ in range(50):
             if self._phase == 'A':
                 fs = self._obstacle_sample(step) if self.obstacle_cells and random.random() < 0.5 else None
                 goal_idx = self._rrt_iter(nodes, parents, costs, goal, step, nr, gr,
-                                          goal_idx, optimize_goal=False, forced_sample=fs,
-                                          max_leap=self._max_leap)
+                                          goal_idx, optimize_goal=False, forced_sample=fs)
                 if goal_idx is not None:
                     self._current_path = self._extract_path(goal_idx)
                     self._publish_path()
@@ -306,20 +304,21 @@ class PathPlan(Node):
                     self.get_logger().info("Phase B complete.")
                     self._tree_nodes = None
                     return
-                if random.random() < 0.5 and len(self._current_path) > 1:
-                    # 50% near best path
+                # Phase B: 50% obstacle, 10% near best path, 40% uniform.
+                r = random.random()
+                if r < 0.5:
+                    fs = self._obstacle_sample(step) if self.obstacle_cells else None
+                elif r < 0.6 and len(self._current_path) > 1:
                     anchor = self._current_path[random.randint(0, len(self._current_path)-1)]
-                    c = int(round(anchor[0]+random.randint(-self._corridor_radius_px, self._corridor_radius_px))), \
-                        int(round(anchor[1]+random.randint(-self._corridor_radius_px, self._corridor_radius_px)))
+                    c = (int(round(anchor[0]+random.randint(-self._corridor_radius_px, self._corridor_radius_px))),
+                         int(round(anchor[1]+random.randint(-self._corridor_radius_px, self._corridor_radius_px))))
                     fs = c if self.in_bounds(*c) and self.is_free(*c) else None
                 else:
-                    # 50% near obstacles
-                    fs = self._obstacle_sample(step) if self.obstacle_cells else None
+                    fs = (random.randint(0, self.map_width-1), random.randint(0, self.map_height-1))
 
                 prev = costs[goal_idx]
                 goal_idx = self._rrt_iter(nodes, parents, costs, goal, step, nr, gr,
-                                          goal_idx, optimize_goal=True, forced_sample=fs,
-                                          max_leap=self._max_leap)
+                                          goal_idx, optimize_goal=True, forced_sample=fs)
                 self._tree_goal_idx = goal_idx
                 if costs[goal_idx] < prev:
                     self._recompute_costs(nodes, parents, costs)
