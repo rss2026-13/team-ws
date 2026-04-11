@@ -20,10 +20,11 @@ class PathPlan(Node):
         self.declare_parameter("odom_topic", "default")
         self.declare_parameter("map_topic", "default")
         self.declare_parameter("wall_buffer_m", 0.12)
-        self.declare_parameter("rrt_phase_a_iterations", 5000)
+        self.declare_parameter("rrt_phase_a_iterations", 10000)
         self.declare_parameter("rrt_phase_b_iterations", 4000)
         # Wall-clock cap for phase B (optimization). <= 0 means no time limit (only iteration cap).
         self.declare_parameter("rrt_phase_b_max_seconds", 7.0)
+        self.declare_parameter("rrt_phase_b_corridor_radius_m", 0.75)
 
         self.odom_topic = (
             self.get_parameter("odom_topic").get_parameter_value().string_value
@@ -101,6 +102,11 @@ class PathPlan(Node):
             .get_parameter_value()
             .double_value
         )
+        self.phase_b_corridor_radius_m = (
+            self.get_parameter("rrt_phase_b_corridor_radius_m")
+            .get_parameter_value()
+            .double_value
+        )
         self.goal_bias = 0.1
         self.wall_buffer_m = (
             self.get_parameter("wall_buffer_m").get_parameter_value().double_value
@@ -169,10 +175,11 @@ class PathPlan(Node):
 
     def pose_cb(self, pose):
         self.pose = pose.pose.pose
-        self.plan_path()
 
     def goal_cb(self, msg):
         self.goal = msg.pose
+        self.last_start_point = None
+        self.last_end_point = None
         self.plan_path()
 
     def world_to_map(self, x_world, y_world):
@@ -253,9 +260,12 @@ class PathPlan(Node):
         goal_radius,
         goal_idx,
         optimize_goal,
+        forced_sample=None,
     ):
         """One RRT* grow step. If optimize_goal and goal_idx set, improve goal parent when cheaper."""
-        if random.random() < self.goal_bias:
+        if forced_sample is not None:
+            sample = forced_sample
+        elif random.random() < self.goal_bias:
             sample = goal
         else:
             sample = (
@@ -359,6 +369,8 @@ class PathPlan(Node):
         goal_idx = None
 
         # Phase A: first feasible path to goal (stop as soon as goal is connected).
+        t_last_viz_a = time.perf_counter()
+        viz_interval_a = 0.1
         for _ in range(self.phase_a_iterations):
             goal_idx = self._rrt_star_one_iteration(
                 nodes,
@@ -373,6 +385,10 @@ class PathPlan(Node):
             )
             if goal_idx is not None:
                 break
+            now = time.perf_counter()
+            if now - t_last_viz_a >= viz_interval_a:
+                t_last_viz_a = now
+                yield [], nodes, parents
 
         if goal_idx is None:
             near_goal_idx = self.nearest_index(nodes, goal)
@@ -381,16 +397,48 @@ class PathPlan(Node):
                 parents.append(near_goal_idx)
                 goal_idx = len(nodes) - 1
             else:
-                return [], nodes, parents
+                yield [], nodes, parents
+                return
 
-        # Phase B: optimize until iteration budget or wall-clock max (whichever first).
+        def extract_path(goal_idx):
+            path = []
+            idx = goal_idx
+            while True:
+                path.append(nodes[idx])
+                if idx == 0:
+                    break
+                idx = parents[idx]
+            path.reverse()
+            return path
+
+        # Publish after Phase A.
+        yield extract_path(goal_idx), nodes, parents
+
+        # Phase B: optimize until wall-clock max, publish tree continuously and path on improvement.
+        corridor_radius_px = int(self.phase_b_corridor_radius_m / self.map_resolution)
         t_phase_b = time.perf_counter()
-        b_iter = 0
-        while b_iter < self.phase_b_iterations:
+        t_last_viz = t_phase_b
+        viz_interval = 0.1  # publish tree every 100ms
+        current_path = extract_path(goal_idx)
+        while True:
+            now = time.perf_counter()
             if self.phase_b_max_seconds > 0.0 and (
-                time.perf_counter() - t_phase_b >= self.phase_b_max_seconds
+                now - t_phase_b >= self.phase_b_max_seconds
             ):
                 break
+
+            # 50% of the time sample near the current path.
+            forced_sample = None
+            if len(current_path) > 1 and random.random() < 0.5:
+                anchor = current_path[random.randint(0, len(current_path) - 1)]
+                candidate = (
+                    anchor[0] + random.randint(-corridor_radius_px, corridor_radius_px),
+                    anchor[1] + random.randint(-corridor_radius_px, corridor_radius_px),
+                )
+                if self.in_bounds(candidate[0], candidate[1]) and self.is_free(candidate[0], candidate[1]):
+                    forced_sample = candidate
+
+            prev_cost = costs[goal_idx]
             goal_idx = self._rrt_star_one_iteration(
                 nodes,
                 parents,
@@ -401,19 +449,17 @@ class PathPlan(Node):
                 goal_radius,
                 goal_idx,
                 optimize_goal=True,
+                forced_sample=forced_sample,
             )
-            b_iter += 1
-        self._rrt_recompute_costs_from_root(nodes, parents, costs)
 
-        path = []
-        idx = goal_idx
-        while True:
-            path.append(nodes[idx])
-            if idx == 0:
-                break
-            idx = parents[idx]
-        path.reverse()
-        return path, nodes, parents
+            improved = costs[goal_idx] < prev_cost
+            if improved:
+                self._rrt_recompute_costs_from_root(nodes, parents, costs)
+                current_path = extract_path(goal_idx)
+            now = time.perf_counter()
+            if improved or (now - t_last_viz >= viz_interval):
+                t_last_viz = now
+                yield extract_path(goal_idx), nodes, parents
 
     def publish_tree_marker(self, nodes, parents):
         marker = Marker()
@@ -467,22 +513,36 @@ class PathPlan(Node):
             self.get_logger().warn("Goal point is not free.")
             return
 
-        path_pixels, tree_nodes, tree_parents = self.rrt_star(start_point, end_point)
-        self.publish_tree_marker(tree_nodes, tree_parents)
-        if not path_pixels:
-            self.get_logger().warn("RRT* failed to find a path.")
+        first = True
+        last_path = None
+        found_path = False
+        for path_pixels, tree_nodes, tree_parents in self.rrt_star(start_point, end_point):
+            self.publish_tree_marker(tree_nodes, tree_parents)
+            if not path_pixels:
+                # Phase A still searching — just visualizing the growing tree.
+                continue
+            found_path = True
+            if path_pixels != last_path:
+                self.trajectory.points = [
+                    self.map_to_world(px, py) for (px, py) in path_pixels
+                ]
+                self.traj_pub.publish(self.trajectory.toPoseArray())
+                self.trajectory.publish_viz()
+                if first:
+                    self.get_logger().info(
+                        f"Phase A: published initial path with {len(self.trajectory.points)} points."
+                    )
+                    first = False
+                else:
+                    self.get_logger().info(
+                        f"Phase B: improved path to {len(self.trajectory.points)} points."
+                    )
+                last_path = path_pixels
+        if not found_path:
+            self.get_logger().warn("RRT* failed to find a path in 10000 iterations.")
             return
-
-        self.trajectory.points = [
-            self.map_to_world(px, py) for (px, py) in path_pixels
-        ]
-        self.traj_pub.publish(self.trajectory.toPoseArray())
-        self.trajectory.publish_viz()
         self.last_start_point = start_point
         self.last_end_point = end_point
-        self.get_logger().info(
-            f"Published RRT* path with {len(self.trajectory.points)} points."
-        )
 
 
 def main(args=None):
