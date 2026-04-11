@@ -23,8 +23,9 @@ class PathPlan(Node):
         self.declare_parameter("map_topic", "default")
         self.declare_parameter("wall_buffer_m", 0.4)
         self.declare_parameter("rrt_phase_b_max_seconds", 30.0)
-        self.declare_parameter("rrt_phase_b_corridor_radius_m", 0.75)
+        self.declare_parameter("rrt_phase_b_corridor_radius_m", 3.0)
         self.declare_parameter("rrt_phase_b_wall_bias_radius_m", 0.75)
+        self.declare_parameter("rrt_max_leap_m", 3.0)
 
         gp = lambda name: self.get_parameter(name).value
         self.odom_topic = gp("odom_topic")
@@ -66,7 +67,7 @@ class PathPlan(Node):
         self._phase_start_time = None
         self._current_path = []
         self._t_last_viz = 0.0
-        self._step_size = self._neighbor_radius = self._goal_radius = self._corridor_radius_px = 1
+        self._step_size = self._neighbor_radius = self._goal_radius = self._corridor_radius_px = self._max_leap = 1
 
         self.create_timer(0.01, self._planning_tick)
 
@@ -165,7 +166,7 @@ class PathPlan(Node):
     # ── RRT* core ─────────────────────────────────────────────────────────────
 
     def _rrt_iter(self, nodes, parents, costs, goal, step, nr, gr, goal_idx,
-                  optimize_goal, forced_sample=None):
+                  optimize_goal, forced_sample=None, max_leap=None):
         if forced_sample is not None:
             sample = forced_sample
         elif random.random() < self.goal_bias:
@@ -178,8 +179,13 @@ class PathPlan(Node):
                 return goal_idx
 
         ni = self.nearest_index(nodes, sample)
-        new = self.steer(nodes[ni], sample, step)
-        if not self.is_free(*new) or not self.line_is_free(nodes[ni], new):
+        nn = nodes[ni]
+        if max_leap and max_leap > step:
+            leap = self.steer(nn, sample, max_leap)
+            new = leap if self.is_free(*leap) and self.line_is_free(nn, leap) else self.steer(nn, sample, step)
+        else:
+            new = self.steer(nn, sample, step)
+        if not self.is_free(*new) or not self.line_is_free(nn, new):
             return goal_idx
 
         near = self.near_indices(nodes, new, nr)
@@ -197,7 +203,7 @@ class PathPlan(Node):
             if rc < costs[idx] and self.line_is_free(new, nodes[idx]):
                 parents[idx], costs[idx] = new_idx, rc
 
-        if math.hypot(new[0]-goal[0], new[1]-goal[1]) <= gr and self.line_is_free(new, goal):
+        if self.line_is_free(new, goal):
             ec = costs[new_idx] + math.hypot(goal[0]-new[0], goal[1]-new[1])
             if goal_idx is None:
                 nodes.append(goal); parents.append(new_idx); costs.append(ec)
@@ -255,6 +261,7 @@ class PathPlan(Node):
         self._t_last_viz = time.perf_counter()
         res = self.map_resolution
         self._step_size = max(2, int(0.6/res))
+        self._max_leap = max(self._step_size, int(self.get_parameter("rrt_max_leap_m").value/res))
         self._neighbor_radius = max(self._step_size+1, int(1.2/res))
         self._goal_radius = max(2, int(0.7/res))
         self._corridor_radius_px = int(self.phase_b_corridor_radius_m/res)
@@ -277,14 +284,15 @@ class PathPlan(Node):
             if self._phase == 'A':
                 fs = self._obstacle_sample(step) if self.obstacle_cells and random.random() < 0.5 else None
                 goal_idx = self._rrt_iter(nodes, parents, costs, goal, step, nr, gr,
-                                          goal_idx, optimize_goal=False, forced_sample=fs)
+                                          goal_idx, optimize_goal=False, forced_sample=fs,
+                                          max_leap=self._max_leap)
                 if goal_idx is not None:
-                    self._tree_goal_idx = goal_idx
                     self._current_path = self._extract_path(goal_idx)
                     self._publish_path()
                     elapsed = time.perf_counter() - self._phase_start_time
                     self.get_logger().info(
                         f"Phase A done in {elapsed:.1f}s: {len(self._current_path)} points. Starting Phase B.")
+                    self._tree_goal_idx = goal_idx
                     self._phase = 'B'
                     self._phase_start_time = time.perf_counter()
                     break
@@ -298,17 +306,20 @@ class PathPlan(Node):
                     self.get_logger().info("Phase B complete.")
                     self._tree_nodes = None
                     return
-                if random.random() < 0.3 and len(self._current_path) > 1:
+                if random.random() < 0.5 and len(self._current_path) > 1:
+                    # 50% near best path
                     anchor = self._current_path[random.randint(0, len(self._current_path)-1)]
                     c = int(round(anchor[0]+random.randint(-self._corridor_radius_px, self._corridor_radius_px))), \
                         int(round(anchor[1]+random.randint(-self._corridor_radius_px, self._corridor_radius_px)))
                     fs = c if self.in_bounds(*c) and self.is_free(*c) else None
                 else:
+                    # 50% near obstacles
                     fs = self._obstacle_sample(step) if self.obstacle_cells else None
 
                 prev = costs[goal_idx]
                 goal_idx = self._rrt_iter(nodes, parents, costs, goal, step, nr, gr,
-                                          goal_idx, optimize_goal=True, forced_sample=fs)
+                                          goal_idx, optimize_goal=True, forced_sample=fs,
+                                          max_leap=self._max_leap)
                 self._tree_goal_idx = goal_idx
                 if costs[goal_idx] < prev:
                     self._recompute_costs(nodes, parents, costs)
@@ -319,6 +330,12 @@ class PathPlan(Node):
         if now - self._t_last_viz >= 0.1:
             self._t_last_viz = now
             self._publish_tree(nodes, parents)
+            if self._phase == 'B' and goal_idx is not None:
+                elapsed = now - self._phase_start_time
+                self.get_logger().info(
+                    f"Phase B: {elapsed:.1f}s elapsed, {len(nodes)} nodes, "
+                    f"path cost {costs[goal_idx]:.1f}px"
+                )
 
     def _publish_path(self):
         self.trajectory.points = [self.m2w(px, py) for px, py in self._current_path]
