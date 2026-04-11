@@ -3,7 +3,7 @@ trajectory_planner:
     odom_topic: "/odom"
     map_topic: "/map"
     scan_topic: "/scan"
-    wall_buffer_m: 0.2
+    wall_buffer_m: 0.3
 trajectory_follower:
   ros__parameters:
     odom_topic: "/odom"
