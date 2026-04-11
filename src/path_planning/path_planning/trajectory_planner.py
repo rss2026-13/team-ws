@@ -23,7 +23,7 @@ class PathPlan(Node):
         self.declare_parameter("rrt_phase_a_iterations", 10000)
         self.declare_parameter("rrt_phase_b_iterations", 4000)
         # Wall-clock cap for phase B (optimization). <= 0 means no time limit (only iteration cap).
-        self.declare_parameter("rrt_phase_b_max_seconds", 7.0)
+        self.declare_parameter("rrt_phase_b_max_seconds", 30.0)
         self.declare_parameter("rrt_phase_b_corridor_radius_m", 0.75)
 
         self.odom_topic = (
@@ -115,6 +115,22 @@ class PathPlan(Node):
         self.last_start_point = None
         self.last_end_point = None
         self.obstacle_cells = []
+        self._needs_replan = False
+        self._tree_nodes = None
+        self._tree_parents = None
+        self._tree_costs = None
+        self._tree_goal = None
+        self._tree_start = None
+        self._tree_goal_idx = None
+        self._phase = None
+        self._phase_start_time = None
+        self._current_path = []
+        self._t_last_viz = 0.0
+        self._step_size = 1
+        self._neighbor_radius = 1
+        self._goal_radius = 1
+        self._corridor_radius_px = 1
+        self.create_timer(0.01, self._planning_tick)
 
     def map_cb(self, msg):
         grid = np.array(msg.data, dtype=np.int16).reshape(
@@ -147,7 +163,6 @@ class PathPlan(Node):
                 f"Received map ({self.map_width}x{self.map_height}) for RRT*."
             )
             self.ready_logged = True
-        self.plan_path()
 
     def inflate_obstacles(self, occupancy_grid, radius_pixels):
         """Inflate occupied cells by a circular radius in pixels."""
@@ -180,12 +195,16 @@ class PathPlan(Node):
 
     def pose_cb(self, pose):
         self.pose = pose.pose.pose
+        if self._tree_start is not None:
+            current = self.world_to_map(self.pose.position.x, self.pose.position.y)
+            dx = (current[0] - self._tree_start[0]) * self.map_resolution
+            dy = (current[1] - self._tree_start[1]) * self.map_resolution
+            if math.hypot(dx, dy) > 0.5:
+                self._needs_replan = True
 
     def goal_cb(self, msg):
         self.goal = msg.pose
-        self.last_start_point = None
-        self.last_end_point = None
-        self.plan_path()
+        self._needs_replan = True
 
     def world_to_map(self, x_world, y_world):
         dx = x_world - self.map_origin_x
@@ -369,7 +388,142 @@ class PathPlan(Node):
                 )
                 queue.append(v)
 
-    def rrt_star(self, start, goal):
+    def _reset_tree(self):
+        if self.pose is None or self.goal is None or self.map_grid is None:
+            return
+        start = self.world_to_map(self.pose.position.x, self.pose.position.y)
+        goal = self.world_to_map(self.goal.position.x, self.goal.position.y)
+        if not self.is_free(start[0], start[1]):
+            self.get_logger().warn("Start point is not free.")
+            return
+        if not self.is_free(goal[0], goal[1]):
+            self.get_logger().warn("Goal point is not free.")
+            return
+        self._tree_start = start
+        self._tree_goal = goal
+        self._tree_nodes = [start]
+        self._tree_parents = [0]
+        self._tree_costs = [0.0]
+        self._tree_goal_idx = None
+        self._phase = 'A'
+        self._phase_start_time = time.perf_counter()
+        self._current_path = []
+        self._t_last_viz = time.perf_counter()
+        self._step_size = max(2, int(0.6 / self.map_resolution))
+        self._neighbor_radius = max(self._step_size + 1, int(1.2 / self.map_resolution))
+        self._goal_radius = max(2, int(0.7 / self.map_resolution))
+        self._corridor_radius_px = int(self.phase_b_corridor_radius_m / self.map_resolution)
+        self.get_logger().info("Starting Phase A.")
+
+    def _planning_tick(self):
+        if self._needs_replan:
+            self._needs_replan = False
+            self._reset_tree()
+            return
+
+        if self._tree_nodes is None:
+            return
+
+        nodes = self._tree_nodes
+        parents = self._tree_parents
+        costs = self._tree_costs
+        goal = self._tree_goal
+        step_size = self._step_size
+        neighbor_radius = self._neighbor_radius
+        goal_radius = self._goal_radius
+        goal_idx = self._tree_goal_idx
+
+        # Run a batch of iterations before returning to the event loop.
+        batch = 50
+        for _ in range(batch):
+            if self._phase == 'A':
+                forced_sample = None
+                if self.obstacle_cells and random.random() < 0.5:
+                    ox, oy = random.choice(self.obstacle_cells)
+                    angle = random.uniform(0, 2 * math.pi)
+                    sx = int(round(ox + step_size * math.cos(angle)))
+                    sy = int(round(oy + step_size * math.sin(angle)))
+                    if self.in_bounds(sx, sy) and self.is_free(sx, sy):
+                        forced_sample = (sx, sy)
+                goal_idx = self._rrt_star_one_iteration(
+                    nodes, parents, costs, goal, step_size, neighbor_radius,
+                    goal_radius, goal_idx, optimize_goal=False, forced_sample=forced_sample,
+                )
+                if goal_idx is not None:
+                    self._tree_goal_idx = goal_idx
+                    self._current_path = self._extract_path(goal_idx)
+                    self._publish_path()
+                    self.get_logger().info(f"Phase A done: {len(self._current_path)} points. Starting Phase B.")
+                    self._phase = 'B'
+                    self._phase_start_time = time.perf_counter()
+                    break
+                elif time.perf_counter() - self._phase_start_time > 30.0:
+                    self.get_logger().warn("Phase A timed out after 30s.")
+                    self._tree_nodes = None
+                    return
+
+            elif self._phase == 'B':
+                if time.perf_counter() - self._phase_start_time > self.phase_b_max_seconds:
+                    self.get_logger().info("Phase B complete.")
+                    self._tree_nodes = None
+                    return
+
+                forced_sample = None
+                r = random.random()
+                if r < 0.5 and len(self._current_path) > 1:
+                    anchor = self._current_path[random.randint(0, len(self._current_path) - 1)]
+                    candidate = (
+                        anchor[0] + random.randint(-self._corridor_radius_px, self._corridor_radius_px),
+                        anchor[1] + random.randint(-self._corridor_radius_px, self._corridor_radius_px),
+                    )
+                    if self.in_bounds(candidate[0], candidate[1]) and self.is_free(candidate[0], candidate[1]):
+                        forced_sample = candidate
+                elif self.obstacle_cells:
+                    ox, oy = random.choice(self.obstacle_cells)
+                    angle = random.uniform(0, 2 * math.pi)
+                    sx = int(round(ox + step_size * math.cos(angle)))
+                    sy = int(round(oy + step_size * math.sin(angle)))
+                    if self.in_bounds(sx, sy) and self.is_free(sx, sy):
+                        forced_sample = (sx, sy)
+
+                prev_cost = costs[goal_idx]
+                goal_idx = self._rrt_star_one_iteration(
+                    nodes, parents, costs, goal, step_size, neighbor_radius,
+                    goal_radius, goal_idx, optimize_goal=True, forced_sample=forced_sample,
+                )
+                self._tree_goal_idx = goal_idx
+                if costs[goal_idx] < prev_cost:
+                    self._rrt_recompute_costs_from_root(nodes, parents, costs)
+                    self._current_path = self._extract_path(goal_idx)
+                    self._publish_path()
+
+        # Publish tree at ~10Hz regardless.
+        now = time.perf_counter()
+        if now - self._t_last_viz >= 0.1:
+            self._t_last_viz = now
+            self.publish_tree_marker(nodes, parents)
+
+    def _extract_path(self, goal_idx):
+        nodes = self._tree_nodes
+        parents = self._tree_parents
+        path = []
+        idx = goal_idx
+        while True:
+            path.append(nodes[idx])
+            if idx == 0:
+                break
+            idx = parents[idx]
+        path.reverse()
+        return path
+
+    def _publish_path(self):
+        self.trajectory.points = [
+            self.map_to_world(px, py) for (px, py) in self._current_path
+        ]
+        self.traj_pub.publish(self.trajectory.toPoseArray())
+        self.trajectory.publish_viz()
+
+    def rrt_star_UNUSED(self, start, goal, plan_id):
         step_size = max(2, int(0.6 / self.map_resolution))
         neighbor_radius = max(step_size + 1, int(1.2 / self.map_resolution))
         goal_radius = max(2, int(0.7 / self.map_resolution))
@@ -383,7 +537,7 @@ class PathPlan(Node):
         t_phase_a = time.perf_counter()
         t_last_viz_a = t_phase_a
         viz_interval_a = 0.1
-        while time.perf_counter() - t_phase_a < 30.0:
+        while time.perf_counter() - t_phase_a < 30.0 and self._plan_id == plan_id:
             # 50% obstacle-based sampling: pick a random obstacle cell and offset outward.
             forced_sample = None
             if self.obstacle_cells and random.random() < 0.5:
@@ -443,7 +597,7 @@ class PathPlan(Node):
         t_last_viz = t_phase_b
         viz_interval = 0.1  # publish tree every 100ms
         current_path = extract_path(goal_idx)
-        while True:
+        while self._plan_id == plan_id:
             now = time.perf_counter()
             if self.phase_b_max_seconds > 0.0 and (
                 now - t_phase_b >= self.phase_b_max_seconds
@@ -507,7 +661,8 @@ class PathPlan(Node):
         marker.color.b = 1.0
         marker.color.a = 0.45
 
-        for i in range(1, len(nodes)):
+        start_i = max(1, len(nodes) - 5000)
+        for i in range(start_i, len(nodes)):
             parent_i = parents[i]
             x0, y0 = self.map_to_world(nodes[i][0], nodes[i][1])
             x1, y1 = self.map_to_world(nodes[parent_i][0], nodes[parent_i][1])
@@ -525,56 +680,6 @@ class PathPlan(Node):
 
         self.tree_pub.publish(marker)
 
-    def plan_path(self):
-        if self.pose is None or self.goal is None or self.map_grid is None:
-            return
-
-        start_point = self.world_to_map(self.pose.position.x, self.pose.position.y)
-        end_point = self.world_to_map(self.goal.position.x, self.goal.position.y)
-
-        endpoints_changed = (
-            self.last_start_point != start_point or self.last_end_point != end_point
-        )
-        if not endpoints_changed:
-            return
-
-        if not self.is_free(start_point[0], start_point[1]):
-            self.get_logger().warn("Start point is not free.")
-            return
-        if not self.is_free(end_point[0], end_point[1]):
-            self.get_logger().warn("Goal point is not free.")
-            return
-
-        first = True
-        last_path = None
-        found_path = False
-        for path_pixels, tree_nodes, tree_parents in self.rrt_star(start_point, end_point):
-            self.publish_tree_marker(tree_nodes, tree_parents)
-            if not path_pixels:
-                # Phase A still searching — just visualizing the growing tree.
-                continue
-            found_path = True
-            if path_pixels != last_path:
-                self.trajectory.points = [
-                    self.map_to_world(px, py) for (px, py) in path_pixels
-                ]
-                self.traj_pub.publish(self.trajectory.toPoseArray())
-                self.trajectory.publish_viz()
-                if first:
-                    self.get_logger().info(
-                        f"Phase A: published initial path with {len(self.trajectory.points)} points."
-                    )
-                    first = False
-                else:
-                    self.get_logger().info(
-                        f"Phase B: improved path to {len(self.trajectory.points)} points."
-                    )
-                last_path = path_pixels
-        if not found_path:
-            self.get_logger().warn("RRT* failed to find a path in 10000 iterations.")
-            return
-        self.last_start_point = start_point
-        self.last_end_point = end_point
 
 
 def main(args=None):
