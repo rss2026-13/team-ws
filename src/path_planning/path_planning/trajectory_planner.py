@@ -107,12 +107,14 @@ class PathPlan(Node):
             .get_parameter_value()
             .double_value
         )
-        self.goal_bias = 0.1
+        self.goal_bias = 0.05
+        self.goal_bias_radius_m = 3.0
         self.wall_buffer_m = (
             self.get_parameter("wall_buffer_m").get_parameter_value().double_value
         )
         self.last_start_point = None
         self.last_end_point = None
+        self.obstacle_cells = []
 
     def map_cb(self, msg):
         grid = np.array(msg.data, dtype=np.int16).reshape(
@@ -136,6 +138,9 @@ class PathPlan(Node):
         )
         self.cos_yaw = math.cos(self.map_origin_yaw)
         self.sin_yaw = math.sin(self.map_origin_yaw)
+
+        ys, xs = np.where(self.map_grid)
+        self.obstacle_cells = list(zip(xs.tolist(), ys.tolist()))
 
         if not self.ready_logged:
             self.get_logger().info(
@@ -266,7 +271,13 @@ class PathPlan(Node):
         if forced_sample is not None:
             sample = forced_sample
         elif random.random() < self.goal_bias:
-            sample = goal
+            r_px = int(self.goal_bias_radius_m / self.map_resolution)
+            sample = (
+                goal[0] + random.randint(-r_px, r_px),
+                goal[1] + random.randint(-r_px, r_px),
+            )
+            if not (self.in_bounds(sample[0], sample[1]) and self.is_free(sample[0], sample[1])):
+                sample = goal
         else:
             sample = (
                 random.randint(0, self.map_width - 1),
@@ -368,10 +379,21 @@ class PathPlan(Node):
         costs = [0.0]
         goal_idx = None
 
-        # Phase A: first feasible path to goal (stop as soon as goal is connected).
-        t_last_viz_a = time.perf_counter()
+        # Phase A: find first feasible path, up to 30 seconds.
+        t_phase_a = time.perf_counter()
+        t_last_viz_a = t_phase_a
         viz_interval_a = 0.1
-        for _ in range(self.phase_a_iterations):
+        while time.perf_counter() - t_phase_a < 30.0:
+            # 50% obstacle-based sampling: pick a random obstacle cell and offset outward.
+            forced_sample = None
+            if self.obstacle_cells and random.random() < 0.5:
+                ox, oy = random.choice(self.obstacle_cells)
+                angle = random.uniform(0, 2 * math.pi)
+                sx = int(round(ox + step_size * math.cos(angle)))
+                sy = int(round(oy + step_size * math.sin(angle)))
+                if self.in_bounds(sx, sy) and self.is_free(sx, sy):
+                    forced_sample = (sx, sy)
+
             goal_idx = self._rrt_star_one_iteration(
                 nodes,
                 parents,
@@ -382,6 +404,7 @@ class PathPlan(Node):
                 goal_radius,
                 goal_idx,
                 optimize_goal=False,
+                forced_sample=forced_sample,
             )
             if goal_idx is not None:
                 break
@@ -427,9 +450,10 @@ class PathPlan(Node):
             ):
                 break
 
-            # 50% of the time sample near the current path.
             forced_sample = None
-            if len(current_path) > 1 and random.random() < 0.5:
+            r = random.random()
+            if r < 0.5 and len(current_path) > 1:
+                # 50% sample near current best path.
                 anchor = current_path[random.randint(0, len(current_path) - 1)]
                 candidate = (
                     anchor[0] + random.randint(-corridor_radius_px, corridor_radius_px),
@@ -437,6 +461,14 @@ class PathPlan(Node):
                 )
                 if self.in_bounds(candidate[0], candidate[1]) and self.is_free(candidate[0], candidate[1]):
                     forced_sample = candidate
+            elif self.obstacle_cells:
+                # 50% obstacle-based sampling.
+                ox, oy = random.choice(self.obstacle_cells)
+                angle = random.uniform(0, 2 * math.pi)
+                sx = int(round(ox + step_size * math.cos(angle)))
+                sy = int(round(oy + step_size * math.sin(angle)))
+                if self.in_bounds(sx, sy) and self.is_free(sx, sy):
+                    forced_sample = (sx, sy)
 
             prev_cost = costs[goal_idx]
             goal_idx = self._rrt_star_one_iteration(
