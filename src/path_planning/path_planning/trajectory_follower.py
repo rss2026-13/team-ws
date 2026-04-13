@@ -25,6 +25,7 @@ class PurePursuit(Node):
         self.k_curv = 1.0
         self.speed = 4.0  # FILL IN #
         self.wheelbase_length = 0.325  # FILL IN #
+        self.goal_threshold = 0.5
 
         self.starting_points = 0
         self.ending_points  = 0 
@@ -83,7 +84,10 @@ class PurePursuit(Node):
         lookahead_point = self.find_lookahead_point(car_to_starting, min_dist_idx, t[min_dist_idx])
 
         # Give pure pursuit drive command
-        self.pub_pure_pursuit_drive_msg(lookahead_point, car_position, car_theta)
+        if (np.allclose(lookahead_point, self.ending_points[-1])) and (np.linalg.norm(self.ending_points[-1] - car_position) < self.goal_threshold):
+            self.pub_pure_pursuit_drive_msg(lookahead_point, 0.0, car_position, car_theta)
+        else:
+            self.pub_pure_pursuit_drive_msg(lookahead_point, self.speed, car_position, car_theta)
 
 
     def calculate_lookahead_distance(self, start_idx, n_segments=3, decay = 0.5):
@@ -126,7 +130,7 @@ class PurePursuit(Node):
         return self.starting_points[min_dist_idx] + (t_on_closest * self.segments[min_dist_idx])
     
 
-    def pub_pure_pursuit_drive_msg(self, lookahead_point, car_position, car_theta):
+    def pub_pure_pursuit_drive_msg(self, lookahead_point, speed, car_position, car_theta):
         dx = lookahead_point[0] - car_position[0]
         dy = lookahead_point[1] - car_position[1]
 
@@ -136,10 +140,11 @@ class PurePursuit(Node):
         ref_angle = np.arctan2(car_lpy, car_lpx)
         steering_angle = np.arctan2(2 * self.wheelbase_length * np.sin(ref_angle), self.lookahead)
 
+
         drive_msg = AckermannDriveStamped()
         drive_msg.header.stamp = self.get_clock().now().to_msg()
         drive_msg.drive.steering_angle = steering_angle
-        drive_msg.drive.speed = self.speed
+        drive_msg.drive.speed = speed
         self.drive_pub.publish(drive_msg)
 
 
