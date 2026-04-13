@@ -99,12 +99,14 @@ class PurePursuit(Node):
         distance_to_segments = np.linalg.norm(projections - car_position, axis=1)
         min_dist_idx = np.argmin(distance_to_segments)
 
+        """"
         distance_float = Float32()
         angle_float = Float32()
         distance_float.data = perp_distance
         angle_float.data = wall_angle
         self.distance_pub_.publish(distance_float)
         self.angle_pub_.publish(angle_float)
+        """
 
         # Compute the lookahead distance
         self.calculate_lookahead_distance(min_dist_idx)
