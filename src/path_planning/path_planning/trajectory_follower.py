@@ -2,6 +2,8 @@ import rclpy
 
 from ackermann_msgs.msg import AckermannDriveStamped
 from geometry_msgs.msg import PoseArray
+from visualization_msgs.msg import Marker
+from std_msgs.msg import Float32
 from nav_msgs.msg import Odometry
 from rclpy.node import Node
 from .utils import LineTrajectory
@@ -48,6 +50,26 @@ class PurePursuit(Node):
         self.drive_pub = self.create_publisher(AckermannDriveStamped,
                                                self.drive_topic,
                                                1)
+        self.cte_pub = self.create_publisher(
+            Float32,
+            "/distance",
+            10 
+        )
+        self.heading_error_pub = self.create_publisher(
+            Float32,
+            "/distance",
+            10 
+        )
+        self.lookahead_pub = self.create_publisher(
+            Float32,
+            "/distance",
+            10 
+        )
+        self.steering_angle_pub = self.create_publisher(
+            Float32,
+            "/distance",
+            10 
+        )
  
 
     def pose_callback(self, odometry_msg):
@@ -76,6 +98,13 @@ class PurePursuit(Node):
         projections = self.starting_points + t[:, np.newaxis] * self.segments
         distance_to_segments = np.linalg.norm(projections - car_position, axis=1)
         min_dist_idx = np.argmin(distance_to_segments)
+
+        distance_float = Float32()
+        angle_float = Float32()
+        distance_float.data = perp_distance
+        angle_float.data = wall_angle
+        self.distance_pub_.publish(distance_float)
+        self.angle_pub_.publish(angle_float)
 
         # Compute the lookahead distance
         self.calculate_lookahead_distance(min_dist_idx)
@@ -140,7 +169,6 @@ class PurePursuit(Node):
         ref_angle = np.arctan2(car_lpy, car_lpx)
         steering_angle = np.arctan2(2 * self.wheelbase_length * np.sin(ref_angle), self.lookahead)
 
-
         drive_msg = AckermannDriveStamped()
         drive_msg.header.stamp = self.get_clock().now().to_msg()
         drive_msg.drive.steering_angle = steering_angle
@@ -155,6 +183,9 @@ class PurePursuit(Node):
         self.trajectory.fromPoseArray(msg)
         self.trajectory.publish_viz(duration=0.0)
 
+        if len(self.trajectory.points) == 1:
+            self.trajectory.points.append(self.trajectory.points[0])
+ 
         self.starting_points = np.array(self.trajectory.points[:-1]) # (N, 2) list of tuples
         self.ending_points = np.array(self.trajectory.points[1:]) # (N, 2) list of tuples
         self.segments = self.ending_points - self.starting_points
