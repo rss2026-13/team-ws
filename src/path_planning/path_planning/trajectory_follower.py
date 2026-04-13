@@ -52,34 +52,28 @@ class PurePursuit(Node):
                                                1)
         self.cte_pub = self.create_publisher(
             Float32,
-            "/distance",
+            "/trajectory/cte",
             10 
         )
         self.heading_error_pub = self.create_publisher(
             Float32,
-            "/distance",
+            "/trajectory/heading_error",
             10 
         )
         self.lookahead_pub = self.create_publisher(
             Float32,
-            "/distance",
+            "/trajectory/lookahead",
             10 
         )
         self.steering_angle_pub = self.create_publisher(
             Float32,
-            "/distance",
+            "/trajectory/steering_angle",
             10 
         )
  
 
     def pose_callback(self, odometry_msg):
         """
-        Need to add evaluation for:
-        1. Cross track Error (distance_to_segments[min_dist_idx])
-        2. Heading Error (car_theta - closest segment angle)
-        3. Lookahead distance over time / Curvature over time
-        4. Steering angle over time
-
         Need to add visualization for:
         1. lookahead point
         2. steering angle
@@ -96,13 +90,23 @@ class PurePursuit(Node):
         t = -np.einsum("ij,ij,i->i", self.segments, car_to_starting, self.inv_segments_mag_sq)
         t = np.clip(t, 0.0, 1.0)
         projections = self.starting_points + t[:, np.newaxis] * self.segments
-        distance_to_segments = np.linalg.norm(projections - car_position, axis=1)
+        car_to_segment = projections - car_position
+        distance_to_segments = np.linalg.norm(car_to_segment, axis=1)
         min_dist_idx = np.argmin(distance_to_segments)
 
         # Publish cross track error
         cte_float = Float32()
         cte_float.data = distance_to_segments[min_dist_idx]
         self.cte_pub.publish(cte_float)
+
+        # Publish heading error
+        segment_angle = np.arctan2(self.segments[min_dist_idx][1], self.segments[min_dist_idx][0])
+        heading_error = car_theta - segment_angle
+        # Wrap to [-pi, pi]
+        heading_error = (heading_error + np.pi) % (2 * np.pi) - np.pi
+        heading_error_float = Float32()
+        heading_error_float.data = heading_error
+        self.heading_error_pub.publish(heading_error_float)
 
         # Compute the lookahead distance
         self.compute_lookahead_distance(min_dist_idx)
@@ -127,8 +131,6 @@ class PurePursuit(Node):
 
         cos_angles = np.sum(self.normalized_segments[start_idx:end_idx] * self.normalized_segments[start_idx + 1 : end_idx + 1], axis=1)
         angles = np.arccos(np.clip(cos_angles, -1.0, 1.0))
-
-        # heading_error = car_theta angles[start_idx]
 
         weights = decay ** np.arange(len(angles))
         total_weight = np.sum(weights)
