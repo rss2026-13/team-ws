@@ -99,17 +99,18 @@ class PurePursuit(Node):
         distance_to_segments = np.linalg.norm(projections - car_position, axis=1)
         min_dist_idx = np.argmin(distance_to_segments)
 
-        """"
-        distance_float = Float32()
-        angle_float = Float32()
-        distance_float.data = perp_distance
-        angle_float.data = wall_angle
-        self.distance_pub_.publish(distance_float)
-        self.angle_pub_.publish(angle_float)
-        """
+        # Publish cross track error
+        cte_float = Float32()
+        cte_float.data = distance_to_segments[min_dist_idx]
+        self.cte_pub.publish(cte_float)
 
         # Compute the lookahead distance
-        self.calculate_lookahead_distance(min_dist_idx)
+        self.compute_lookahead_distance(min_dist_idx)
+
+        # Publish lookahead distance
+        lookahead_float = Float32()
+        lookahead_float.data = self.lookahead
+        self.lookahead_pub.publish(lookahead_float)
 
         # Compute the lookahead point
         lookahead_point = self.find_lookahead_point(car_to_starting, min_dist_idx, t[min_dist_idx])
@@ -121,11 +122,13 @@ class PurePursuit(Node):
             self.pub_pure_pursuit_drive_msg(lookahead_point, self.speed, car_position, car_theta)
 
 
-    def calculate_lookahead_distance(self, start_idx, n_segments=3, decay = 0.5):
+    def compute_lookahead_distance(self, start_idx, n_segments=3, decay = 0.5):
         end_idx = min(start_idx + n_segments, len(self.segments) - 1)
 
         cos_angles = np.sum(self.normalized_segments[start_idx:end_idx] * self.normalized_segments[start_idx + 1 : end_idx + 1], axis=1)
         angles = np.arccos(np.clip(cos_angles, -1.0, 1.0))
+
+        # heading_error = car_theta angles[start_idx]
 
         weights = decay ** np.arange(len(angles))
         total_weight = np.sum(weights)
@@ -170,6 +173,11 @@ class PurePursuit(Node):
 
         ref_angle = np.arctan2(car_lpy, car_lpx)
         steering_angle = np.arctan2(2 * self.wheelbase_length * np.sin(ref_angle), self.lookahead)
+
+        # Publish steering angle
+        steering_angle_float = Float32()
+        steering_angle_float.data = steering_angle
+        self.steering_angle_pub.publish(steering_angle_float)
 
         drive_msg = AckermannDriveStamped()
         drive_msg.header.stamp = self.get_clock().now().to_msg()
