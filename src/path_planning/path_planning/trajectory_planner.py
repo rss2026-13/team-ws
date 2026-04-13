@@ -437,7 +437,7 @@ class PathPlan(Node):
         self.get_logger().info(f"Path planned with {len(path_world[0])} points")
 
         self.trajectory.points = list(zip(path_world[0], path_world[1]))
-        # self.traj_pub.publish(self.trajectory.toPoseArray())
+        self.traj_pub.publish(self.trajectory.toPoseArray())
         self.trajectory.publish_viz()
 
 
