@@ -25,7 +25,7 @@ class PurePursuit(Node):
         self.lookahead = 0  # FILL IN #
         self.base_lookahead = 0.75
         self.k_curv = 1.0
-        self.speed = 4.0  # FILL IN #
+        self.speed = 0.5  # FILL IN #
         self.wheelbase_length = 0.325  # FILL IN #
         self.goal_threshold = 0.5
 

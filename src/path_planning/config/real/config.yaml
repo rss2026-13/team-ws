@@ -1,12 +1,12 @@
 trajectory_planner:
   ros__parameters:
-    odom_topic: "/vesc/odom"
+    odom_topic: "/pf/pose/odom"
     map_topic: "/map"
     scan_topic: "/scan"
 trajectory_follower:
   ros__parameters:
-    odom_topic: "/vesc/odom"
-    drive_topic: "/drive"
+    odom_topic: "/pf/pose/odom"
+    drive_topic: "/vesc/input/navigation"
 safety_controller:
   ros__parameters:
     scan_topic: "/scan"
