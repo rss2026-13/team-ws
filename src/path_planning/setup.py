@@ -34,6 +34,7 @@ setup(
             'trajectory_planner = path_planning.trajectory_planner:main',
             'trajectory_follower = path_planning.trajectory_follower:main',
             'eval_traj_sim_grid = path_planning.eval_traj_sim_grid:main',
+            'eval_pp=path_planning.eval_pp:main',
         ],
     },
 )
