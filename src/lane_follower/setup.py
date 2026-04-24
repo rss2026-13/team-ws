@@ -19,6 +19,9 @@ setup(
     entry_points={
         'console_scripts': [
             'lane_follower_node = lane_follower.lane_follower_node:main',
+            'sim_lanes=lane_follower.sim_lanes:main',
+            'lane_controller=lane_follower.lane_controller:main',
+            'debug_lanes=lane_follower.debug_lanes:main',
         ],
     },
 )
