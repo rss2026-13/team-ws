@@ -32,8 +32,8 @@ class SimulationController(Node):
         # Kp acts on normalised lateral error  (pixels / img_half_width)
         # Kd acts on heading error in radians, dampens oscillations on curves
         # will likely need to tune for such high speeds
-        self.Kp = 2.5
-        self.Kd = 5.0
+        self.Kp = 1.2
+        self.Kd = 2.5
 
         self.img_w = 640
         self.img_center = self.img_w / 2.0   # 320 px
