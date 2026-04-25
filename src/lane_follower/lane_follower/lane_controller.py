@@ -7,7 +7,7 @@ from ackermann_msgs.msg import AckermannDriveStamped
 
 class SimulationController(Node):
     """
-    Lane-following controller that mirrors the structure of a successful
+    Lane-following controller that mirrors the structure of 
     wall-follower PD controller.
 
     It extracts two signals from the lane lines, just as the wall follower
@@ -30,10 +30,10 @@ class SimulationController(Node):
         self.target_v = 4.0         # m/s
 
         # Kp acts on normalised lateral error  (pixels / img_half_width)
-        # Kd acts on heading error in radians
-        # Start with these and tune Kd first (it damps oscillation on curves).
-        self.Kp = 1.2
-        self.Kd = 2.5
+        # Kd acts on heading error in radians, dampens oscillations on curves
+        # will likely need to tune for such high speeds
+        self.Kp = 2.5
+        self.Kd = 5.0
 
         self.img_w = 640
         self.img_center = self.img_w / 2.0   # 320 px
