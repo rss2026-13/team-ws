@@ -2,12 +2,14 @@ import rclpy
 
 from ackermann_msgs.msg import AckermannDriveStamped
 from geometry_msgs.msg import PoseArray
+from geometry_msgs.msg import Point
 from visualization_msgs.msg import Marker
 from std_msgs.msg import Float32
 from nav_msgs.msg import Odometry
 from rclpy.node import Node
 from .utils import LineTrajectory
 import numpy as np
+import math
 
 
 class PurePursuit(Node):
@@ -74,10 +76,6 @@ class PurePursuit(Node):
 
     def pose_callback(self, odometry_msg):
         """
-        Need to add visualization for:
-        1. lookahead point
-        2. steering angle
-        3. closest point on segment to car
         """
         if not self.initialized_traj:
             return
@@ -115,6 +113,7 @@ class PurePursuit(Node):
         lookahead_float = Float32()
         lookahead_float.data = self.lookahead
         self.lookahead_pub.publish(lookahead_float)
+        # self.pub_lookahead_sphere(car_position[0], car_position[1], self.lookahead)
 
         # Compute the lookahead point
         lookahead_point = self.find_lookahead_point(car_to_starting, min_dist_idx, t[min_dist_idx])
@@ -206,6 +205,36 @@ class PurePursuit(Node):
         self.normalized_segments = self.segments / np.sqrt(self.segments_mag_sq[:, np.newaxis])
 
         self.initialized_traj = True
+
+
+    def pub_lookahead_sphere(self, x, y, radius):
+        marker = Marker()
+        marker.header.frame_id = "map"
+        marker.header.stamp = self.get_clock().now().to_msg()
+        marker.ns = "lookahead_visualization"
+        marker.id = 0
+        marker.type = Marker.SPHERE
+        marker.action = Marker.ADD
+
+        # The actual center of the lookahead point
+        marker.pose.position.x = float(x)
+        marker.pose.position.y = float(y)
+        marker.pose.position.z = 0.0
+        marker.pose.orientation.w = 1.0
+
+        # Scale represents the DIAMETER (2 * radius)
+        # If you want a flat disk, keep z small (e.g., 0.01)
+        marker.scale.x = float(radius * 2)
+        marker.scale.y = float(radius * 2)
+        marker.scale.z = 0.05 
+
+        # Colors (Semi-transparent Green)
+        marker.color.r = 0.0
+        marker.color.g = 1.0
+        marker.color.b = 0.0
+        marker.color.a = 0.3 # Lower alpha lets you see the track underneath
+        
+        self.viz_pub.publish(marker)
 
 
 def main(args=None):

@@ -1,4 +1,12 @@
 <launch>
+    <node
+        pkg="safety_controller"
+        name="safety_controller"
+        exec="safety_controller"
+        output="screen"
+    >
+    <param name="drive_topic" value="/drive"/>
+    </node>
     <node pkg="path_planning" exec="trajectory_follower" name="trajectory_follower">
         <param name="odom_topic" value="/odom"/>
         <param name="drive_topic" value="/drive"/>

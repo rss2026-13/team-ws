@@ -12,17 +12,19 @@ from geometry_msgs.msg import Point
 class SafetyController(Node):
     def __init__(self):
         super().__init__("safety_controller")
-        self.declare_parameter("drive_topic", "/vesc/low_level/ackermann_cmd")
-        self.declare_parameter("output_topic", "/vesc/low_level/input/safety")
+        # self.declare_parameter("drive_topic", "/vesc/low_level/ackermann_cmd")
+        # self.declare_parameter("output_topic", "/vesc/low_level/input/safety")
+        self.declare_parameter("drive_topic", "/drive")
+        self.declare_parameter("output_topic", "/drive")
         self.declare_parameter("scan_topic", "/scan")
         self.declare_parameter("margin", 0.2)
-        self.declare_parameter("max_deceleration", 2.0)
+        self.declare_parameter("max_deceleration", 5.0)
         self.declare_parameter("car_width", 0.25)
         self.declare_parameter("wheelbase", 0.325)
         self.declare_parameter("lidar_offset", 0.12)          # Lidar to front bumper
         self.declare_parameter("lidar_front_axle_distance", 0.05)  # Lidar to front axle
         self.declare_parameter("collision_point_threshold", 5) # Min points to trigger stop
-        self.declare_parameter("visualize", False)
+        self.declare_parameter("visualize", True)
 
         self.DRIVE_TOPIC = self.get_parameter("drive_topic").get_parameter_value().string_value
         self.OUTPUT_TOPIC = self.get_parameter("output_topic").get_parameter_value().string_value
@@ -52,7 +54,7 @@ class SafetyController(Node):
         self.drive_command = None
         self.scan_cos_angles = None
         self.scan_sin_angles = None
-        self.laser_frame = "laser"  # Update to match your actual laser frame_id
+        self.laser_frame = "laser"
 
     def drive_callback(self, msg):
         self.drive_command = msg
@@ -72,6 +74,14 @@ class SafetyController(Node):
 
         velocity = self.drive_command.drive.speed
         delta = self.drive_command.drive.steering_angle
+
+        if self.is_collision:
+            safe_command = AckermannDriveStamped()
+            safe_command.header.stamp = self.get_clock().now().to_msg()
+            safe_command.drive.speed = 0.0
+            safe_command.drive.steering_angle = delta
+            self.drive_publisher.publish(safe_command)
+            self.get_logger().warn("Frontal object detected! Stopping the robot.")
 
         if velocity < 0.001:
             return
@@ -105,7 +115,7 @@ class SafetyController(Node):
 
         in_path = np.zeros(len(px), dtype=bool)
 
-        if abs(delta) < 0.01:  # Straight path
+        if abs(delta) < 0.15:  # Straight path
             collision_zone_start = self.LIDAR_OFFSET
             collision_zone_end = self.LIDAR_OFFSET + front_threshold
             in_path = (px > collision_zone_start) & \
@@ -120,14 +130,18 @@ class SafetyController(Node):
             px_cor = px + self.rear_axle_dist
             py_cor = py - R
             pr = np.sqrt(px_cor**2 + py_cor**2)
-            pangle = np.mod(np.arctan2(px_cor, py_cor * -np.sign(R)), 2 * np.pi)
+
+            radial_mask = (R_min < pr) & (pr < R_max)
+            px_cor = px_cor[radial_mask]
+            py_cor = py_cor[radial_mask]
+            pr = pr[radial_mask]
+            pangle = np.arctan2(px_cor, py_cor * -np.sign(R))
 
             # Arc distance from bumper to each point
             bumper_angle = np.arcsin(np.clip(self.rear_to_bumper / pr, -1.0, 1.0))
             p_bumper_ahead_dist = (pangle - bumper_angle) * pr
 
-            in_path = (pr > R_min) & (pr < R_max) & \
-                      (p_bumper_ahead_dist > 0) & (p_bumper_ahead_dist < front_threshold)
+            in_path = (p_bumper_ahead_dist > 0) & (p_bumper_ahead_dist < front_threshold)
 
         # Require multiple points to filter out noise/spurious returns
         self.is_collision = np.sum(in_path) > self.COLLISION_POINT_THRESHOLD
@@ -162,7 +176,7 @@ class SafetyController(Node):
 
         num_steps = 20
 
-        if abs(delta) < 0.01:  # Straight path
+        if abs(delta) < 0.15:  # Straight path
             y_inner = -self.CAR_WIDTH / 2
             y_outer = self.CAR_WIDTH / 2
             x_start = self.LIDAR_OFFSET
