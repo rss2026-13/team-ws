@@ -2,31 +2,31 @@ import numpy as np
 
 
 class MotionModel:
-
     def __init__(self, node):
-        # Standard deviations on body-frame odometry (independent per axis)
-        node.declare_parameter("motion_model.sigma_odom_x", 0.05)
-        node.declare_parameter("motion_model.sigma_odom_y", 0.05)
-        node.declare_parameter("motion_model.sigma_odom_theta", 0.05)
+        node.declare_parameter("deterministic", False)
+        node.declare_parameter("motion_model.sigma_x", 0.1)
+        node.declare_parameter("motion_model.sigma_y", 0.1)
+        node.declare_parameter("motion_model.sigma_theta", 0.002)
 
-        self.sigma_odom_x = (
-            node.get_parameter("motion_model.sigma_odom_x")
+        self.deterministic = (
+            node.get_parameter("deterministic").get_parameter_value().bool_value
+        )
+        self.sigma_x = (
+            node.get_parameter("motion_model.sigma_x")
             .get_parameter_value()
             .double_value
         )
-        self.sigma_odom_y = (
-            node.get_parameter("motion_model.sigma_odom_y")
+        self.sigma_y = (
+            node.get_parameter("motion_model.sigma_y")
             .get_parameter_value()
             .double_value
         )
-        self.sigma_odom_theta = (
-            node.get_parameter("motion_model.sigma_odom_theta")
+        self.sigma_theta = (
+            node.get_parameter("motion_model.sigma_theta")
             .get_parameter_value()
             .double_value
         )
-
-        # Set True to disable noise (used by unit tests)
-        self.deterministic = False
+        self.logger = node.get_logger()
 
     def evaluate(self, particles, odometry):
         """
@@ -46,29 +46,30 @@ class MotionModel:
             particles: An updated matrix of the
                 same size
         """
-        p = np.asarray(particles, dtype=np.float64)
-        if p.ndim != 2 or p.shape[1] != 3:
-            raise ValueError("particles must be Nx3")
-        n = p.shape[0]
-        odom = np.asarray(odometry, dtype=np.float64).reshape(3)
-        
-        dx = float(odom[0])
-        dy = float(odom[1])
-        dtheta = float(odom[2])
-
-        if not self.deterministic:
-            dx = dx + np.random.randn(n) * self.sigma_odom_x
-            dy = dy + np.random.randn(n) * self.sigma_odom_y
-            dtheta = dtheta + np.random.randn(n) * self.sigma_odom_theta
-
-        x = p[:, 0]
-        y = p[:, 1]
-        theta = p[:, 2]
-        c = np.cos(theta)
-        s = np.sin(theta)
-
-        x_new = x + c * dx - s * dy
-        y_new = y + s * dx + c * dy
-        theta_new = theta + dtheta
-
-        return np.column_stack([x_new, y_new, theta_new])
+        x, y, theta = particles[:, 0], particles[:, 1], particles[:, 2]
+        dx, dy, dtheta = odometry
+        if self.deterministic:
+            return np.stack(
+                (
+                    x + dx * np.cos(theta) - dy * np.sin(theta),
+                    y + dx * np.sin(theta) + dy * np.cos(theta),
+                    theta + dtheta,
+                ),
+                axis=1,
+            )
+        else:
+            dx_noisy = dx + np.random.normal(0, self.sigma_x, size=x.shape)
+            dy_noisy = dy + np.random.normal(0, self.sigma_y, size=y.shape)
+            theta_noise = np.random.normal(0, self.sigma_theta, size=theta.shape)
+            return np.stack(
+                (
+                    x
+                    + dx_noisy * np.cos(theta + theta_noise)
+                    - dy_noisy * np.sin(theta + theta_noise),
+                    y
+                    + dx_noisy * np.sin(theta + theta_noise)
+                    + dy_noisy * np.cos(theta + theta_noise),
+                    theta + dtheta + theta_noise,
+                ),
+                axis=1,
+            )
