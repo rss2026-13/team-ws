@@ -12,6 +12,7 @@ from rclpy.node import Node
 from typing import List
 from ultralytics import YOLO
 from vs_msgs.msg import ParkingMeterLocation
+from std_msgs.msg import Bool
 
 
 @dataclass(frozen=True)
@@ -74,9 +75,9 @@ class YoloAnnotatorNode(Node):
         #need following publishers for integration
 
         self.meter_detected_pub = self.create_publisher(
-            bool, "yolo/parking_meter_detected", 10)
+            Bool, "yolo/parking_meter_detected", 10)
         self.light_detected_pub = self.create_publisher(
-            bool, "yolo/traffic_light_detected", 10)
+            Bool, "yolo/traffic_light_detected", 10)
         
         self.meter_loc_pub = self.create_publisher(
             ParkingMeterLocation, "/yolo/parking_meter_location", 10)
@@ -141,7 +142,7 @@ class YoloAnnotatorNode(Node):
           result.boxes.cls:  (N,) tensor
         """
         detections = []
-        meter_detect = 1
+        meter_detect = 0
         light_detect = 0
 
         if result.boxes is None:
@@ -188,14 +189,14 @@ class YoloAnnotatorNode(Node):
                 light_detect = 1
 
         if meter_detect == 1:
-            self.meter_detected_pub.publish(True)
+            self.meter_detected_pub.publish(Bool(data=True))
         else:
-            self.meter_detected_pub.publish(False)
+            self.meter_detected_pub.publish(Bool(data=False))
 
         if light_detect == 1:
-            self.light_detected_pub.publish(True)
+            self.light_detected_pub.publish(Bool(data=True))
         else:
-            self.light_detected_pub.publish(False)
+            self.light_detected_pub.publish(Bool(data=False))
             
         return detections
 
