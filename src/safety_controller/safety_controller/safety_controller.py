@@ -70,6 +70,9 @@ class SafetyController(Node):
         self.scan_cos_angles = None
         self.scan_sin_angles = None
 
+        self.clear_scan_count = 0
+        self.CLEAR_SCANS_REQUIRED = 3
+
     def drive_callback(self, msg):
         self.drive_command = msg
         self.get_logger().debug("Received new drive command")
@@ -166,6 +169,11 @@ class SafetyController(Node):
             self.is_collision = np.any(in_path)
 
         if self.is_collision:
+            self.clear_scan_count = 0
+        else:
+            self.clear_scan_count += 1
+        
+        if self.is_collision or self.clear_scan_count < self.CLEAR_SCANS_REQUIRED:
             safe_command = AckermannDriveStamped()
             safe_command.header.stamp = self.get_clock().now().to_msg()
             safe_command.drive.speed = 0.0
