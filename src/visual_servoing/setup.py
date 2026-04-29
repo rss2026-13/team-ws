@@ -36,6 +36,7 @@ setup(
             'yolo_annotator = visual_servoing.yolo_annotator:main',
             'evaluate_homography = visual_servoing.evaluate_homography:main',
             'final_detector = visual_servoing.final_detector:main',
+            'traffic_light_homography = visual_servoing.traffic_light_homography:main',
         ],
     },
 )
