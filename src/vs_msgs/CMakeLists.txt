@@ -27,6 +27,7 @@ rosidl_generate_interfaces(${PROJECT_NAME}
   "msg/ConeLocation.msg"
   "msg/ConeLocationPixel.msg"
   "msg/ParkingError.msg"
+  "msg/ParkingMeterLocation.msg"
  )
 
 if(BUILD_TESTING)

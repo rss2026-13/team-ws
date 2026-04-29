@@ -24,7 +24,6 @@ setup(
     },
     entry_points={
         'console_scripts': [
-            'traffic_light_detection=traffic_light.traffic_light_detection:main',
             'traffic_light_node=traffic_light.traffic_light_node:main',
             'test_detection=traffic_light.test_detection:main',
             'test_stop_behavior=traffic_light.test_stop_behavior:main',
