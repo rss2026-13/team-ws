@@ -15,7 +15,7 @@ MIN_PTS_CONFIDENT = 2
 SMOOTH_ALPHA = 0.4
 
 # Only keep edges where the source pixel is bright (white tape, not blue/dark)
-WHITE_THRESH = 160
+WHITE_THRESH = 180
 
 
 class LaneFollowerNode(Node):
@@ -117,9 +117,9 @@ class LaneFollowerNode(Node):
                     continue
                 slope = (y2 - y1) / (x2 - x1)
                 # Require steeper slope to reject near-horizontal lines
-                if slope < -0.3:
+                if slope < -0.4:
                     left_pts += [(x1, y1), (x2, y2)]
-                elif slope > 0.3:
+                elif slope > 0.4:
                     right_pts += [(x1, y1), (x2, y2)]
 
         self._left_coeffs = self._smooth_fit(left_pts, self._left_coeffs)
