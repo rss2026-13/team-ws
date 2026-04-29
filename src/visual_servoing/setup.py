@@ -35,6 +35,7 @@ setup(
             'homography_transformer = visual_servoing.homography_transformer:main',
             'yolo_annotator = visual_servoing.yolo_annotator:main',
             'evaluate_homography = visual_servoing.evaluate_homography:main',
+            'final_detector = visual_servoing.final_detector:main',
         ],
     },
 )
