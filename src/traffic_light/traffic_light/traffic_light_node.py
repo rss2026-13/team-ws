@@ -36,6 +36,7 @@ from nav_msgs.msg import Odometry
 from ackermann_msgs.msg import AckermannDriveStamped
 
 from traffic_light.traffic_light_detection import is_red_light_on
+from std_msgs.msg import Bool
 
 
 class TrafficLightNode(Node):
@@ -73,6 +74,7 @@ class TrafficLightNode(Node):
         self.car_y = 0.0
         self._light_position_set = False  # becomes True once we fix the default position
         self.bridge = CvBridge()
+        self.traffic_light_stop = False
 
         # ── Subscribers ───────────────────────────────────────────────────────
         self.image_sub = self.create_subscription(
@@ -106,6 +108,12 @@ class TrafficLightNode(Node):
             10,
         )
         self.debug_pub = self.create_publisher(Image, "/traffic_light_debug_img", 10)
+
+        self.traffic_light_stop_pub = self.create_publisher(
+            Bool,
+            "/traffic_light_stop",
+            10
+        )
 
         self.get_logger().info(
             "TrafficLightNode initialized — waiting for first odom to set light position."
