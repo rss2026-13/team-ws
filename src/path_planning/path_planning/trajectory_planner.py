@@ -6,6 +6,7 @@ import numpy as np
 import rclpy
 from geometry_msgs.msg import PoseArray, PoseStamped
 from nav_msgs.msg import OccupancyGrid, Odometry
+from std_msgs.msg import String
 from rclpy.node import Node
 from scipy.signal import convolve2d
 from scipy.spatial.transform import Rotation as R
@@ -44,6 +45,14 @@ class PathPlan(Node):
             Odometry, self.odom_topic, self.pose_cb, 10
         )
 
+        self.robot_state_sub = self.create_subscription(
+            String,
+            "/robot_state",
+            self.robot_state_cb,
+            10
+        )
+
+        self.robot_state = "MCL_INITIALIZATION"
         self.pose = None
         self.goal = None
         self.map = None
@@ -153,6 +162,9 @@ class PathPlan(Node):
     def goal_cb(self, msg):
         self.goal = msg.pose
         self.plan_path()
+    
+    def robot_state_cb(self, msg: String):
+        self.robot_state = msg.data
 
     def heuristic(self, a, b):
         dx = a[0] - b[0]
@@ -418,7 +430,7 @@ class PathPlan(Node):
         return []
 
     def plan_path(self):
-        if self.pose is None or self.goal is None or self.map is None:
+        if self.pose is None or self.goal is None or self.map is None or ("NAVIGATING" not in self.robot_state):
             return
         self.get_logger().info("Planning path...")
         time_start = time.time()

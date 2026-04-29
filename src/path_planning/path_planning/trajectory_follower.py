@@ -3,7 +3,7 @@ import rclpy
 from ackermann_msgs.msg import AckermannDriveStamped
 from geometry_msgs.msg import PoseArray
 from visualization_msgs.msg import Marker
-from std_msgs.msg import Float32
+from std_msgs.msg import Float32, String
 from nav_msgs.msg import Odometry
 from rclpy.node import Node
 from .utils import LineTrajectory
@@ -38,6 +38,7 @@ class PurePursuit(Node):
 
         self.initialized_traj = False
         self.trajectory = LineTrajectory(self, "/followed_trajectory")
+        self.robot_state = "MCL_INITIALIZATION"
 
         self.pose_sub = self.create_subscription(Odometry,
                                                  self.odom_topic,
@@ -47,6 +48,12 @@ class PurePursuit(Node):
                                                  "/trajectory/current",
                                                  self.trajectory_callback,
                                                  1)
+        self.robot_state_sub = self.create_subscription(
+            String,
+            "/robot_state",
+            self.robot_state_cb,
+            10
+        )
         self.drive_pub = self.create_publisher(AckermannDriveStamped,
                                                self.drive_topic,
                                                1)
@@ -71,6 +78,8 @@ class PurePursuit(Node):
             10 
         )
  
+    def robot_state_cb(self, msg: String):
+        self.robot_state = msg.data
 
     def pose_callback(self, odometry_msg):
         """
@@ -79,7 +88,7 @@ class PurePursuit(Node):
         2. steering angle
         3. closest point on segment to car
         """
-        if not self.initialized_traj:
+        if not self.initialized_traj or ("NAVIGATING" not in self.robot_state):
             return
 
         car_position = np.array([odometry_msg.pose.pose.position.x, odometry_msg.pose.pose.position.y])
