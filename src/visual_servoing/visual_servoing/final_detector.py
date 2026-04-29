@@ -12,6 +12,9 @@ from rclpy.node import Node
 from typing import List
 from ultralytics import YOLO
 from vs_msgs.msg import ParkingMeterLocation
+
+from vs_msgs.msg import ConeLocationPixel #added this so that we can use existing cone homog code for the traffic light
+
 from std_msgs.msg import Bool
 
 
@@ -81,6 +84,9 @@ class YoloAnnotatorNode(Node):
         
         self.meter_loc_pub = self.create_publisher(
             ParkingMeterLocation, "/yolo/parking_meter_location", 10)
+
+        self.light_loc_pub = self.create_publisher(
+            ConeLocationPixel, "/yolo/traffic_light_location_px", 10) #add traffic light location publishing
 
 
 
@@ -186,6 +192,10 @@ class YoloAnnotatorNode(Node):
                 self.meter_loc_pub.publish(meter_location)
                 meter_detect = 1
             elif class_name == "traffic light":
+                light_location = ConeLocationPixel()
+                light_location.u = float((x1 + x2) / 2)   # horizontal center
+                light_location.v = float(y2)               # bottom of bounding box
+                self.light_loc_pub.publish(light_location)
                 light_detect = 1
 
         if meter_detect == 1:
