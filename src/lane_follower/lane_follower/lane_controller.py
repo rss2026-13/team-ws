@@ -24,10 +24,10 @@ class SimulationController(Node):
 
         self.subscription = self.create_subscription(
             Float32MultiArray, '/lane_lines', self.listener_callback, 10)
-        self.publisher = self.create_publisher(AckermannDriveStamped, '/drive', 10)
+        self.publisher = self.create_publisher(AckermannDriveStamped, '/vesc/high_level/input/nav_1', 10)
 
         # --- Tuning parameters ---
-        self.target_v = 4.0         # m/s
+        self.target_v = 0.5         # m/s
 
         # Kp acts on normalised lateral error  (pixels / img_half_width)
         # Kd acts on heading error in radians, dampens oscillations on curves
@@ -103,7 +103,7 @@ class SimulationController(Node):
         # ---- 3. PD steering (mirrors wall-follower structure) ----
         #   Kp term corrects lateral position (like dist_error in wall follower)
         #   Kd term corrects heading           (like wall_angle in wall follower)
-        steering_angle = self.Kp * lateral_error + self.Kd * heading_error
+        steering_angle = -1 * self.Kp * lateral_error + self.Kd * heading_error
 
         # Clamp to physical limits
         steering_angle = float(np.clip(steering_angle, -self.max_steer, self.max_steer))
