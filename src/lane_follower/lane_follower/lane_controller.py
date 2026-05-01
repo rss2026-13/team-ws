@@ -23,26 +23,24 @@ class SimulationController(Node):
         super().__init__('sim_controller')
 
         self.subscription = self.create_subscription(
-            Float32MultiArray, '/lane_lines', self.listener_callback, 10)
+            Float32MultiArray, '/lane_lines_transformed', self.listener_callback, 10)
         self.publisher = self.create_publisher(AckermannDriveStamped, '/vesc/high_level/input/nav_1', 10)
 
         # --- Tuning parameters ---
-        self.target_v = 2.5         # m/s
+        self.target_v = 1.0         # m/s
 
-        # Kp acts on normalised lateral error  (pixels / img_half_width)
-        # Kd acts on heading error in radians, dampens oscillations on curves
-        # will likely need to tune for such high speeds
-        self.Kp = 0.04
-        self.Kd = 0.00
+        # Kp acts on lateral error in meters
+        # Kd damps oscillations based on rate of change of lateral error
+        self.Kp = 0.3
+        self.Kd = 0.0
         self.clockwise = True
 
-        self.img_w = 640
-        self.img_center = self.img_w / 2.0   # 320 px
+        self.lane_width = 0.85  # meters
 
         # Maximum steering angle your car supports (radians)
         self.max_steer = 0.4
 
-        self.prev_error=0.0
+        self.prev_error = 0.0
 
     # ------------------------------------------------------------------
     # Geometry helpers
@@ -51,17 +49,16 @@ class SimulationController(Node):
     @staticmethod
     def line_angle(x1, y1, x2, y2):
         """
-        Angle of a line segment relative to the vertical image axis.
-        Image coordinates: y increases downward, so a straight-ahead lane
-        line is vertical (angle = 0).  A left-curving lane tilts the top
-        of the line to the left (negative u), giving a positive angle here.
+        Angle of a line segment relative to the car's forward (x) axis.
+        Ground-plane coords: x=forward, y=left.
+        A perfectly straight lane line has dy≈0, so angle≈0.
         Returns angle in radians in (-pi/2, pi/2).
         """
-        dx = x2 - x1   # positive = top of line is to the right
-        dy = y1 - y2   # positive because image y increases downward
-        if abs(dy) < 1e-6:
+        dx = x2 - x1
+        dy = y2 - y1
+        if abs(dx) < 1e-6:
             return 0.0
-        return np.arctan2(dx, dy)   # angle from vertical
+        return np.arctan2(dy, dx)   # angle from forward axis
 
     # ------------------------------------------------------------------
     # Main callback
@@ -72,6 +69,7 @@ class SimulationController(Node):
         if len(lines) < 8:
             return
 
+        # Ground-plane coords: x=forward (meters), y=left (meters)
         lx1, ly1, lx2, ly2 = lines[0:4]
         rx1, ry1, rx2, ry2 = lines[4:8]
 
@@ -79,36 +77,30 @@ class SimulationController(Node):
         right_valid = (rx1 != -1.0)
 
         if not left_valid and not right_valid:
-            #self._publish(0.0, 0.0)   # no lanes visible – stop
             return
 
-        # ---- 1. Lateral error (distance of lane centre from image centre) ----
-        if left_valid and right_valid:
-            # Use the near (bottom) points for lateral position
-            lane_center_px = (lx1 + rx1) / 2.0
-        elif left_valid:
-            # Estimate lane centre assuming standard half-width (~150 px)
-            lane_center_px = lx1 + 700.0
-        else:
-            lane_center_px = rx1 - 640.0
+        # ---- 1. Guess missing line using lane width, then compute lane centre ----
+        if left_valid and not right_valid:
+            rx1, ry1 = lx1, ly1 - self.lane_width
+            rx2, ry2 = lx2, ly2 - self.lane_width
+        elif right_valid and not left_valid:
+            lx1, ly1 = rx1, ry1 + self.lane_width
+            lx2, ly2 = rx2, ry2 + self.lane_width
 
-        # Normalise: -1 (far left) … +1 (far right)
-        lateral_error = (self.img_center - lane_center_px) / self.img_center
-        d_error=(lateral_error-self.prev_error)/1.0
-        self.prev_error=lateral_error
-        
-        # ---- 2. Heading error (lane angle relative to image vertical) ----
-        angles = []
-        if left_valid:
-            angles.append(self.line_angle(lx1, ly1, lx2, ly2))
-        if right_valid:
-            angles.append(self.line_angle(rx1, ry1, rx2, ry2))
+        lane_center_y = (ly1 + ry1) / 2.0
+        lateral_error = -lane_center_y  # positive = car is right of centre
+        d_error = (lateral_error - self.prev_error) / 1.0
+        self.prev_error = lateral_error
+
+        # ---- 2. Heading error (lane angle relative to car forward axis) ----
+        angles = [
+            self.line_angle(lx1, ly1, lx2, ly2),
+            self.line_angle(rx1, ry1, rx2, ry2),
+        ]
         heading_error = float(np.mean(angles))
 
-        # ---- 3. PD steering (mirrors wall-follower structure) ----
-        #   Kp term corrects lateral position (like dist_error in wall follower)
-        #   Kd term corrects heading           (like wall_angle in wall follower)
-        sign = lateral_error/abs(lateral_error) if lateral_error else 0
+        # ---- 3. PD steering ----
+        sign = lateral_error / abs(lateral_error) if lateral_error else 0
         steering_angle = self.Kp * abs(lateral_error) ** 1.1 * sign + self.Kd * d_error
 
         # Clamp to physical limits

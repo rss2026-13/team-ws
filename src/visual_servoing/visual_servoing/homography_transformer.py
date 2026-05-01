@@ -7,7 +7,7 @@ import numpy as np
 import cv2
 from cv_bridge import CvBridge, CvBridgeError
 
-from std_msgs.msg import String
+from std_msgs.msg import String, Float32MultiArray
 from sensor_msgs.msg import Image
 from ackermann_msgs.msg import AckermannDriveStamped
 from visualization_msgs.msg import Marker
@@ -49,6 +49,9 @@ class HomographyTransformer(Node):
         self.marker_pub = self.create_publisher(Marker, "/cone_marker", 1)
         self.cone_px_sub = self.create_subscription(ConeLocationPixel, "/relative_cone_px", self.cone_detection_callback, 1)
 
+        self.lane_lines_pub = self.create_publisher(Float32MultiArray, "/lane_lines_transformed", 10)
+        self.lane_lines_sub = self.create_subscription(Float32MultiArray, "/lane_lines", self.lane_lines_callback, 10)
+
         if not len(PTS_GROUND_PLANE) == len(PTS_IMAGE_PLANE):
             rclpy.logerr("ERROR: PTS_GROUND_PLANE and PTS_IMAGE_PLANE should be of same length")
 
@@ -80,6 +83,26 @@ class HomographyTransformer(Node):
         relative_xy_msg.y_pos = y
 
         self.cone_pub.publish(relative_xy_msg)
+
+    def lane_lines_callback(self, msg):
+        data = msg.data
+        if len(data) < 8:
+            return
+
+        out = []
+        # Transform each line's two endpoints; preserve -1 sentinel for invalid lines
+        for i in range(0, 8, 4):
+            u1, v1, u2, v2 = data[i], data[i+1], data[i+2], data[i+3]
+            if u1 == -1.0:
+                out.extend([-1.0, -1.0, -1.0, -1.0])
+            else:
+                x1, y1 = self.transformUvToXy(u1, v1)
+                x2, y2 = self.transformUvToXy(u2, v2)
+                out.extend([x1, y1, x2, y2])
+
+        transformed_msg = Float32MultiArray()
+        transformed_msg.data = out
+        self.lane_lines_pub.publish(transformed_msg)
 
     def transformUvToXy(self, u, v):
         """
