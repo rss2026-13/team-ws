@@ -64,7 +64,7 @@ class TrafficLightNode(Node):
 
         self.declare_parameter("drive_topic")
         DRIVE_TOPIC = self.get_parameter("drive_topic").value  # set in launch file; different for simulator vs racecar
-
+        self.declare_parameter("stop_distance", 2.0)
         self.stop_distance = self.get_parameter("stop_distance").value
 
         # ── State ─────────────────────────────────────────────────────────────
@@ -136,7 +136,6 @@ class TrafficLightNode(Node):
 
     def odom_callback(self, msg: Odometry):
          """Track car position (used for future world-frame logic if needed)."""
-        # Currently unused since homography gives us car-frame distance directly.
         pass
 
     def yolo_callback(self, msg: Bool):
@@ -198,7 +197,7 @@ class TrafficLightNode(Node):
         """
         self._last_steering_angle = drive_msg.drive.steering_angle
 
-        if self.should_stop:
+        if self.should_stop():
             self.get_logger().info(
                 f"Stopping — red={self.red_light_detected}, "
                 f"yolo={self.yolo_light_detected}, "
@@ -210,7 +209,9 @@ class TrafficLightNode(Node):
 
     def stop_timer_callback(self):
         """Actively publish speed=0 at 20 Hz while stopped."""
-        if self._should_stop():
+        should=self._should_stop()
+        self.traffic_light_stop_pub.publish(Bool(data=should))
+        if should:
             stop_cmd = AckermannDriveStamped()
             stop_cmd.header.stamp = self.get_clock().now().to_msg()
             stop_cmd.drive.speed = 0.0
