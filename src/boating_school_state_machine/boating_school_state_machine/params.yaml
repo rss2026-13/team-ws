@@ -1,9 +1,21 @@
 particle_filter:
   ros__parameters:
-    particle_filter_frame: base_link
+    particle_filter_frame: /base_link_pf
     odom_topic: /vesc/odom
     scan_topic: /scan
-    num_particles: 200
+    map_topic: /map
+    num_particles: 100
+    num_beams_per_particle: 99
+    scan_field_of_view: 4.71 # radians
+    scan_theta_discretization: 500.0
+    angle_step: 11
+    deterministic: false
+    debug: false
+    lidar_scale_to_map_scale: 1.0
+    motion_model:
+      sigma_x: 0.03
+      sigma_y: 0.01
+      sigma_theta: 0.04
 
 final_detector:
   ros__parameters:
@@ -13,23 +25,33 @@ final_detector:
 
 traffic_light_node:
   ros__parameters:
-    stop_distance: 1.5
+    stop_distance: 1.0
+    drive_topic: /vesc/high_level/input/nav_0
 
 trajectory_planner:
   ros__parameters:
     odom_topic: /pf/pose/odom
     map_topic: /map
+    scan_topic: /scan
 
 trajectory_follower:
   ros__parameters:
     odom_topic: /pf/pose/odom
-    drive_topic: /vesc/low_level/input/navigation
+    drive_topic: /vesc/high_level/input/nav_2 
+    base_lookahead: 0.75
+    k_curve: 1.0
+    velocity: 0.5
+    goal_threshold: 0.5
+    n_segments_to_weight: 3
+    weight_decay: 0.5
 
 parking_controller:
   ros__parameters:
-    drive_topic: /vesc/low_level/input/navigation
+    drive_topic: /vesc/high_level/input/nav_1
     velocity: 0.5
-    parking_distance: 0.8
+    parking_distance: 0.75
+    distance_threshold: 0.15
+    angle_threshold: 0.15
     visualize_parking: false
 
 safety_controller:

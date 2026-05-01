@@ -63,6 +63,8 @@ class TrafficLightNode(Node):
         self.declare_parameter("traffic_light_x", float("nan"))  # nan = use default offset
         self.declare_parameter("traffic_light_y", float("nan"))
         self.declare_parameter("stop_distance", 1.0)
+        self.declare_parameter("drive_topic")
+        DRIVE_TOPIC = self.get_parameter("drive_topic").value  # set in launch file; different for simulator vs racecar
 
         self.tl_x = self.get_parameter("traffic_light_x").value
         self.tl_y = self.get_parameter("traffic_light_y").value
@@ -104,7 +106,7 @@ class TrafficLightNode(Node):
         # VESC driver expects drive commands.
         self.drive_pub = self.create_publisher(
             AckermannDriveStamped,
-            "/vesc/low_level/input/navigation",
+            DRIVE_TOPIC,
             10,
         )
         self.debug_pub = self.create_publisher(Image, "/traffic_light_debug_img", 10)

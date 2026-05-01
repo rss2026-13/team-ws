@@ -78,15 +78,18 @@ class ParkingController(Node):
         self.VELOCITY = self.get_parameter('velocity').get_parameter_value().double_value
 
         # Controller Variables
-        self.declare_parameter("parking_distance", 2.0)
+        self.declare_parameter("parking_distance", 1.0)
         self.PARKING_DISTANCE = self.get_parameter("parking_distance").get_parameter_value().double_value
         self.BASE_LOOKAHEAD_DIST = 0.75 * self.VELOCITY
 
         # Thresholds and State Trackers
         self.declare_parameter("visualize_parking", False)
         self.VISUALIZE = self.get_parameter("visualize_parking").get_parameter_value().bool_value
-        self.DISTANCE_THRESHOLD = 0.10
-        self.ANGLE_THRESHOLD = 0.15
+
+        self.declare_parameter("distance_threshold", 0.10)
+        self.DISTANCE_THRESHOLD = self.get_parameter("distance_threshold").get_parameter_value().double_value
+        self.declare_parameter("angle_threshold", 0.15)
+        self.ANGLE_THRESHOLD = self.get_parameter("angle_threshold").get_parameter_value().double_value
         self.parking_state = ParkingState.DOCKING
         self.escape_direction = 0
         self.relative_x = 0
@@ -140,6 +143,9 @@ class ParkingController(Node):
                 self.get_logger().info(f"Parked at spot {self.park_count}. Capturing Image...")
                 self.create_timer(5.0, self.finish_parking)
             return
+        
+
+        self.parking_status_pub.publish(Bool(data = False))
 
         # Determine whether the car is captured or ready to dock
         if cone_dist <= r_capture:

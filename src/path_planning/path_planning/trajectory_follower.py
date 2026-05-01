@@ -3,7 +3,7 @@ import rclpy
 from ackermann_msgs.msg import AckermannDriveStamped
 from geometry_msgs.msg import PoseArray
 from visualization_msgs.msg import Marker
-from std_msgs.msg import Float32, String
+from std_msgs.msg import Float32, String, Bool
 from nav_msgs.msg import Odometry
 from rclpy.node import Node
 from .utils import LineTrajectory
@@ -22,12 +22,27 @@ class PurePursuit(Node):
         self.odom_topic = self.get_parameter('odom_topic').get_parameter_value().string_value
         self.drive_topic = self.get_parameter('drive_topic').get_parameter_value().string_value
 
-        self.lookahead = 0  # FILL IN #
-        self.base_lookahead = 0.75
-        self.k_curv = 1.0
-        self.speed = 0.5  # FILL IN #
-        self.wheelbase_length = 0.325  # FILL IN #
-        self.goal_threshold = 0.5
+        self.lookahead = 0
+
+        self.declare_parameter("base_lookahead", 0.75)
+        self.base_lookahead = self.get_parameter("base_lookahead").get_parameter_value().double_value
+        
+        self.declare_parameter("k_curv", 1.0)
+        self.k_curv = self.get_parameter("k_curv").get_parameter_value().double_value
+
+        self.declare_parameter("velocity", 0.5)
+        self.velocity = self.get_parameter("velocity").get_parameter_value().double_value
+
+        self.wheelbase_length = 0.325
+
+        self.declare_parameter("goal_threshold", 0.5)
+        self.goal_threshold = self.get_parameter("goal_threshold").get_parameter_value().double_value
+
+        self.declare_parameter("n_segments_to_weight", 3)
+        self.n_segments_to_weight = self.get_parameter("n_segments_to_weight").get_parameter_value().integer_value
+
+        self.declare_parameter("weight_decay", 0.5)
+        self.weight_decay = self.get_parameter("weight_decay").get_parameter_value().double_value
 
         self.starting_points = 0
         self.ending_points  = 0 
@@ -77,6 +92,11 @@ class PurePursuit(Node):
             "/trajectory/steering_angle",
             10 
         )
+        self.goal_reached_pub = self.create_publisher(
+            Bool,
+            "/goal_reached",
+            10
+        )
  
     def robot_state_cb(self, msg: String):
         self.robot_state = msg.data
@@ -118,7 +138,7 @@ class PurePursuit(Node):
         self.heading_error_pub.publish(heading_error_float)
 
         # Compute the lookahead distance
-        self.compute_lookahead_distance(min_dist_idx)
+        self.compute_lookahead_distance(min_dist_idx, self.n_segments_to_weight, self.weight_decay)
 
         # Publish lookahead distance
         lookahead_float = Float32()
@@ -131,11 +151,12 @@ class PurePursuit(Node):
         # Give pure pursuit drive command
         if (np.allclose(lookahead_point, self.ending_points[-1])) and (np.linalg.norm(self.ending_points[-1] - car_position) < self.goal_threshold):
             self.pub_pure_pursuit_drive_msg(lookahead_point, 0.0, car_position, car_theta)
+            self.goal_reached_pub.publish(Bool(data = True))
         else:
-            self.pub_pure_pursuit_drive_msg(lookahead_point, self.speed, car_position, car_theta)
+            self.pub_pure_pursuit_drive_msg(lookahead_point, self.velocity, car_position, car_theta)
 
 
-    def compute_lookahead_distance(self, start_idx, n_segments=3, decay = 0.5):
+    def compute_lookahead_distance(self, start_idx, n_segments, decay):
         end_idx = min(start_idx + n_segments, len(self.segments) - 1)
 
         cos_angles = np.sum(self.normalized_segments[start_idx:end_idx] * self.normalized_segments[start_idx + 1 : end_idx + 1], axis=1)

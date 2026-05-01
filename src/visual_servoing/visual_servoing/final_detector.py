@@ -14,7 +14,7 @@ from ultralytics import YOLO
 
 from vs_msgs.msg import ConeLocationPixel #added this so that we can use existing cone homog code for the traffic light
 
-from std_msgs.msg import Bool
+from std_msgs.msg import Bool, Float32
 
 
 @dataclass(frozen=True)
@@ -86,7 +86,18 @@ class YoloAnnotatorNode(Node):
 
         self.light_loc_pub = self.create_publisher(
             ConeLocationPixel, "/yolo/traffic_light_location_px", 10) #add traffic light location publishing
+        
+        self.meter_confidence_pub = self.create_publisher(
+            Float32,
+            "/yolo/parking_meter_confidence",
+            10
+        )
 
+        self.light_confidence_pub = self.create_publisher(
+            Float32,
+            "/yolo/traffic_light_confidence",
+            10
+        )
 
 
     def get_class_color_map(self) -> dict[str, tuple[int, int, int]]:
@@ -189,12 +200,14 @@ class YoloAnnotatorNode(Node):
                 meter_location.u = float((x1 + x2) / 2)
                 meter_location.v = float(y2)
                 self.meter_loc_pub.publish(meter_location)
+                self.meter_confidence_pub.publish(Float32(data = float(confidence)))
                 meter_detect = 1
             elif class_name == "traffic light":
                 light_location = ConeLocationPixel()
                 light_location.u = float((x1 + x2) / 2)   # horizontal center
                 light_location.v = float(y2)               # bottom of bounding box
                 self.light_loc_pub.publish(light_location)
+                self.light_confidence_pub.publish(Float32(data = float(confidence)))
                 light_detect = 1
 
         if meter_detect == 1:
