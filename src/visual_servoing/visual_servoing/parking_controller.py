@@ -6,12 +6,15 @@ import numpy as np
 
 from vs_msgs.msg import ConeLocation, ParkingError
 from ackermann_msgs.msg import AckermannDriveStamped
-from std_msgs.msg import Float32, Int32
+from std_msgs.msg import Float32, Int32, String, Bool
+from sensor_msgs.msg import Image
 from visualization_msgs.msg import Marker # Added for visualization
 from geometry_msgs.msg import Point # Added for circle points
 from rcl_interfaces.msg import SetParametersResult
 import math
-
+import os
+import cv2
+from cv_bridge import CvBridge
 
 class ParkingState:
     CAPTURED = 0
@@ -38,15 +41,37 @@ class ParkingController(Node):
         self.capture_radius_pub = self.create_publisher(Float32, "/capture_radius", 10)
         self.parking_state_pub = self.create_publisher(Int32, "/parking_state", 10)
         self.cone_angle_pub = self.create_publisher(Float32, "/cone_angle", 10)
-        self.create_subscription(ConeLocation, "/relative_cone", self.relative_cone_callback, 1)
+        self.parking_meter_sub = self.create_subscription(ConeLocation, "/parking_meter_relative_location", self.relative_location_cb, 10)
         self.viz_pub = self.create_publisher(Marker, "/parking_visualization", 10)
+
+        self.robot_state_sub = self.create_subscription(
+            String,
+            "/robot_state",
+            self.robot_state_cb,
+            10
+        )
+
+        self.parking_status_pub = self.create_publisher(Bool, "/parked", 10)
+        self.parking_timer_active = False
+        self.park_count = 0
+        self.bridge = CvBridge()
+        self.latest_parking_image = None
+
+        self.parking_image_sub = self.create_subscription(
+            Image,
+            "/yolo/annotated_image",
+            lambda msg: setattr(self, "latest_parking_image", msg),
+            10
+        )
+
+        self.robot_state = "MCL_INITIALIZATION"
 
         # Physical Car Constants
         self.WHEELBASE = 0.325
         self.CAR_WIDTH = 0.25
         self.MAX_STEERING_ANGLE = 0.34
         self.TURN_RADIUS = self.WHEELBASE / np.tan(self.MAX_STEERING_ANGLE)
-        self.BACKUP_VELOCITY = -0.5
+        self.BACKUP_VELOCITY = -0.2
         
         # Physical Car Variables
         self.declare_parameter("velocity", 0.5)
@@ -71,7 +96,13 @@ class ParkingController(Node):
         self.get_logger().info("Parking Controller Initialized")
 
 
-    def relative_cone_callback(self, msg):
+    def robot_state_cb(self, msg: String):
+        self.robot_state = msg.data
+
+    def relative_location_cb(self, msg):
+        if "PARKING" not in self.robot_state:
+            return
+
         self.relative_x = msg.x_pos
         self.relative_y = msg.y_pos
 
@@ -102,6 +133,12 @@ class ParkingController(Node):
             self.capture_radius_publisher(r_capture)
             self.parking_state_publisher()
             self.cone_angle_publisher(cone_angle)
+
+            if not self.parking_timer_active:
+                self.parking_timer_active = True
+                self.park_count += 1
+                self.get_logger().info(f"Parked at spot {self.park_count}. Capturing Image...")
+                self.create_timer(5.0, self.finish_parking)
             return
 
         # Determine whether the car is captured or ready to dock
@@ -137,6 +174,25 @@ class ParkingController(Node):
         self.capture_radius_publisher(r_capture)
         self.parking_state_publisher()
         self.cone_angle_publisher(cone_angle)
+    
+    
+    def finish_parking(self):
+        if self.latest_parking_image is not None:
+            try:
+                bgr = self.bridge.imgmsg_to_cv2(self.latest_parking_image, desired_encoding="bgr8")
+                save_dir = os.path.expanduser("~/racecar_ws/parking_images")
+                os.makedirs(save_dir, exist_ok=True)
+                filename = os.path.join(save_dir, f"parking_spot_{self.park_count}.png")
+                cv2.imwrite(filename, bgr)
+                self.get_logger().info(f"Parking image {self.park_count} saved to {filename}")
+            except Exception as e:
+                self.get_logger().error(f"Failed to save image: {e}")
+        else:
+            self.get_logger().warn("No parking image found")
+
+        self.parking_status_pub.publish(Bool(data = True))
+        self.parking_timer_active = False
+
 
 
     def error_publisher(self):

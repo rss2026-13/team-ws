@@ -109,6 +109,7 @@ class TrafficLightNode(Node):
         )
         self.debug_pub = self.create_publisher(Image, "/traffic_light_debug_img", 10)
 
+        # This publisher will be required for integration in the state machine, publish "should_stop"
         self.traffic_light_stop_pub = self.create_publisher(
             Bool,
             "/traffic_light_stop",

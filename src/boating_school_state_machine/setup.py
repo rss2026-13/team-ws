@@ -1,4 +1,6 @@
 from setuptools import find_packages, setup
+import os
+from glob import glob
 
 package_name = 'boating_school_state_machine'
 
@@ -10,6 +12,10 @@ setup(
         ('share/ament_index/resource_index/packages',
             ['resource/' + package_name]),
         ('share/' + package_name, ['package.xml']),
+        (os.path.join('share', package_name, 'launch'),
+            glob('launch/*.launch.xml')),
+        (os.path.join('share', package_name, 'boating_school_state_machine'),
+            glob('boating_school_state_machine/params.yaml')),
     ],
     install_requires=['setuptools'],
     zip_safe=True,
@@ -24,6 +30,7 @@ setup(
     },
     entry_points={
         'console_scripts': [
+            'boating_school_state_machine = boating_school_state_machine.boating_school_state_machine:main',
         ],
     },
 )

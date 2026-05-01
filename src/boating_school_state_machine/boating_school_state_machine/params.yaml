@@ -1,0 +1,49 @@
+particle_filter:
+  ros__parameters:
+    particle_filter_frame: base_link
+    odom_topic: /vesc/odom
+    scan_topic: /scan
+    num_particles: 200
+
+final_detector:
+  ros__parameters:
+    model: yolo11n.pt
+    conf_threshold: 0.85
+    iou_threshold: 0.7
+
+traffic_light_node:
+  ros__parameters:
+    stop_distance: 1.5
+
+trajectory_planner:
+  ros__parameters:
+    odom_topic: /pf/pose/odom
+    map_topic: /map
+
+trajectory_follower:
+  ros__parameters:
+    odom_topic: /pf/pose/odom
+    drive_topic: /vesc/low_level/input/navigation
+
+parking_controller:
+  ros__parameters:
+    drive_topic: /vesc/low_level/input/navigation
+    velocity: 0.5
+    parking_distance: 0.8
+    visualize_parking: false
+
+safety_controller:
+  ros__parameters:
+    drive_topic: /vesc/low_level/ackermann_cmd
+    output_topic: /vesc/low_level/input/safety
+    scan_topic: /scan
+    margin: 0.2
+    max_deceleration: 2.0
+    car_width: 0.25
+    wheelbase: 0.325
+    lidar_offset: 0.12
+    visualize: false
+
+boating_school_state_machine:
+  ros__parameters:
+    mcl_initialization_time: 5.0
