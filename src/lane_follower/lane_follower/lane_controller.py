@@ -27,19 +27,22 @@ class SimulationController(Node):
         self.publisher = self.create_publisher(AckermannDriveStamped, '/vesc/high_level/input/nav_1', 10)
 
         # --- Tuning parameters ---
-        self.target_v = 0.5         # m/s
+        self.target_v = 2.5         # m/s
 
         # Kp acts on normalised lateral error  (pixels / img_half_width)
         # Kd acts on heading error in radians, dampens oscillations on curves
         # will likely need to tune for such high speeds
-        self.Kp = 1.2
-        self.Kd = 2.5
+        self.Kp = 0.04
+        self.Kd = 0.00
+        self.clockwise = True
 
         self.img_w = 640
         self.img_center = self.img_w / 2.0   # 320 px
 
         # Maximum steering angle your car supports (radians)
         self.max_steer = 0.4
+
+        self.prev_error=0.0
 
     # ------------------------------------------------------------------
     # Geometry helpers
@@ -76,7 +79,7 @@ class SimulationController(Node):
         right_valid = (rx1 != -1.0)
 
         if not left_valid and not right_valid:
-            self._publish(0.0, 0.0)   # no lanes visible – stop
+            #self._publish(0.0, 0.0)   # no lanes visible – stop
             return
 
         # ---- 1. Lateral error (distance of lane centre from image centre) ----
@@ -85,13 +88,15 @@ class SimulationController(Node):
             lane_center_px = (lx1 + rx1) / 2.0
         elif left_valid:
             # Estimate lane centre assuming standard half-width (~150 px)
-            lane_center_px = lx1 + 150.0
+            lane_center_px = lx1 + 700.0
         else:
-            lane_center_px = rx1 - 150.0
+            lane_center_px = rx1 - 640.0
 
         # Normalise: -1 (far left) … +1 (far right)
         lateral_error = (self.img_center - lane_center_px) / self.img_center
-
+        d_error=(lateral_error-self.prev_error)/1.0
+        self.prev_error=lateral_error
+        
         # ---- 2. Heading error (lane angle relative to image vertical) ----
         angles = []
         if left_valid:
@@ -103,7 +108,8 @@ class SimulationController(Node):
         # ---- 3. PD steering (mirrors wall-follower structure) ----
         #   Kp term corrects lateral position (like dist_error in wall follower)
         #   Kd term corrects heading           (like wall_angle in wall follower)
-        steering_angle = -1 * self.Kp * lateral_error + self.Kd * heading_error
+        sign = lateral_error/abs(lateral_error) if lateral_error else 0
+        steering_angle = self.Kp * abs(lateral_error) ** 1.1 * sign + self.Kd * d_error
 
         # Clamp to physical limits
         steering_angle = float(np.clip(steering_angle, -self.max_steer, self.max_steer))
