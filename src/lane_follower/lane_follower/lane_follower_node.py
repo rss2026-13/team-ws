@@ -14,8 +14,10 @@ MIN_PTS_CONFIDENT = 2
 # EMA smoothing factor: 0 = always use previous, 1 = always use current
 SMOOTH_ALPHA = 0.4
 
-# Only keep edges where the source pixel is bright (white tape, not blue/dark)
-WHITE_THRESH = 150
+# HSV thresholds for white tape: low saturation, high value
+# In OpenCV HSV: H 0-180, S 0-255, V 0-255
+WHITE_S_MAX = 20   # S < ~8% of 255  — keeps blue out (blue S starts at ~18)
+WHITE_V_MIN = 171  # V > ~69% of 255 — blue tops out at ~65% (~166), so ~10pt margin
 
 
 class LaneFollowerNode(Node):
@@ -38,7 +40,7 @@ class LaneFollowerNode(Node):
 
         self.declare_parameter("canny_low", 50)
         self.declare_parameter("canny_high", 150)
-        self.declare_parameter("hough_threshold", 30)
+        self.declare_parameter("hough_threshold", 15)
         self.declare_parameter("hough_min_line_length", 20)
         self.declare_parameter("hough_max_line_gap", 80)
 
@@ -47,6 +49,7 @@ class LaneFollowerNode(Node):
         )
         self.lane_pub = self.create_publisher(Float32MultiArray, "/lane_lines", 10)
         self.debug_pub = self.create_publisher(Image, "/lane_debug_img", 10)
+        self.mask_pub = self.create_publisher(Image, "/lane_white_mask", 10)
 
         self.bridge = CvBridge()
 
@@ -65,7 +68,7 @@ class LaneFollowerNode(Node):
         min_len = self.get_parameter("hough_min_line_length").get_parameter_value().integer_value
         max_gap = self.get_parameter("hough_max_line_gap").get_parameter_value().integer_value
 
-        left_line, right_line, debug_img = self.detect_lanes(
+        left_line, right_line, debug_img, mask_img = self.detect_lanes(
             img, canny_low, canny_high, hough_thresh, min_len, max_gap
         )
 
@@ -78,19 +81,23 @@ class LaneFollowerNode(Node):
         self.lane_pub.publish(lane_msg)
 
         self.debug_pub.publish(self.bridge.cv2_to_imgmsg(debug_img, "bgr8"))
+        self.mask_pub.publish(self.bridge.cv2_to_imgmsg(mask_img, "bgr8"))
 
     def detect_lanes(self, img, canny_low, canny_high, hough_thresh, min_len, max_gap):
         h, w = img.shape[:2]
         y_top = int(h * 0.5)
         y_bottom = int(h * 1)
 
-        gray = cv2.cvtColor(img, cv2.COLOR_BGRA2GRAY)
+        bgr = cv2.cvtColor(img, cv2.COLOR_BGRA2BGR)
+        hsv = cv2.cvtColor(bgr, cv2.COLOR_BGR2HSV)
+        white_mask = cv2.inRange(hsv,
+                                 (0,           0,           WHITE_V_MIN),
+                                 (180, WHITE_S_MAX,         255))
+
+        gray = cv2.cvtColor(bgr, cv2.COLOR_BGR2GRAY)
         blur = cv2.GaussianBlur(gray, (5, 5), 0)
         edges = cv2.Canny(blur, canny_low, canny_high)
-
-        # Only keep edges on bright (white) pixels — filters out blue lines and dark artifacts
-        bright_mask = (gray > WHITE_THRESH).astype(np.uint8) * 255
-        edges = cv2.bitwise_and(edges, bright_mask)
+        edges = cv2.bitwise_and(edges, white_mask)
 
         # Trapezoid mask: keep lower road region
         mask = np.zeros_like(edges)
@@ -128,14 +135,16 @@ class LaneFollowerNode(Node):
         left_line = self._coeffs_to_line(self._left_coeffs, y_top, y_bottom)
         right_line = self._coeffs_to_line(self._right_coeffs, y_top, y_bottom)
 
-        debug = cv2.cvtColor(img, cv2.COLOR_BGRA2BGR)
+        mask_img = cv2.bitwise_and(bgr, bgr, mask=white_mask)
+
+        debug = bgr.copy()
         cv2.polylines(debug, [polygon], True, (0, 255, 255), 1)
         if left_line:
             cv2.line(debug, (left_line[0], left_line[1]), (left_line[2], left_line[3]), (0, 0, 255), 3)
         if right_line:
             cv2.line(debug, (right_line[0], right_line[1]), (right_line[2], right_line[3]), (0, 255, 0), 3)
 
-        return left_line, right_line, debug
+        return left_line, right_line, debug, mask_img
 
     def _smooth_fit(self, pts, prev_coeffs):
         if len(pts) < MIN_PTS_CONFIDENT:
