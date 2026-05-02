@@ -82,7 +82,7 @@ class LaneFollowerNode(Node):
     def detect_lanes(self, img, canny_low, canny_high, hough_thresh, min_len, max_gap):
         h, w = img.shape[:2]
         y_top = int(h * 0.55)
-        y_bottom = int(h * 0.75)
+        y_bottom = int(h * 1)
 
         gray = cv2.cvtColor(img, cv2.COLOR_BGRA2GRAY)
         blur = cv2.GaussianBlur(gray, (5, 5), 0)
@@ -97,8 +97,8 @@ class LaneFollowerNode(Node):
         polygon = np.array([[
             (0,             y_bottom),
             (w,             y_bottom),
-            (int(w * 0.75), y_top),
-            (int(w * 0.25), y_top),
+            (int(w * 0.95), y_top),
+            (int(w * 0.05), y_top),
         ]], dtype=np.int32)
         cv2.fillPoly(mask, polygon, 255)
         masked = cv2.bitwise_and(edges, mask)
