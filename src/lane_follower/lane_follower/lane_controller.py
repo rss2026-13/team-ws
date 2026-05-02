@@ -1,7 +1,7 @@
 import rclpy
 from rclpy.node import Node
 import numpy as np
-from std_msgs.msg import Float32MultiArray
+from std_msgs.msg import Float32MultiArray, Float32
 from ackermann_msgs.msg import AckermannDriveStamped
 from visualization_msgs.msg import Marker, MarkerArray
 from geometry_msgs.msg import Point
@@ -29,8 +29,9 @@ class SimulationController(Node):
             Float32MultiArray, '/lane_lines_transformed', self.listener_callback, 10)
         self.publisher = self.create_publisher(AckermannDriveStamped, '/vesc/high_level/input/nav_1', 10)
         self.viz_pub = self.create_publisher(MarkerArray, '/lane_viz', 10)
+        self.error_pub = self.create_publisher(Float32, '/lane_center_error', 10)
 
-        self.target_v = 4.0       # m/s
+        self.target_v = 3.0       # m/s
         self.lookahead = 75      # metres — primary tuning knob
         self.wheelbase = 0.325    # metres (MIT RACECAR)
         self.lane_width = 0.9    # metres
@@ -75,6 +76,7 @@ class SimulationController(Node):
         self._publish(self.target_v, steering_angle)
         self._publish_viz(lx1, ly1, lx2, ly2, rx1, ry1, rx2, ry2,
                           cx1, cy1, cx2, cy2, gx, gy)
+        self.error_pub.publish(Float32(data=float(cy1)))
 
         self.get_logger().debug(
             f'goal=({gx:.2f},{gy:.2f})  alpha={np.degrees(alpha):.1f}°  '

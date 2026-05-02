@@ -15,7 +15,7 @@ MIN_PTS_CONFIDENT = 2
 SMOOTH_ALPHA = 0.4
 
 # Only keep edges where the source pixel is bright (white tape, not blue/dark)
-WHITE_THRESH = 170
+WHITE_THRESH = 150
 
 
 class LaneFollowerNode(Node):
@@ -81,8 +81,8 @@ class LaneFollowerNode(Node):
 
     def detect_lanes(self, img, canny_low, canny_high, hough_thresh, min_len, max_gap):
         h, w = img.shape[:2]
-        y_top = int(h * 0.55)
-        y_bottom = int(h * 0.95)
+        y_top = int(h * 0.5)
+        y_bottom = int(h * 1)
 
         gray = cv2.cvtColor(img, cv2.COLOR_BGRA2GRAY)
         blur = cv2.GaussianBlur(gray, (5, 5), 0)
