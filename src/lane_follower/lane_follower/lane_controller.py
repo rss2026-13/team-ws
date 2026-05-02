@@ -30,11 +30,11 @@ class SimulationController(Node):
         self.publisher = self.create_publisher(AckermannDriveStamped, '/vesc/high_level/input/nav_1', 10)
         self.viz_pub = self.create_publisher(MarkerArray, '/lane_viz', 10)
 
-        self.target_v = 2.0       # m/s
-        self.lookahead = 2.5      # metres — primary tuning knob
+        self.target_v = 3.0       # m/s
+        self.lookahead = 25      # metres — primary tuning knob
         self.wheelbase = 0.325    # metres (MIT RACECAR)
-        self.lane_width = 0.85    # metres
-        self.max_steer = 0.4      # radians
+        self.lane_width = 0.9    # metres
+        self.max_steer = 0.3      # radians
 
     # ------------------------------------------------------------------
 

@@ -82,7 +82,7 @@ class LaneFollowerNode(Node):
     def detect_lanes(self, img, canny_low, canny_high, hough_thresh, min_len, max_gap):
         h, w = img.shape[:2]
         y_top = int(h * 0.55)
-        y_bottom = int(h * 1)
+        y_bottom = int(h * 0.95)
 
         gray = cv2.cvtColor(img, cv2.COLOR_BGRA2GRAY)
         blur = cv2.GaussianBlur(gray, (5, 5), 0)
@@ -117,9 +117,9 @@ class LaneFollowerNode(Node):
                     continue
                 slope = (y2 - y1) / (x2 - x1)
                 # Require steeper slope to reject near-horizontal lines
-                if slope < -0.4:
+                if slope < -0.35:
                     left_pts += [(x1, y1), (x2, y2)]
-                elif slope > 0.4:
+                elif slope > 0.35:
                     right_pts += [(x1, y1), (x2, y2)]
 
         self._left_coeffs = self._smooth_fit(left_pts, self._left_coeffs)
