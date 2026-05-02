@@ -15,7 +15,7 @@ MIN_PTS_CONFIDENT = 2
 SMOOTH_ALPHA = 0.4
 
 # Only keep edges where the source pixel is bright (white tape, not blue/dark)
-WHITE_THRESH = 180
+WHITE_THRESH = 170
 
 
 class LaneFollowerNode(Node):
