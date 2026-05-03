@@ -166,6 +166,8 @@ class ParticleFilter(Node):
         pose_array_msg.header.frame_id = "map"
         for particle in self.particles[:100]:
             pose = Pose()
+            if not isinstance(particle[0], float) or not isinstance(particle[1], float):
+                return
             pose.position.x = particle[0]
             pose.position.y = particle[1]
             theta = particle[2]
