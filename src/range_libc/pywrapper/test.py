@@ -68,7 +68,7 @@ glt = range_libc.PyGiantLUTCast(testMap, 500, 108)
 # this is for testing the amount of raw functional call overhead, does not compute ranges
 # null = range_libc.PyNull(testMap, 500, 108)
 
-for x in range(1):
+for x in range(10):
 	vals = np.random.random((3,num_vals)).astype(np.float32)
 	vals[0,:] *= (testMap.width() - 2.0)
 	vals[1,:] *= (testMap.height() - 2.0)
@@ -80,12 +80,11 @@ for x in range(1):
 	test_states = [None]*num_vals
 	for i in range(num_vals):
 		test_states[i] = (vals[0,i], vals[1,i], vals[2,i])
-	vals_swapped = vals.copy()
-	vals_swapped[0,:], vals_swapped[1,:] = vals[1,:], vals[0, :]
+
 	def bench(obj,name):
 		print("Running:", name)
 		start = time.time()
-		obj.calc_range_many(vals_swapped, ranges)
+		obj.calc_range_many(vals, ranges)
 		end = time.time()
 		dur_np = end - start
 		print(",,,"+name+" np: finished computing", ranges.shape[0], "ranges in", dur_np, "sec")
@@ -95,11 +94,6 @@ for x in range(1):
 		dur = end - start
 
 		diff = np.linalg.norm(ranges - np.array(ranges_slow))
-		diffs = ranges - np.array(ranges_slow)
-		print("mean:", np.mean(diffs))
-		print("max:", np.max(diffs))
-		print("sample np:", ranges[:10])
-		print("sample slow:", ranges_slow[:10])
 		if diff > 0.001:
 			print(",,,"+"Numpy result different from slow result, investigation possibly required. norm:", diff)
 		# print("DIFF:", diff)
