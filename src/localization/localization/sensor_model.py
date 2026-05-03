@@ -118,6 +118,7 @@ class SensorModel:
             + self.alpha_rand * p_rand
         )
         self.sensor_model_table /= np.sum(self.sensor_model_table, axis=0)
+        self.sensor_model_table = self.sensor_model_table ** (1 / self.softening_factor)
         self.range_method.set_sensor_model(self.sensor_model_table)
         if self.DEBUG:
             plt.imshow(self.sensor_model_table, origin="lower")

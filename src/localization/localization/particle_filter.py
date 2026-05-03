@@ -84,7 +84,7 @@ class ParticleFilter(Node):
             z = msg.pose.pose.orientation.z
             w = msg.pose.pose.orientation.w
             theta = np.arctan2(2 * (w * z), 1 - 2 * (z**2))
-            self.initialize_particles(x, y, theta, True)
+            self.initialize_particles(x, y, theta, False)
             self.publish_pose()
             self.get_logger().info(
                 "Initialized particles at pose: %f, %f, %f" % (x, y, theta)
@@ -191,14 +191,11 @@ class ParticleFilter(Node):
             dtype=np.float32,
         )
         self.sensor_model.evaluate(self.particles, ranges)
-        probabilities = self.sensor_model.weights ** (1 / self.softening_factor)
+        probabilities = self.sensor_model.weights
         if np.sum(probabilities) == 0:
             self.get_logger().warn(
-                "All particles have zero probability! This is unexpected. Resetting particles."
+                "All particles have zero probability! Probably just thinks every particle is extremely unlikely"
             )
-            self.initialize_particles(0, 0, 0, noisy=True)
-            self.publish_pose()
-            self.publish_particles()
             return
         self.particles = self.particles[
             np.random.choice(
