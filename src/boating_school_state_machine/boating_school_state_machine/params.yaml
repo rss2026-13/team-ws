@@ -1,11 +1,11 @@
 particle_filter:
   ros__parameters:
-    particle_filter_frame: /base_link_pf
+    particle_filter_frame: pf/base_link
     odom_topic: /vesc/odom
     scan_topic: /scan
     map_topic: /map
-    num_particles: 100
-    num_beams_per_particle: 99
+    num_particles: 200
+    num_beams_per_particle: 150
     scan_field_of_view: 4.71 # radians
     scan_theta_discretization: 500.0
     angle_step: 11
@@ -13,8 +13,8 @@ particle_filter:
     debug: false
     lidar_scale_to_map_scale: 1.0
     motion_model:
-      sigma_x: 0.03
-      sigma_y: 0.01
+      sigma_x: 0.08
+      sigma_y: 0.03
       sigma_theta: 0.04
 
 final_detector:
