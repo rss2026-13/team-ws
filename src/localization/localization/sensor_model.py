@@ -195,7 +195,7 @@ class SensorModel:
         self.MAX_RANGE_PX = self.table_width - 1
         # self.range_method = range_libc.PyRayMarching(oMap, self.MAX_RANGE_PX)
         self.range_method = range_libc.PyCDDTCast(
-            oMap, self.MAX_RANGE_PX, self.THETA_DISCRETIZATION
+            oMap, self.MAX_RANGE_PX, self.scan_theta_discretization
         )
 
         print("Map initialized")
