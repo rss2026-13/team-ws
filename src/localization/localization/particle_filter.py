@@ -53,11 +53,7 @@ class ParticleFilter(Node):
         )
 
         self.click_sub = self.create_subscription(
-            PointStamped, "/clicked_point", self.pose_callback_global, 1
-        )
-
-        self.global_sub = self.create_subscription(
-            PoseStamped, "/goal_pose", self.pose_callback, 1
+            PointStamped, "/clicked_point", self.pose_callback, 1
         )
         self.odom_pub = self.create_publisher(Odometry, "/pf/pose/odom", 1)
         self.particle_pub = self.create_publisher(PoseArray, "/pf/particles", 1)
@@ -80,71 +76,24 @@ class ParticleFilter(Node):
         self.get_logger().info("=============+READY+=============")
 
     def pose_callback(self, msg):
-        pose = None
+        if isinstance(msg, PointStamped):
+            x = msg.point.x
+            y = msg.point.y
+            theta = 0.0
+            self.initialize_particles(x, y, theta, True)
+            self.publish_pose()
+            self.get_logger().info("Initialized particles at point: %f, %f" % (x, y))
         if isinstance(msg, PoseWithCovarianceStamped):
-            pose = msg.pose.pose
-        if isinstance(msg, PoseStamped):
-            pose = msg.pose
-        if pose is None:
-            self.get_logger().error(
-                "Received unsupported message type in pose_callback"
+            x = msg.pose.pose.position.x
+            y = msg.pose.pose.position.y
+            z = msg.pose.pose.orientation.z
+            w = msg.pose.pose.orientation.w
+            theta = np.arctan2(2 * (w * z), 1 - 2 * (z**2))
+            self.initialize_particles(x, y, theta, True)
+            self.publish_pose()
+            self.get_logger().info(
+                "Initialized particles at pose: %f, %f, %f" % (x, y, theta)
             )
-            return
-        x = pose.position.x
-        z = pose.orientation.z
-        y = pose.position.y
-        w = pose.orientation.w
-        theta = np.arctan2(2 * (w * z), 1 - 2 * (z**2))
-        self.initialize_particles(x, y, theta, True)
-        self.publish_pose()
-        self.softening_factor = self.softening_factor_min
-        self.softening_factor_current_step = 0
-        self.get_logger().info(
-            "Initialized particles at pose: %f, %f, %f" % (x, y, theta)
-        )
-
-    def pose_callback_global(self, msg):
-        self.initialize_particles_global()
-        self.publish_pose()
-        self.get_logger().info("Initialized particles globally based on map")
-
-    def initialize_particles_global(self):
-        if not self.sensor_model.map_set:
-            pass
-        map = 1 - self.sensor_model.map
-        indices = np.argwhere(map > 0.5)[:, 0]
-        chosen_indices = indices[np.random.choice(len(indices), self.num_particles)]
-        x = (
-            chosen_indices
-            % self.sensor_model.map_info.width
-            * self.sensor_model.resolution
-        )
-        y = (
-            chosen_indices
-            // self.sensor_model.map_info.width
-            * self.sensor_model.resolution
-        )
-        rot_matrix = np.array(
-            [
-                [
-                    np.cos(self.sensor_model.origin[2]),
-                    -np.sin(self.sensor_model.origin[2]),
-                ],
-                [
-                    np.sin(self.sensor_model.origin[2]),
-                    np.cos(self.sensor_model.origin[2]),
-                ],
-            ]
-        )
-        xy = np.stack((x, y), axis=1) @ rot_matrix.T
-        x, y = (
-            xy[:, 0] + self.sensor_model.origin[0],
-            xy[:, 1] + self.sensor_model.origin[1],
-        )
-        theta = np.random.uniform(-np.pi, np.pi, size=self.num_particles)
-        self.particles = np.stack((x, y, theta), axis=1)
-        self.softening_factor_current_step = self.softening_factor_steps
-        self.softening_factor = self.softening_factor_max
 
     def initialize_particles(self, x, y, theta, noisy=True):
         self.particles = np.array(
@@ -155,8 +104,7 @@ class ParticleFilter(Node):
                     theta + np.random.uniform(-np.pi, np.pi) if noisy else theta,
                 ]
                 for _ in range(self.num_particles)
-            ],
-            dtype=np.float32,
+            ]
         )
         self.get_logger().info("Sample particle: %s" % (self.particles[0],))
 
