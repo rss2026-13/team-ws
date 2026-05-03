@@ -175,13 +175,13 @@ class ParticleFilter(Node):
         avg_theta = np.arctan2(
             np.mean(np.sin(self.particles[:, 2])), np.mean(np.cos(self.particles[:, 2]))
         )
-
+        self.logger.info(f"Publishing pose: {avg_x}, {avg_y}, {avg_theta}")
         t = TransformStamped()
         t.header.stamp = self.clock.now().to_msg()
         t.header.frame_id = "map"
         t.child_frame_id = self.particle_filter_frame
-        t.transform.translation.x = avg_x
-        t.transform.translation.y = avg_y
+        t.transform.translation.x = float(avg_x)
+        t.transform.translation.y = float(avg_y)
         t.transform.translation.z = 0.0
         t.transform.rotation.x = 0.0
         t.transform.rotation.y = 0.0
@@ -191,8 +191,8 @@ class ParticleFilter(Node):
         odom_msg = Odometry()
         odom_msg.header.stamp = self.clock.now().to_msg()
         odom_msg.header.frame_id = "map"
-        odom_msg.pose.pose.position.x = avg_x
-        odom_msg.pose.pose.position.y = avg_y
+        odom_msg.pose.pose.position.x = float(avg_x)
+        odom_msg.pose.pose.position.y = float(avg_y)
         odom_msg.pose.pose.orientation.z = np.sin(avg_theta / 2)
         odom_msg.pose.pose.orientation.w = np.cos(avg_theta / 2)
         self.odom_pub.publish(odom_msg)
