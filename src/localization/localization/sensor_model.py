@@ -199,7 +199,6 @@ class SensorModel:
         )
         self.range_method.prune()
 
-        print("Map initialized")
         self.precompute_sensor_model()
-        print("Sensor model computed")
+        self.logger.info("Map received and processed. Sensor model precomputed.")
         self.map_set = True

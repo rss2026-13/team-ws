@@ -66,7 +66,7 @@ class ParticleFilter(Node):
         self.last_laser_time = self.clock.now()
         self.particles = np.zeros((self.num_particles, 3), dtype=np.float32)
         self.tf_broadcaster = TransformBroadcaster(self)
-        self.softening_factor = 30
+        self.softening_factor = 60
 
         self.get_logger().info("=============+READY+=============")
 
