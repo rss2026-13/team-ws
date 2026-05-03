@@ -184,7 +184,7 @@ class ParticleFilter(Node):
             self.particles, odometry, desperation=0
         )
         self.publish_pose()
-        self.publish_particles()
+        # self.publish_particles()
 
     def laser_callback(self, msg):
         ranges = msg.ranges
