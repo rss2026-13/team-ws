@@ -2,24 +2,28 @@
 """
 traffic_light_node.py
 
-ROS2 node that:
-  - Subscribes to the camera feed
-  - Detects red traffic lights via color segmentation
-  - Knows the traffic light's world position (provided at launch, default 1m ahead)
-  - Uses localization to compute distance to the light
-  - Publishes drive commands: stop if red AND within stopping range,
-    otherwise pass through commands from the path planner
+ROS2 node that stops the racecar at a red traffic light.
 
-  NOTE: Traffic light position is currently a fixed parameter. In the future this
-  will be replaced by a subscription to homography output from a YOLO annotator.
+Detection pipeline:
+  1. YOLO annotator detects whether a traffic light is present in the image
+     and publishes its pixel location → /yolo/traffic_light_location_px
+  2. TrafficLightHomography converts pixel → car-frame (x, y) metres
+     → /traffic_light_relative_location
+  3. This node subscribes to both, and:
+       - Uses the YOLO Bool  (/yolo/traffic_light_detected) to decide whether
+         to stop (combined with color segmentation for red vs. not-red)
+       - Uses the homography ConeLocation to know how far away the light is
 
 Subscriptions:
     /zed/zed_node/rgb/image_rect_color          (sensor_msgs/Image)
     /pf/pose/odom                               (nav_msgs/Odometry)  -- particle filter localization
     /vesc/low_level/input/navigation            (ackermann_msgs/AckermannDriveStamped) -- path planner
 
+    /yolo/traffic_light_detected                (std_msgs/Bool)
+    /traffic_light_relative_location            (vs_msgs/ConeLocation)
+    
 Publications:
-    /vesc/low_level/input/navigation_filtered   (ackermann_msgs/AckermannDriveStamped) -- to VESC
+    /vesc/low_level/input/navigation   (ackermann_msgs/AckermannDriveStamped) -- to VESC
     /traffic_light_debug_img                    (sensor_msgs/Image)
 """
 
@@ -36,43 +40,42 @@ from nav_msgs.msg import Odometry
 from ackermann_msgs.msg import AckermannDriveStamped
 
 from traffic_light.traffic_light_detection import is_red_light_on
+from std_msgs.msg import Bool
+from vs_msgs.msg import ConeLocation
 
 
 class TrafficLightNode(Node):
     """
     Intercepts path planner drive commands and stops the car at a red light.
 
-    Parameters (set via ROS2 params at launch, or use defaults):
-        traffic_light_x  (float): world x-coordinate of the traffic light (default: car_x + 1.0)
-        traffic_light_y  (float): world y-coordinate of the traffic light (default: car_y)
-        stop_distance    (float): distance in metres at which to stop (default: 1.0 m)
-        min_red_pixels   (int):   pixel count threshold for red detection (default: 100)
-
-    TODO: Replace traffic_light_x/y params with a subscription to homography output
-          from the YOLO annotator once that pipeline is ready.
+        Stop condition:
+        YOLO sees a traffic light  (yolo_light_detected = True)
+        AND color segmentation confirms it is red  (red_light_detected = True)
+        AND the light is within stop_distance metres  (from homography)
+        
+    Parameters: stop_distance (float): metres at which to stop
     """
 
-    # Sentinel value meaning "use the car's position at startup + 1m ahead"
-    _DEFAULT_LIGHT_OFFSET = 1.0
 
     def __init__(self):
         super().__init__("traffic_light_node")
 
         # ── Parameters ────────────────────────────────────────────────────────
-        self.declare_parameter("traffic_light_x", float("nan"))  # nan = use default offset
-        self.declare_parameter("traffic_light_y", float("nan"))
-        self.declare_parameter("stop_distance", 1.0)
 
-        self.tl_x = self.get_parameter("traffic_light_x").value
-        self.tl_y = self.get_parameter("traffic_light_y").value
+        self.declare_parameter("drive_topic")
+        DRIVE_TOPIC = self.get_parameter("drive_topic").value  # set in launch file; different for simulator vs racecar
+        self.declare_parameter("stop_distance", 2.0)
         self.stop_distance = self.get_parameter("stop_distance").value
 
         # ── State ─────────────────────────────────────────────────────────────
-        self.red_light_detected = False
-        self.car_x = 0.0
-        self.car_y = 0.0
-        self._light_position_set = False  # becomes True once we fix the default position
+        self.red_light_detected = False       # from color segmentation
+        self.yolo_light_detected = False      # from YOLO (traffic light class present)
+        self.light_x = None                   # car-frame x from homography (metres ahead)
+        self.light_y = None                   # car-frame y from homography
+        self._last_steering_angle = 0.0
+      
         self.bridge = CvBridge()
+        self.traffic_light_stop = False
 
         # ── Subscribers ───────────────────────────────────────────────────────
         self.image_sub = self.create_subscription(
@@ -87,53 +90,72 @@ class TrafficLightNode(Node):
             self.odom_callback,
             10,
         )
-        # Path planner output → we intercept this and gate it through stop logic
         self.drive_input_sub = self.create_subscription(
             AckermannDriveStamped,
             "/vesc/low_level/input/navigation",
             self.drive_input_callback,
             10,
         )
+              # YOLO: tells us whether a traffic light object is visible at all
+        self.yolo_sub = self.create_subscription(
+            Bool,
+            "/yolo/traffic_light_detected",
+            self.yolo_callback,
+            10,
+        )
+        # Homography: gives us the car-frame position of the light
+        self.homography_sub = self.create_subscription(
+            ConeLocation,
+            "/traffic_light_relative_location",
+            self.homography_callback,
+            10,
+        )
 
         # ── Publishers ────────────────────────────────────────────────────────
-        # Publishes filtered commands so the VESC receives our gated output.
-        # In your launch file, make sure the VESC is listening to this topic,
-        # or remap /vesc/low_level/input/navigation_filtered → wherever your
-        # VESC driver expects drive commands.
         self.drive_pub = self.create_publisher(
             AckermannDriveStamped,
-            "/vesc/low_level/input/navigation",
+            DRIVE_TOPIC,
             10,
         )
         self.debug_pub = self.create_publisher(Image, "/traffic_light_debug_img", 10)
 
+        self.stop_timer=self.create_timer(0.05, self.stop_timer_callback)
+      
+        # This publisher will be required for integration in the state machine, publish "should_stop"
+        self.traffic_light_stop_pub = self.create_publisher(
+            Bool,
+            "/traffic_light_stop",
+            10
+        )
+
         self.get_logger().info(
-            "TrafficLightNode initialized — waiting for first odom to set light position."
+            f"TrafficLightNode initialized. stop_distance={self.stop_distance} m"
         )
 
     # ── Callbacks ─────────────────────────────────────────────────────────────
 
     def odom_callback(self, msg: Odometry):
-        """Update car position from particle filter localization."""
-        self.car_x = msg.pose.pose.position.x
-        self.car_y = msg.pose.pose.position.y
+         """Track car position (used for future world-frame logic if needed)."""
+        pass
 
-        # On the very first odom message, fix the default light position to
-        # 1 m ahead of wherever the car starts, if no explicit param was given.
-        if not self._light_position_set:
-            if math.isnan(self.tl_x) or math.isnan(self.tl_y):
-                # TODO: replace this block with homography/YOLO subscription output
-                self.tl_x = self.car_x + self._DEFAULT_LIGHT_OFFSET
-                self.tl_y = self.car_y
-                self.get_logger().info(
-                    f"No traffic_light_x/y params given — defaulting to 1 m ahead: "
-                    f"({self.tl_x:.2f}, {self.tl_y:.2f})"
-                )
-            else:
-                self.get_logger().info(
-                    f"Traffic light position set from params: ({self.tl_x:.2f}, {self.tl_y:.2f})"
-                )
-            self._light_position_set = True
+    def yolo_callback(self, msg: Bool):
+        """Update whether YOLO sees a traffic light in the current frame."""
+        self.yolo_light_detected = msg.data
+
+        # If YOLO no longer sees a light, clear the cached position so we
+        # don't stop based on a stale homography reading.
+        if not self.yolo_light_detected:
+            self.light_x = None
+            self.light_y = None
+
+    def homography_callback(self, msg: ConeLocation):
+        """
+        Receive the car-frame position of the traffic light from homography.
+        x_pos is distance ahead of the car (positive = in front).
+        y_pos is lateral offset (positive = left).
+        """
+        self.light_x = msg.x_pos
+        self.light_y = msg.y_pos
 
     def image_callback(self, image_msg: Image):
         """Run red-light detection on every incoming camera frame."""
@@ -149,12 +171,20 @@ class TrafficLightNode(Node):
         debug_img = img.copy()
         if self.red_light_detected and bbox is not None:
             cv2.rectangle(debug_img, bbox[0], bbox[1], (0, 0, 255), 3)
-            label = "RED LIGHT DETECTED"
-        else:
-            label = "NO RED LIGHT"
+            # Build a status label showing all three conditions
+        dist_str = f"{self._distance_to_light():.1f}m" if self._distance_to_light() is not None else "?m"
+        label = (
+            f"YOLO={'Y' if self.yolo_light_detected else 'N'} | "
+            f"RED={'Y' if self.red_light_detected else 'N'} | "
+            f"DIST={dist_str}"
+        )
+        color = (0, 0, 255) if self._should_stop() else (0, 255, 0)
+        cv2.putText(debug_img, label, (20, 40), cv2.FONT_HERSHEY_SIMPLEX, 0.9, color, 2)
 
-        color = (0, 0, 255) if self.red_light_detected else (0, 255, 0)
-        cv2.putText(debug_img, label, (20, 40), cv2.FONT_HERSHEY_SIMPLEX, 1.2, color, 2)
+        if self._should_stop():
+            cv2.putText(debug_img, "STOPPED", (20, 80),
+                        cv2.FONT_HERSHEY_SIMPLEX, 1.2, (0, 0, 255), 3)
+          
         self.debug_pub.publish(self.bridge.cv2_to_imgmsg(debug_img, "bgr8"))
 
     def drive_input_callback(self, drive_msg: AckermannDriveStamped):
@@ -165,36 +195,58 @@ class TrafficLightNode(Node):
           2. The car is within `stop_distance` metres of the traffic light.
         Otherwise, forward the command unchanged.
         """
-        if not self._light_position_set:
-            # Haven't received odom yet — pass commands through so the car isn't
-            # frozen at startup waiting for the first pose estimate.
-            self.drive_pub.publish(drive_msg)
-            return
+        self._last_steering_angle = drive_msg.drive.steering_angle
 
-        distance_to_light = self._distance_to_light()
-        #should_stop = self.red_light_detected and distance_to_light <= self.stop_distance Add this back later
-        should_stop=self.red_light_detected
-
-        if should_stop:
+        if self.should_stop():
             self.get_logger().info(
-                f"Red light detected at {distance_to_light:.2f} m — STOPPING.",
+                f"Stopping — red={self.red_light_detected}, "
+                f"yolo={self.yolo_light_detected}, "
+                f"dist={self._distance_to_light()}",
                 throttle_duration_sec=1.0,
             )
+        else:
+          self.drive_pub.publish(drive_msg)
+
+    def stop_timer_callback(self):
+        """Actively publish speed=0 at 20 Hz while stopped."""
+        should=self._should_stop()
+        self.traffic_light_stop_pub.publish(Bool(data=should))
+        if should:
             stop_cmd = AckermannDriveStamped()
             stop_cmd.header.stamp = self.get_clock().now().to_msg()
             stop_cmd.drive.speed = 0.0
-            stop_cmd.drive.steering_angle = drive_msg.drive.steering_angle  # preserve steering
+            stop_cmd.drive.steering_angle = self._last_steering_angle
             self.drive_pub.publish(stop_cmd)
-        else:
-            self.drive_pub.publish(drive_msg)
 
-    # ── Helpers ───────────────────────────────────────────────────────────────
+    def _should_stop(self) -> bool:
+        """
+        Stop if ALL of:
+          1. YOLO sees a traffic light in the frame
+          2. Color segmentation confirms it is red
+          3. The light is within stop_distance metres
 
-    def _distance_to_light(self) -> float:
-        """Euclidean distance from current car position to the traffic light."""
-        dx = self.car_x - self.tl_x
-        dy = self.car_y - self.tl_y
-        return math.sqrt(dx * dx + dy * dy)
+        If homography hasn't given us a position yet but both detectors agree
+        it's red, we stop anyway to be safe (distance unknown → assume close).
+        """
+        if not (self.yolo_light_detected and self.red_light_detected):
+            return False
+
+        dist = self._distance_to_light()
+        if dist is None:
+            # No homography reading yet — both detectors say red, stop to be safe
+            return True
+
+        return dist <= self.stop_distance
+
+    def _distance_to_light(self):
+        """
+        Distance to the traffic light in the car frame (metres).
+        Returns None if no homography reading has been received.
+        x_pos from homography is forward distance, y_pos is lateral.
+        """
+        if self.light_x is None or self.light_y is None:
+            return None
+        return math.sqrt(self.light_x ** 2 + self.light_y ** 2)
 
 
 # ── Entry point ───────────────────────────────────────────────────────────────

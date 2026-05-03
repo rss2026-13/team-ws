@@ -52,7 +52,7 @@ class SensorModel:
 
         # Your sensor table will be a `table_width` x `table_width` np array:
         self.table_width = 201
-        self.softening_factor = 10.0
+        self.softening_factor = 30.0
         self.DEBUG = False
         ####################################
 

@@ -1,22 +1,25 @@
 import rclpy
 from rclpy.node import Node
 import numpy as np
-from std_msgs.msg import Float32MultiArray
+from std_msgs.msg import Float32MultiArray, Float32
 from ackermann_msgs.msg import AckermannDriveStamped
+from visualization_msgs.msg import Marker, MarkerArray
+from geometry_msgs.msg import Point
+from std_msgs.msg import ColorRGBA
 
 
 class SimulationController(Node):
     """
-    Lane-following controller that mirrors the structure of 
-    wall-follower PD controller.
+    Pure-pursuit lane controller.
 
-    It extracts two signals from the lane lines, just as the wall follower
-    used both distance and angle to the wall:
+    The lane centerline is the segment connecting the midpoints of the near
+    and far lane-line endpoints (in base_link ground-plane coords: x=forward,
+    y=left, metres).  A lookahead point at distance `lookahead` is found on
+    that segment; steering is computed via the pure-pursuit formula:
 
-      1. lateral_error  – how far the car is from the lane centre (pixels)
-      2. heading_error  – angle between the car's heading and the lane direction (radians)
+        δ = arctan(2 * L * sin(α) / ld)
 
-    Steering = Kp * lateral_error + Kd * heading_error
+    where α is the angle to the lookahead point and L is the wheelbase.
     """
 
     def __init__(self):
@@ -25,43 +28,15 @@ class SimulationController(Node):
         self.subscription = self.create_subscription(
             Float32MultiArray, '/lane_lines_transformed', self.listener_callback, 10)
         self.publisher = self.create_publisher(AckermannDriveStamped, '/vesc/high_level/input/nav_1', 10)
+        self.viz_pub = self.create_publisher(MarkerArray, '/lane_viz', 10)
+        self.error_pub = self.create_publisher(Float32, '/lane_center_error', 10)
 
-        # --- Tuning parameters ---
-        self.target_v = 1.0         # m/s
+        self.target_v = 4.0       # m/s
+        self.lookahead = 1000      # metres — primary tuning knob
+        self.wheelbase = 0.325    # metres (MIT RACECAR)
+        self.lane_width = 0.9    # metres
+        self.max_steer = 0.3      # radians
 
-        # Kp acts on lateral error in meters
-        # Kd damps oscillations based on rate of change of lateral error
-        self.Kp = 0.3
-        self.Kd = 0.0
-        self.clockwise = True
-
-        self.lane_width = 0.85  # meters
-
-        # Maximum steering angle your car supports (radians)
-        self.max_steer = 0.4
-
-        self.prev_error = 0.0
-
-    # ------------------------------------------------------------------
-    # Geometry helpers
-    # ------------------------------------------------------------------
-
-    @staticmethod
-    def line_angle(x1, y1, x2, y2):
-        """
-        Angle of a line segment relative to the car's forward (x) axis.
-        Ground-plane coords: x=forward, y=left.
-        A perfectly straight lane line has dy≈0, so angle≈0.
-        Returns angle in radians in (-pi/2, pi/2).
-        """
-        dx = x2 - x1
-        dy = y2 - y1
-        if abs(dx) < 1e-6:
-            return 0.0
-        return np.arctan2(dy, dx)   # angle from forward axis
-
-    # ------------------------------------------------------------------
-    # Main callback
     # ------------------------------------------------------------------
 
     def listener_callback(self, msg):
@@ -69,7 +44,6 @@ class SimulationController(Node):
         if len(lines) < 8:
             return
 
-        # Ground-plane coords: x=forward (meters), y=left (meters)
         lx1, ly1, lx2, ly2 = lines[0:4]
         rx1, ry1, rx2, ry2 = lines[4:8]
 
@@ -79,7 +53,7 @@ class SimulationController(Node):
         if not left_valid and not right_valid:
             return
 
-        # ---- 1. Guess missing line using lane width, then compute lane centre ----
+        # Fill in missing line by offsetting the visible one
         if left_valid and not right_valid:
             rx1, ry1 = lx1, ly1 - self.lane_width
             rx2, ry2 = lx2, ly2 - self.lane_width
@@ -87,30 +61,132 @@ class SimulationController(Node):
             lx1, ly1 = rx1, ry1 + self.lane_width
             lx2, ly2 = rx2, ry2 + self.lane_width
 
-        lane_center_y = (ly1 + ry1) / 2.0
-        lateral_error = -lane_center_y  # positive = car is right of centre
-        d_error = (lateral_error - self.prev_error) / 1.0
-        self.prev_error = lateral_error
+        # Lane centerline: near midpoint C1, far midpoint C2
+        cx1, cy1 = (lx1 + rx1) / 2.0, (ly1 + ry1) / 2.0
+        cx2, cy2 = (lx2 + rx2) / 2.0, (ly2 + ry2) / 2.0
 
-        # ---- 2. Heading error (lane angle relative to car forward axis) ----
-        angles = [
-            self.line_angle(lx1, ly1, lx2, ly2),
-            self.line_angle(rx1, ry1, rx2, ry2),
-        ]
-        heading_error = float(np.mean(angles))
+        gx, gy = self._lookahead_point(cx1, cy1, cx2, cy2)
 
-        # ---- 3. PD steering ----
-        sign = lateral_error / abs(lateral_error) if lateral_error else 0
-        steering_angle = self.Kp * abs(lateral_error) ** 1.1 * sign + self.Kd * d_error
-
-        # Clamp to physical limits
+        # Pure pursuit: α is the angle from the car's heading (x-axis) to the goal
+        alpha = np.arctan2(gy, gx)
+        ld = np.hypot(gx, gy)
+        steering_angle = np.arctan2(2.0 * self.wheelbase * np.sin(alpha), ld)
         steering_angle = float(np.clip(steering_angle, -self.max_steer, self.max_steer))
 
         self._publish(self.target_v, steering_angle)
+        self._publish_viz(lx1, ly1, lx2, ly2, rx1, ry1, rx2, ry2,
+                          cx1, cy1, cx2, cy2, gx, gy)
+        self.error_pub.publish(Float32(data=float(cy1)))
 
         self.get_logger().debug(
-            f'lat_err={lateral_error:.3f}  head_err={heading_error:.3f}  '
-            f'steer={steering_angle:.3f}')
+            f'goal=({gx:.2f},{gy:.2f})  alpha={np.degrees(alpha):.1f}°  '
+            f'steer={np.degrees(steering_angle):.1f}°')
+
+    # ------------------------------------------------------------------
+
+    def _lookahead_point(self, cx1, cy1, cx2, cy2):
+        """
+        Find the point on segment C1→C2 at distance `self.lookahead` from
+        the origin (the car).  Falls back to the far endpoint if the
+        lookahead circle doesn't intersect the segment.
+        """
+        ld = self.lookahead
+        dx, dy = cx2 - cx1, cy2 - cy1
+
+        # Quadratic: |C1 + t*(C2-C1)|² = ld²
+        a = dx*dx + dy*dy
+        b = 2.0 * (cx1*dx + cy1*dy)
+        c = cx1*cx1 + cy1*cy1 - ld*ld
+
+        if abs(a) < 1e-9:
+            return cx1, cy1
+
+        discriminant = b*b - 4*a*c
+        if discriminant < 0:
+            # Lookahead circle misses the segment entirely — use far end
+            return cx2, cy2
+
+        t1 = (-b + np.sqrt(discriminant)) / (2*a)
+        t2 = (-b - np.sqrt(discriminant)) / (2*a)
+
+        # Pick the smallest t ≥ 0 that lies on [0, 1]; prefer the far solution
+        candidates = [t for t in (t1, t2) if t >= 0]
+        if not candidates:
+            return cx2, cy2
+
+        t = min(candidates)
+        t = float(np.clip(t, 0.0, 1.0))
+        return cx1 + t*dx, cy1 + t*dy
+
+    # ------------------------------------------------------------------
+
+    def _publish_viz(self, lx1, ly1, lx2, ly2, rx1, ry1, rx2, ry2,
+                     cx1, cy1, cx2, cy2, gx, gy):
+        now = self.get_clock().now().to_msg()
+        markers = MarkerArray()
+
+        def line_marker(mid, x1, y1, x2, y2, r, g, b):
+            m = Marker()
+            m.header.frame_id = 'base_link'
+            m.header.stamp = now
+            m.ns = 'lane_lines'
+            m.id = mid
+            m.type = Marker.LINE_STRIP
+            m.action = Marker.ADD
+            m.scale.x = 0.04
+            m.color = ColorRGBA(r=r, g=g, b=b, a=1.0)
+            m.pose.orientation.w = 1.0
+            m.points = [
+                Point(x=float(x1), y=float(y1), z=0.0),
+                Point(x=float(x2), y=float(y2), z=0.0),
+            ]
+            return m
+
+        def sphere_marker(mid, x, y, r, g, b, size=0.12):
+            m = Marker()
+            m.header.frame_id = 'base_link'
+            m.header.stamp = now
+            m.ns = 'lane_lines'
+            m.id = mid
+            m.type = Marker.SPHERE
+            m.action = Marker.ADD
+            m.scale.x = m.scale.y = m.scale.z = size
+            m.color = ColorRGBA(r=r, g=g, b=b, a=1.0)
+            m.pose.orientation.w = 1.0
+            m.pose.position.x = float(x)
+            m.pose.position.y = float(y)
+            m.pose.position.z = 0.0
+            return m
+
+        markers.markers.append(line_marker(0, lx1, ly1, lx2, ly2, 1.0, 0.0, 0.0))  # left: red
+        markers.markers.append(line_marker(1, rx1, ry1, rx2, ry2, 0.0, 1.0, 0.0))  # right: green
+
+        # Centerline
+        markers.markers.append(line_marker(2, cx1, cy1, cx2, cy2, 1.0, 1.0, 0.0))
+
+        # Lookahead point: cyan sphere
+        markers.markers.append(sphere_marker(3, gx, gy, 0.0, 1.0, 1.0, size=0.15))
+
+        # Lookahead circle (approximated as a LINE_STRIP ring)
+        ring = Marker()
+        ring.header.frame_id = 'base_link'
+        ring.header.stamp = now
+        ring.ns = 'lane_lines'
+        ring.id = 4
+        ring.type = Marker.LINE_STRIP
+        ring.action = Marker.ADD
+        ring.scale.x = 0.02
+        ring.color = ColorRGBA(r=0.5, g=0.5, b=0.5, a=0.4)
+        ring.pose.orientation.w = 1.0
+        thetas = np.linspace(0, 2*np.pi, 36)
+        for th in thetas:
+            ring.points.append(Point(
+                x=float(self.lookahead * np.cos(th)),
+                y=float(self.lookahead * np.sin(th)),
+                z=0.0))
+        markers.markers.append(ring)
+
+        self.viz_pub.publish(markers)
 
     # ------------------------------------------------------------------
 
