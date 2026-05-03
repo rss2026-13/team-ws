@@ -161,6 +161,11 @@ class ParticleFilter(Node):
         self.get_logger().info("Sample particle: %s" % (self.particles[0],))
 
     def publish_pose(self):
+        if not self.sensor_model.map_set:
+            return
+        if self.particles.shape[0] == 0:
+            self.get_logger().warn("No particles to publish pose from!")
+            return
         avg_x = np.mean(self.particles[:, 0])
         avg_y = np.mean(self.particles[:, 1])
         avg_theta = np.arctan2(
