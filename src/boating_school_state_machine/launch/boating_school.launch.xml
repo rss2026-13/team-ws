@@ -1,60 +1,82 @@
 <launch>
-    
-  <arg name="params_file"
-     default="$(find-pkg-share boating_school_state_machine)/boating_school_state_machine/params.yaml"/>
-
   <!-- Particle Filter -->
-  <node pkg="localization"
-        exec="particle_filter"
-        name="particle_filter"
-        params-from="$(var params_file)"/>
+  <node 
+      pkg="localization"
+      exec="particle_filter"
+      name="particle_filter"
+  >
+      <param from="$(find-pkg-share boating_school_state_machine)/params.yaml"/>
+  </node>
 
   <!-- YOLO Detector -->
-  <node pkg="visual_servoing"
-        exec="final_detector"
-        name="final_detector"
-        params-from="$(var params_file)"/>
+  <node 
+      pkg="visual_servoing"
+      exec="final_detector"
+      name="final_detector"
+  >
+      <param from="$(find-pkg-share boating_school_state_machine)/params.yaml"/>
+  </node>
 
   <!-- Homography -->
-  <node pkg="visual_servoing"
-        exec="traffic_light_homography"
-        name="traffic_light_homography"
-        params-from="$(var params_file)"/>
+  <node
+      pkg="visual_servoing"
+      exec="traffic_light_homography"
+      name="traffic_light_homography"
+  >
+      <param from="$(find-pkg-share boating_school_state_machine)/params.yaml"/>
+  </node>
 
   <!-- Traffic Light Node -->
-  <node pkg="traffic_light"
-        exec="traffic_light_node"
-        name="traffic_light_node"
-        params-from="$(var params_file)"/>
+  <node
+      pkg="traffic_light"
+      exec="traffic_light_node"
+      name="traffic_light_node"
+  >
+      <param from="$(find-pkg-share boating_school_state_machine)/params.yaml"/>
+  </node>
 
   <!-- Trajectory Planner -->
-  <node pkg="path_planning"
-        exec="trajectory_planner"
-        name="trajectory_planner"
-        params-from="$(var params_file)"/>
+  <node
+      pkg="path_planning"
+      exec="trajectory_planner"
+      name="trajectory_planner"
+  >
+      <param from="$(find-pkg-share boating_school_state_machine)/params.yaml"/>
+  </node>
 
   <!-- Trajectory Follower -->
-  <node pkg="path_planning"
-        exec="trajectory_follower"
-        name="trajectory_follower"
-        params-from="$(var params_file)"/>
+  <node
+      pkg="path_planning"
+      exec="trajectory_follower"
+      name="trajectory_follower"
+  >
+      <param from="$(find-pkg-share boating_school_state_machine)/params.yaml"/>
+  </node>
 
   <!-- Parking Controller -->
-  <node pkg="visual_servoing"
-        exec="parking_controller"
-        name="parking_controller"
-        params-from="$(var params_file)"/>
+  <node
+      pkg="visual_servoing"
+      exec="parking_controller"
+      name="parking_controller"
+  >
+      <param from="$(find-pkg-share boating_school_state_machine)/params.yaml"/>
+  </node>
 
   <!-- Safety Controller -->
-  <node pkg="safety_controller"
-        exec="safety_controller"
-        name="safety_controller"
-        params-from="$(var params_file)"/>
+  <node
+      pkg="safety_controller"
+      exec="safety_controller"
+      name="safety_controller"
+  >
+      <param from="$(find-pkg-share boating_school_state_machine)/params.yaml"/>
+  </node>
 
   <!-- State Machine -->
-  <node pkg="boating_school_state_machine"
-        exec="boating_school_state_machine"
-        name="boating_school_state_machine"
-        params-from="$(var params_file)"/>
-
+  <node 
+      pkg="boating_school_state_machine"
+      exec="boating_school_state_machine"
+      name="boating_school_state_machine"
+  >
+      <param from="$(find-pkg-share boating_school_state_machine)/params.yaml"/>
+  </node>
 </launch>
