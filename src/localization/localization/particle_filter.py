@@ -140,31 +140,12 @@ class ParticleFilter(Node):
         odom_msg.pose.pose.orientation.w = np.cos(avg_theta / 2)
         self.odom_pub.publish(odom_msg)
 
-        # if self.debug and self.sensor_model.map_set:
-        #     scan = self.sensor_model.scan_sim.scan(
-        #         np.array([[avg_x, avg_y, avg_theta]])
-        #     )
-        #     msg = LaserScan()
-        #     msg.header.stamp = self.clock.now().to_msg()
-        #     msg.header.frame_id = self.particle_filter_frame
-        #     msg.angle_min = -self.sensor_model.scan_field_of_view / 2
-        #     msg.angle_max = self.sensor_model.scan_field_of_view / 2
-        #     msg.angle_increment = self.sensor_model.scan_field_of_view / (
-        #         self.sensor_model.num_beams_per_particle - 1
-        #     )
-        #     msg.range_min = 0.0
-        #     msg.range_max = 100.0
-        #     msg.ranges = scan[0].tolist()
-        #     msg.intensities = scan[0].tolist()
-        #     self.scan_pub.publish(msg)
-
     def publish_particles(self):
-        # publish at most 100 particles
 
         pose_array_msg = PoseArray()
         pose_array_msg.header.stamp = self.clock.now().to_msg()
         pose_array_msg.header.frame_id = "map"
-        for particle in self.particles[:100]:
+        for particle in self.particles[:50]:
             pose = Pose()
             if not isinstance(particle[0], float) or not isinstance(particle[1], float):
                 return

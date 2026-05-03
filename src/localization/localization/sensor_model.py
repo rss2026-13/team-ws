@@ -193,7 +193,7 @@ class SensorModel:
         # Initialize a map with the laser scan
         oMap = range_libc.PyOMap(map_msg)
         self.MAX_RANGE_PX = self.table_width - 1
-        self.range_method = range_libc.PyRayMarching(oMap, self.MAX_RANGE_PX)
+        self.range_method = range_libc.PyCDDTCast(oMap, self.MAX_RANGE_PX)
 
         print("Map initialized")
         self.precompute_sensor_model()
