@@ -9,11 +9,16 @@ from scan_simulator_2d import PyScanSimulator2D
 # if any error re: scan_simulator_2d occurs
 from scipy.spatial.transform import Rotation as R
 
+import range_libc
+
 np.set_printoptions(threshold=sys.maxsize)
 
 
 class SensorModel:
-    def __init__(self, node):
+    def __init__(self, node, num_particles):
+        self.num_particles = num_particles
+        self.weights = np.ones(self.num_particles) / float(self.num_particles)
+        self.first_sensor_update = True
         node.declare_parameter("map_topic", "default")
         node.declare_parameter("num_beams_per_particle", 1)
         node.declare_parameter("scan_theta_discretization", 1.0)
@@ -52,7 +57,7 @@ class SensorModel:
 
         # Your sensor table will be a `table_width` x `table_width` np array:
         self.table_width = 201
-        self.softening_factor = 30.0
+
         self.DEBUG = False
         ####################################
 
@@ -63,17 +68,8 @@ class SensorModel:
 
         # Precompute the sensor model table
         self.sensor_model_table = np.empty((self.table_width, self.table_width))
-        self.precompute_sensor_model()
-
-        # Create a simulated laser scan
-        self.scan_sim = PyScanSimulator2D(
-            self.num_beams_per_particle,
-            self.scan_field_of_view,
-            0,  # This is not the simulator, don't add noise
-            0.01,  # This is used as an epsilon
-            self.scan_theta_discretization,
-        )
-
+        self.laser_angles = None
+        self.downsampled_angles = None
         # Subscribe to the map
         self.map = None
         self.map_set = False
@@ -122,8 +118,7 @@ class SensorModel:
             + self.alpha_rand * p_rand
         )
         self.sensor_model_table /= np.sum(self.sensor_model_table, axis=0)
-        self.sensor_model_table = self.sensor_model_table ** (1 / self.softening_factor)
-
+        self.range_method.set_sensor_model(self.sensor_model_table)
         if self.DEBUG:
             plt.imshow(self.sensor_model_table, origin="lower")
             plt.colorbar()
@@ -155,30 +150,30 @@ class SensorModel:
 
         if not self.map_set:
             return
-
-        scans = self.scan_sim.scan(particles)
-        scan_indices = np.clip(
-            np.round(scans / (self.resolution * self.lidar_scale_to_map_scale)).astype(
-                int
-            ),
-            0,
-            self.table_width - 1,
+        if self.first_sensor_update:
+            self.queries = np.zeros((self.num_particles, 3), dtype=np.float32)
+            self.ranges = np.zeros(
+                self.num_beams_per_particle * self.num_particles, dtype=np.float32
+            )
+            self.tiled_angles = np.tile(self.downsampled_angles, self.num_particles)
+            self.first_sensor_update = False
+        self.queries[:, :] = particles[:, :]
+        self.range_method.calc_range_repeat_angles(
+            self.queries, self.downsampled_angles, self.ranges
         )
-        obs_indices = np.clip(
-            np.round(
-                observation / (self.resolution * self.lidar_scale_to_map_scale)
-            ).astype(int),
-            0,
-            self.table_width - 1,
+        self.range_method.eval_sensor_model(
+            observation,
+            self.ranges,
+            self.weights,
+            self.num_beams_per_particle,
+            self.num_particles,
         )
-        probabilities = self.sensor_model_table[obs_indices, scan_indices]
-        probabilities = np.prod(probabilities, axis=1)
-        return probabilities
+        # np.power(self.weights, 0.3, self.weights)
 
     def map_callback(self, map_msg):
         # Convert the map to a numpy array
-        self.map_data = np.array(map_msg.data, np.double)
-        self.map = np.zeros_like(self.map_data, dtype=np.double)
+        self.map_data = np.array(map_msg.data, np.float32)
+        self.map = np.zeros_like(self.map_data, dtype=np.float32)
 
         unique = np.unique(self.map_data)
         self.logger.info(f"Unique values in the map data: {unique}")
@@ -196,14 +191,11 @@ class SensorModel:
         self.origin = (origin_p.x, origin_p.y, yaw)
         self.map_info = map_msg.info
         # Initialize a map with the laser scan
-        self.scan_sim.set_map(
-            self.map,
-            map_msg.info.height,
-            map_msg.info.width,
-            map_msg.info.resolution,
-            self.origin,
-            0.5,
-        )
+        oMap = range_libc.PyOMap(map_msg)
+        self.MAX_RANGE_PX = self.table_width - 1
+        self.range_method = range_libc.PyRayMarching(oMap, self.MAX_RANGE_PX)
 
-        self.map_set = True
         print("Map initialized")
+        self.precompute_sensor_model()
+        print("Sensor model computed")
+        self.map_set = True
