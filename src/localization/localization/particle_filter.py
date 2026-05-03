@@ -167,6 +167,10 @@ class ParticleFilter(Node):
             self.get_logger().warn("No particles to publish pose from!")
             return
         avg_x = np.mean(self.particles[:, 0])
+        if not isinstance(avg_x, float):
+            self.get_logger().error(
+                f"avg_x is not a float! This is unexpected. avg_x: {avg_x}, type: {type(avg_x)}"
+            )
         avg_y = np.mean(self.particles[:, 1])
         avg_theta = np.arctan2(
             np.mean(np.sin(self.particles[:, 2])), np.mean(np.cos(self.particles[:, 2]))
