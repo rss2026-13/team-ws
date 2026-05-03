@@ -54,7 +54,7 @@ class SensorModel:
         self.alpha_max = 0.07
         self.alpha_rand = 0.12
         self.sigma_hit = 8
-
+        self.softening_factor = 60.0
         # Your sensor table will be a `table_width` x `table_width` np array:
         self.table_width = 201
 
@@ -118,6 +118,7 @@ class SensorModel:
             + self.alpha_rand * p_rand
         )
         self.sensor_model_table /= np.sum(self.sensor_model_table, axis=0)
+        self.sensor_model_table = self.sensor_model_table ** (1 / self.softening_factor)
         self.range_method.set_sensor_model(self.sensor_model_table)
         if self.DEBUG:
             plt.imshow(self.sensor_model_table, origin="lower")
@@ -176,6 +177,9 @@ class SensorModel:
         self.map = np.zeros_like(self.map_data, dtype=np.float32)
 
         unique = np.unique(self.map_data)
+        self.logger.info(
+            "Map received! Processing map data... (should take about 30 seconds)"
+        )
         self.logger.info(f"Unique values in the map data: {unique}")
         self.map[self.map_data != 0] = 1.0
 
@@ -197,7 +201,7 @@ class SensorModel:
         self.range_method = range_libc.PyCDDTCast(
             oMap, self.MAX_RANGE_PX, self.scan_theta_discretization
         )
-        self.range_method.prune()
+        # self.range_method.prune()
 
         self.precompute_sensor_model()
         self.logger.info("Map received and processed. Sensor model precomputed.")

@@ -193,14 +193,11 @@ class ParticleFilter(Node):
             dtype=np.float32,
         )
         self.sensor_model.evaluate(self.particles, ranges)
-        probabilities = self.sensor_model.weights ** (1 / self.softening_factor)
+        probabilities = self.sensor_model.weights
         if np.sum(probabilities) == 0:
             self.get_logger().warn(
                 "All particles have zero probability! This is unexpected. Resetting particles."
             )
-            self.initialize_particles(0, 0, 0, noisy=True)
-            self.publish_pose()
-            self.publish_particles()
             return
         self.particles = self.particles[
             np.random.choice(
