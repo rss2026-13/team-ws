@@ -1,12 +1,12 @@
 #!/usr/bin/env python3
 import numpy as np
 import rclpy
-import scipy.signal
 from ackermann_msgs.msg import AckermannDriveStamped
 from rclpy.node import Node
 from sensor_msgs.msg import LaserScan
 from std_msgs.msg import Float32
 from visualization_msgs.msg import Marker
+from std_msgs.msg import Bool
 
 
 class SafetyController(Node):
@@ -61,9 +61,10 @@ class SafetyController(Node):
         self.drive_publisher = self.create_publisher(
             AckermannDriveStamped, self.OUTPUT_TOPIC, 10
         )
-        self.distance_pub = self.create_publisher(Float32, "/sc_wall_dist", 10)
+        # self.distance_pub = self.create_publisher(Float32, "/sc_wall_dist", 10)
+        self.front_threshold_pub = self.create_publisher(Float32, "/sc_front_threshold", 10)
 
-        self.marker_pub = self.create_publisher(Marker, "/safety_marker", 1)
+        # self.marker_pub = self.create_publisher(Marker, "/safety_marker", 1)
         self.is_collision = False
         self.scan_data = None
         self.drive_command = None
@@ -73,7 +74,15 @@ class SafetyController(Node):
         self.clear_scan_count = 0
         self.CLEAR_SCANS_REQUIRED = 3
 
-        self.lidar_x_from_base_link = 0.275
+        self.LIDAR_X = 0.275 #lidar x from base link
+        self.front_mask = None
+
+        self.declare_parameter("min_obstacle_points", 5)
+        self.MIN_OBSTACLE_POINTS = (
+            self.get_parameter("min_obstacle_points").get_parameter_value().integer_value
+        )
+
+        self.safety_stop_pub = self.create_publisher(Bool, "/safety_stop", 10)
 
     def drive_callback(self, msg):
         self.drive_command = msg
@@ -102,6 +111,8 @@ class SafetyController(Node):
 
         # Kinematic Threshold
         front_threshold = self.MARGIN + (velocity**2) / (2 * self.MAX_DECELERATION)
+        self.front_threshold_pub.publish(Float32(data = front_threshold))
+
         delta = self.drive_command.drive.steering_angle
         if self.VISUALIZE:
             self.publish_safety_marker(delta, front_threshold)
@@ -124,7 +135,6 @@ class SafetyController(Node):
         collision_zone_start = self.LIDAR_OFFSET
         collision_zone_end = self.LIDAR_OFFSET + front_threshold
 
-        self.is_collision = False
 
         if abs(delta) < 0.01:  # Straight Path
             # Points must be ahead of bumper AND within threshold
@@ -137,26 +147,26 @@ class SafetyController(Node):
             R = self.WHEELBASE / np.tan(
                 delta
             )  # Radius of car rotation, max and min account for front and back corner
-            R_max = np.sqrt(
-                (self.WHEELBASE + self.LIDAR_OFFSET) ** 2
-                + (abs(R) + self.CAR_WIDTH / 2) ** 2
-            )
-            R_min = abs(R) - self.CAR_WIDTH / 2
+
+            bumper_to_cor_x = self.LIDAR_X + self.LIDAR_OFFSET  # 0.275 + 0.15 = 0.425m
+
+            # R_max: CoR → front far corner (outer swept edge)
+            R_max = np.sqrt(bumper_to_cor_x**2 + (abs(R) + self.CAR_WIDTH / 2)**2)
+            # R_min: CoR → front near corner (inner swept edge)
+            R_min = np.sqrt(bumper_to_cor_x**2 + (abs(R) - self.CAR_WIDTH / 2)**2)
+
 
             # Points in car center of rotation (cor) frame
-            px_cor = px + self.WHEELBASE
+            px_cor = px + self.LIDAR_X
             py_cor = py - R
-            pr = np.sqrt((px_cor) ** 2 + (py_cor) ** 2)
+ 
+            pr = np.sqrt(px_cor**2 + py_cor**2)
             pangle = np.mod(np.arctan2(px_cor, py_cor * -np.sign(R)), 2 * np.pi)
 
-            # Angle that bumper is at in point's cor frame
-            bumper_angle = np.arcsin(
-                np.clip((self.WHEELBASE + self.LIDAR_OFFSET) / pr, -1.0, 1.0)
-            )
+             # Angle to the front bumper arc in the CoR frame
+            bumper_angle = np.arcsin(np.clip(bumper_to_cor_x / pr, -1.0, 1.0))
             p_bumper_ahead_dist = (pangle - bumper_angle) * pr
-
-            # Obstacle must be within the car's curved path
-            # Obstacle must be past the bumper but within stopping distance
+ 
             in_path = (
                 (pr > R_min)
                 & (pr < R_max)
@@ -164,108 +174,24 @@ class SafetyController(Node):
                 & (p_bumper_ahead_dist < front_threshold)
             )
 
-            self.is_collision = np.any(in_path)
 
+        self.is_collision = np.sum(in_path) >= self.MIN_OBSTACLE_POINTS
+ 
         if self.is_collision:
             self.clear_scan_count = 0
         else:
             self.clear_scan_count += 1
-        
+ 
         if self.is_collision or self.clear_scan_count < self.CLEAR_SCANS_REQUIRED:
             safe_command = AckermannDriveStamped()
             safe_command.header.stamp = self.get_clock().now().to_msg()
             safe_command.drive.speed = 0.0
             safe_command.drive.steering_angle = 0.0
             self.drive_publisher.publish(safe_command)
-            self.get_logger().warn("Frontal object detected! Stopping the robot.")
-
-    def create_point(self, x, y):
-        from geometry_msgs.msg import Point
-
-        p = Point()
-        p.x = x
-        p.y = y
-        p.z = 0.0
-        return p
-
-    def publish_safety_marker(self, delta, stop_dist):
-        marker = Marker()
-        marker.header.frame_id = "base_link"  # Set to rear axle frame
-        marker.ns = "safety_zone"
-        marker.id = 0
-        marker.type = Marker.LINE_LIST
-        marker.action = Marker.ADD
-        marker.scale.x = 0.02  # Line thickness
-        marker.color.r = 1.0
-        marker.color.g = 0.0
-        marker.color.b = 0.0
-        marker.color.a = 0.6  # Semi-transparent red
-
-        num_steps = 20
-
-        if abs(delta) < 0.01:
-            # --- Straight Case: Two Parallel Lines ---
-            y_inner = -self.CAR_WIDTH / 2
-            y_outer = self.CAR_WIDTH / 2
-            x_start = self.LIDAR_OFFSET
-            x_end = x_start + stop_dist
-
-            # Left Boundary
-            marker.points.append(self.create_point(x_start, y_outer))
-            marker.points.append(self.create_point(x_end, y_outer))
-            # Right Boundary
-            marker.points.append(self.create_point(x_start, y_inner))
-            marker.points.append(self.create_point(x_end, y_inner))
-            # Front Bumper Crossbar
-            marker.points.append(self.create_point(x_start, y_inner))
-            marker.points.append(self.create_point(x_start, y_outer))
-
+            self.safety_stop_pub.publish(Bool(data = True))
+            self.get_logger().info("Frontal object detected! Stopping the robot.")
         else:
-            # --- Curved Case: Swept Path (Bicycle Model) ---
-            R = self.WHEELBASE / np.tan(delta)
-            R_min = abs(R) - self.CAR_WIDTH / 2
-            R_max = np.sqrt(
-                (self.WHEELBASE + self.LIDAR_OFFSET) ** 2
-                + (abs(R) + self.CAR_WIDTH / 2) ** 2
-            )
-
-            # Helper to calculate points along an arc for a specific radius
-            def get_arc_point(radius, current_arc_dist, theta_start):
-                # Calculate the angle where the front bumper (x=L) starts for this radius
-                theta = theta_start + (current_arc_dist / radius)
-
-                x = radius * np.sin(theta)
-                # Center is at (0, R). Handle Left vs Right turn Y-offsets.
-                if R > 0:  # Left Turn
-                    y = R - radius * np.cos(theta)
-                else:  # Right Turn
-                    y = R + radius * np.cos(theta)
-                return self.create_point(x, y)
-
-            theta_start_min = np.arcsin(
-                np.clip((self.WHEELBASE + self.LIDAR_OFFSET) / R_min, -1.0, 1.0)
-            )
-            theta_start_max = np.arcsin(
-                np.clip((self.WHEELBASE + self.LIDAR_OFFSET) / R_max, -1.0, 1.0)
-            )
-            # Generate segments for both inner and outer boundaries
-            for i in range(num_steps):
-                d1 = (i / num_steps) * stop_dist
-                d2 = ((i + 1) / num_steps) * stop_dist
-
-                # Outer Swept Path Segment (The wide swing)
-                marker.points.append(get_arc_point(R_max, d1, theta_start_max))
-                marker.points.append(get_arc_point(R_max, d2, theta_start_max))
-
-                # Inner Swept Path Segment (The tight turn)
-                marker.points.append(get_arc_point(R_min, d1, theta_start_min))
-                marker.points.append(get_arc_point(R_min, d2, theta_start_min))
-
-            # Draw the front bumper "line" to show where the zone starts
-            marker.points.append(get_arc_point(R_max, 0.0, theta_start_max))
-            marker.points.append(get_arc_point(R_min, 0.0, theta_start_min))
-
-        self.marker_pub.publish(marker)
+            self.safety_stop_pub.publish(Bool(data = False))
 
 
 def main():
