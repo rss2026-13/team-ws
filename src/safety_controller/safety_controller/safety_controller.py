@@ -22,7 +22,7 @@ class SafetyController(Node):
         self.declare_parameter("car_width", 0.25)
         self.declare_parameter("wheelbase", 0.325)
         self.declare_parameter(
-            "lidar_offset", 0.12
+            "lidar_offset", 0.15
         )  # Distance from lidar to front bumper
         self.declare_parameter("visualize", False)
 
@@ -70,21 +70,23 @@ class SafetyController(Node):
         self.scan_cos_angles = None
         self.scan_sin_angles = None
 
+        self.clear_scan_count = 0
+        self.CLEAR_SCANS_REQUIRED = 3
+
+        self.lidar_x_from_base_link = 0.275
+
     def drive_callback(self, msg):
         self.drive_command = msg
         self.get_logger().debug("Received new drive command")
         self.evaluate_safety()
 
     def scan_callback(self, msg):
-        if (self.scan_cos_angles is None) or (
-            self.scan_sin_angles is None
-        ):  # Lazy initialization
-            ranges = scipy.signal.medfilt(msg.ranges, kernel_size=7)
-            angles = np.linspace(
-                msg.angle_min, msg.angle_max, num=np.array(ranges).shape[0]
-            )
-            self.scan_cos_angles = np.cos(angles)
-            self.scan_sin_angles = np.sin(angles)
+        if self.scan_cos_angles is None or self.scan_sin_angles is None:
+            angles = np.linspace(msg.angle_min, msg.angle_max, num=len(msg.ranges))
+            front_mask = np.abs(angles) < (np.pi / 2)
+            self.front_mask = front_mask
+            self.scan_cos_angles = np.cos(angles[front_mask])
+            self.scan_sin_angles = np.sin(angles[front_mask]) 
 
         self.scan_data = msg
         self.get_logger().debug("Received new scan data")
@@ -105,17 +107,17 @@ class SafetyController(Node):
             self.publish_safety_marker(delta, front_threshold)
 
         # Get Cartesian points
-        ranges = np.array(scipy.signal.medfilt(self.scan_data.ranges, kernel_size=7))
+        ranges = np.array(self.scan_data.ranges)[self.front_mask]
         px = ranges * self.scan_cos_angles
         py = ranges * self.scan_sin_angles
 
         # Publish distance from front bumper
-        dist_x = px - self.LIDAR_OFFSET
-        mask = (np.abs(py) < self.CAR_WIDTH / 2) & (dist_x > 0)
-        if np.any(mask):
-            distance = Float32()
-            distance.data = float(np.percentile(dist_x[mask], 5))
-            self.distance_pub.publish(distance)
+        # dist_x = px - self.LIDAR_OFFSET
+        # mask = (np.abs(py) < self.CAR_WIDTH / 2) & (dist_x > 0)
+        # if np.any(mask):
+        #     distance = Float32()
+        #     distance.data = float(np.percentile(dist_x[mask], 5))
+        #     self.distance_pub.publish(distance)
 
         # Adjust for LIDAR offset (Move points to car's front bumper frame)
         # We check if points are within 'front_threshold' OF THE BUMPER
@@ -131,7 +133,6 @@ class SafetyController(Node):
                 & (px < collision_zone_end)
                 & (np.abs(py) < self.CAR_WIDTH / 2)
             )
-            self.is_collision = np.any(in_path)
         else:  # Curved Path (Bicycle Model)
             R = self.WHEELBASE / np.tan(
                 delta
@@ -166,6 +167,11 @@ class SafetyController(Node):
             self.is_collision = np.any(in_path)
 
         if self.is_collision:
+            self.clear_scan_count = 0
+        else:
+            self.clear_scan_count += 1
+        
+        if self.is_collision or self.clear_scan_count < self.CLEAR_SCANS_REQUIRED:
             safe_command = AckermannDriveStamped()
             safe_command.header.stamp = self.get_clock().now().to_msg()
             safe_command.drive.speed = 0.0

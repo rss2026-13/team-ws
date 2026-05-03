@@ -63,7 +63,7 @@ safety_controller:
     max_deceleration: 2.0
     car_width: 0.25
     wheelbase: 0.325
-    lidar_offset: 0.12
+    lidar_offset: 0.15
     visualize: false
 
 boating_school_state_machine:

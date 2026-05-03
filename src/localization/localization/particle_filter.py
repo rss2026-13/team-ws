@@ -4,6 +4,7 @@ from geometry_msgs.msg import (
     PointStamped,
     Pose,
     PoseArray,
+    PoseStamped,
     PoseWithCovarianceStamped,
     TransformStamped,
 )
@@ -61,13 +62,13 @@ class ParticleFilter(Node):
         if self.debug:
             self.scan_pub = self.create_publisher(LaserScan, "/pf/scan_sim", 1)
         self.motion_model = MotionModel(self)
-        self.sensor_model = SensorModel(self)
-
+        self.sensor_model = SensorModel(self, self.num_particles)
         self.clock = rclpy.clock.Clock()
         self.last_odom_time = self.clock.now()
         self.last_laser_time = self.clock.now()
-        self.particles = np.zeros((self.num_particles, 3))
+        self.particles = np.zeros((self.num_particles, 3), dtype=np.float32)
         self.tf_broadcaster = TransformBroadcaster(self)
+        self.softening_factor = 60
 
         self.get_logger().info("=============+READY+=============")
 
@@ -105,18 +106,27 @@ class ParticleFilter(Node):
         self.get_logger().info("Sample particle: %s" % (self.particles[0],))
 
     def publish_pose(self):
+        if not self.sensor_model.map_set:
+            return
+        if self.particles.shape[0] == 0:
+            self.get_logger().warn("No particles to publish pose from!")
+            return
         avg_x = np.mean(self.particles[:, 0])
+        if not isinstance(avg_x, float):
+            self.get_logger().error(
+                f"avg_x is not a float! This is unexpected. avg_x: {avg_x}, type: {type(avg_x)}"
+            )
         avg_y = np.mean(self.particles[:, 1])
         avg_theta = np.arctan2(
             np.mean(np.sin(self.particles[:, 2])), np.mean(np.cos(self.particles[:, 2]))
         )
-
+        # self.get_logger().info(f"Publishing pose: {avg_x}, {avg_y}, {avg_theta}")
         t = TransformStamped()
         t.header.stamp = self.clock.now().to_msg()
         t.header.frame_id = "map"
         t.child_frame_id = self.particle_filter_frame
-        t.transform.translation.x = avg_x
-        t.transform.translation.y = avg_y
+        t.transform.translation.x = float(avg_x)
+        t.transform.translation.y = float(avg_y)
         t.transform.translation.z = 0.0
         t.transform.rotation.x = 0.0
         t.transform.rotation.y = 0.0
@@ -126,36 +136,21 @@ class ParticleFilter(Node):
         odom_msg = Odometry()
         odom_msg.header.stamp = self.clock.now().to_msg()
         odom_msg.header.frame_id = "map"
-        odom_msg.pose.pose.position.x = avg_x
-        odom_msg.pose.pose.position.y = avg_y
+        odom_msg.pose.pose.position.x = float(avg_x)
+        odom_msg.pose.pose.position.y = float(avg_y)
         odom_msg.pose.pose.orientation.z = np.sin(avg_theta / 2)
         odom_msg.pose.pose.orientation.w = np.cos(avg_theta / 2)
         self.odom_pub.publish(odom_msg)
 
-        if self.debug and self.sensor_model.map_set:
-            scan = self.sensor_model.scan_sim.scan(
-                np.array([[avg_x, avg_y, avg_theta]])
-            )
-            msg = LaserScan()
-            msg.header.stamp = self.clock.now().to_msg()
-            msg.header.frame_id = self.particle_filter_frame
-            msg.angle_min = -self.sensor_model.scan_field_of_view / 2
-            msg.angle_max = self.sensor_model.scan_field_of_view / 2
-            msg.angle_increment = self.sensor_model.scan_field_of_view / (
-                self.sensor_model.num_beams_per_particle - 1
-            )
-            msg.range_min = 0.0
-            msg.range_max = 100.0
-            msg.ranges = scan[0].tolist()
-            msg.intensities = scan[0].tolist()
-            self.scan_pub.publish(msg)
-
     def publish_particles(self):
+
         pose_array_msg = PoseArray()
         pose_array_msg.header.stamp = self.clock.now().to_msg()
         pose_array_msg.header.frame_id = "map"
-        for particle in self.particles:
+        for particle in self.particles[:50]:
             pose = Pose()
+            if not isinstance(particle[0], float) or not isinstance(particle[1], float):
+                return
             pose.position.x = particle[0]
             pose.position.y = particle[1]
             theta = particle[2]
@@ -169,19 +164,44 @@ class ParticleFilter(Node):
         angular = msg.twist.twist.angular
         dt = (self.clock.now() - self.last_odom_time).nanoseconds / 1e9
         self.last_odom_time = self.clock.now()
-        odometry = np.array([linear.x * dt, linear.y * dt, angular.z * dt])
+        odometry = [linear.x * dt, linear.y * dt, angular.z * dt]
         self.particles = self.motion_model.evaluate(self.particles, odometry)
         self.publish_pose()
+        # self.publish_particles()
 
     def laser_callback(self, msg):
-        if not self.sensor_model.map_set:
-            return
         ranges = msg.ranges
         num_beams = self.sensor_model.num_beams_per_particle
+        if not isinstance(self.sensor_model.laser_angles, np.ndarray):
+            self.sensor_model.laser_angles = np.linspace(
+                msg.angle_min, msg.angle_max, len(ranges)
+            )
+            self.sensor_model.downsampled_angles = np.array(
+                [
+                    self.sensor_model.laser_angles[
+                        int((i + 0.5) * len(ranges) / num_beams)
+                    ]
+                    for i in range(num_beams)
+                ],
+                dtype=np.float32,
+            )
         ranges = np.array(
-            [ranges[int((i + 0.5) * len(ranges) / num_beams)] for i in range(num_beams)]
+            [
+                ranges[int((i + 0.5) * len(ranges) / num_beams)]
+                for i in range(num_beams)
+            ],
+            dtype=np.float32,
         )
-        probabilities = self.sensor_model.evaluate(self.particles, ranges)
+        self.sensor_model.evaluate(self.particles, ranges)
+        probabilities = self.sensor_model.weights ** (1 / self.softening_factor)
+        if np.sum(probabilities) == 0:
+            self.get_logger().warn(
+                "All particles have zero probability! This is unexpected. Resetting particles."
+            )
+            self.initialize_particles(0, 0, 0, noisy=True)
+            self.publish_pose()
+            self.publish_particles()
+            return
         self.particles = self.particles[
             np.random.choice(
                 self.num_particles,
@@ -189,14 +209,6 @@ class ParticleFilter(Node):
                 p=probabilities / np.sum(probabilities),
             )
         ]
-        self.particles += np.stack(
-            (
-                np.random.normal(0, 0.03, size=self.num_particles),
-                np.random.normal(0, 0.01, size=self.num_particles),
-                np.random.normal(0, 0.04, size=self.num_particles),
-            ),
-            axis=1,
-        )
         self.publish_pose()
         self.publish_particles()
 
