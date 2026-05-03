@@ -197,6 +197,7 @@ class SensorModel:
         self.range_method = range_libc.PyCDDTCast(
             oMap, self.MAX_RANGE_PX, self.scan_theta_discretization
         )
+        self.range_method.prune()
 
         print("Map initialized")
         self.precompute_sensor_model()
