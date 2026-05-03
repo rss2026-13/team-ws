@@ -175,7 +175,7 @@ class ParticleFilter(Node):
         avg_theta = np.arctan2(
             np.mean(np.sin(self.particles[:, 2])), np.mean(np.cos(self.particles[:, 2]))
         )
-        self.logger.info(f"Publishing pose: {avg_x}, {avg_y}, {avg_theta}")
+        self.get_logger().info(f"Publishing pose: {avg_x}, {avg_y}, {avg_theta}")
         t = TransformStamped()
         t.header.stamp = self.clock.now().to_msg()
         t.header.frame_id = "map"
