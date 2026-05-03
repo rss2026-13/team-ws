@@ -164,11 +164,12 @@ class ParticleFilter(Node):
         #     self.scan_pub.publish(msg)
 
     def publish_particles(self):
-        return
+        # publish at most 100 particles
+
         pose_array_msg = PoseArray()
         pose_array_msg.header.stamp = self.clock.now().to_msg()
         pose_array_msg.header.frame_id = "map"
-        for particle in self.particles:
+        for particle in self.particles[:100]:
             pose = Pose()
             pose.position.x = particle[0]
             pose.position.y = particle[1]
