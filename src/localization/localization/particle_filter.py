@@ -66,12 +66,7 @@ class ParticleFilter(Node):
         self.last_laser_time = self.clock.now()
         self.particles = np.zeros((self.num_particles, 3), dtype=np.float32)
         self.tf_broadcaster = TransformBroadcaster(self)
-        self.failure_time = 0
-        self.softening_factor_min = 2.5
-        self.softening_factor_max = 40.0
-        self.softening_factor = self.softening_factor_min
-        self.softening_factor_steps = 50
-        self.softening_factor_current_step = 0
+        self.softening_factor = 30
 
         self.get_logger().info("=============+READY+=============")
 
@@ -190,19 +185,6 @@ class ParticleFilter(Node):
         )
         self.publish_pose()
         self.publish_particles()
-
-    def update_softening_factor(self):
-        if self.softening_factor_current_step > 0:
-            self.softening_factor_current_step -= 1
-            self.softening_factor = self.softening_factor_min + (
-                self.softening_factor_max - self.softening_factor_min
-            ) * np.cos(
-                (1 - self.softening_factor_current_step / self.softening_factor_steps)
-                * np.pi
-                / 2
-            )
-        else:
-            self.softening_factor = self.softening_factor_min
 
     def laser_callback(self, msg):
         ranges = msg.ranges
