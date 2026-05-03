@@ -177,6 +177,9 @@ class SensorModel:
         self.map = np.zeros_like(self.map_data, dtype=np.float32)
 
         unique = np.unique(self.map_data)
+        self.logger.info(
+            "Map received! Processing map data... (should take about 30 seconds)"
+        )
         self.logger.info(f"Unique values in the map data: {unique}")
         self.map[self.map_data != 0] = 1.0
 

@@ -51,10 +51,6 @@ class ParticleFilter(Node):
         self.pose_sub = self.create_subscription(
             PoseWithCovarianceStamped, "/initialpose", self.pose_callback, 1
         )
-
-        self.click_sub = self.create_subscription(
-            PointStamped, "/clicked_point", self.pose_callback, 1
-        )
         self.odom_pub = self.create_publisher(Odometry, "/pf/pose/odom", 1)
         self.particle_pub = self.create_publisher(PoseArray, "/pf/particles", 1)
         if self.debug:
