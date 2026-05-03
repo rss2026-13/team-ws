@@ -14,13 +14,19 @@ def cd_red_light_segmentation(img, debug=False):
     """
     Detects red region and returns bounding box.
     """
-    img_hsv = cv2.cvtColor(img, cv2.COLOR_BGR2HSV)
+    #Define a region of interest (roi)
+    height, width = img.shape[:2]
+    y_start, y_end = int(height * 0.3), int(height*0.7) #only look at middle 40% of height
+    x_start, x_end = int(width * 0.1), int(width*0.9)#only look at middle 80% of width
+    roi_img=img[y_start:y_end, x_start:x_end]
 
-    # UPDATED: Stricter HSV ranges to avoid detecting green/housing as red
-    # Increased Saturation floor to 170 and Value floor to 120
-    lower_red1 = np.array([0,   170,  120])
-    upper_red1 = np.array([5,   255,  255])
-    lower_red2 = np.array([175, 170,  120])
+    img_hsv = cv2.cvtColor(roi_img, cv2.COLOR_BGR2HSV)
+
+    # Stricter HSV ranges but still allowing farther away lights
+    # change saturation and value to do so
+    lower_red1 = np.array([0,   80,  120])
+    upper_red1 = np.array([7,   255,  255]) #try allowing a little orange
+    lower_red2 = np.array([175, 80,  120])
     upper_red2 = np.array([180, 255, 255])
 
     mask1 = cv2.inRange(img_hsv, lower_red1, upper_red1)
@@ -43,13 +49,12 @@ def cd_red_light_segmentation(img, debug=False):
 
     biggest_contour = max(contours, key=cv2.contourArea)
 
-    # UPDATED: Filter out small noise. A real light in your images 
-    # should be larger than 50-100 pixels.
-    if cv2.contourArea(biggest_contour) < 100:
+    # Filter out small noise
+    if cv2.contourArea(biggest_contour) < 30:
         return None
 
     x, y, w, h = cv2.boundingRect(biggest_contour)
-    return ((x, y), (x + w, y + h))
+    return ((x+x_start, y+y_start), (x+x_start + w, y+y_start + h)) #offset bounding box to match region of interest cropping
 
 
 def is_red_light_on(img, debug=False):
@@ -89,4 +94,5 @@ if __name__ == "__main__":
     else:
         print("No red light detected. Showing original image.")
         image_print(img)
+
 
