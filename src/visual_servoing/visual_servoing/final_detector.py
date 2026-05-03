@@ -14,7 +14,7 @@ from ultralytics import YOLO
 
 from vs_msgs.msg import ConeLocationPixel #added this so that we can use existing cone homog code for the traffic light
 
-from std_msgs.msg import Bool, Float32
+from std_msgs.msg import Bool, Float32, RegionOfInterest #added RoI to return area where traffic light is
 
 
 @dataclass(frozen=True)
@@ -73,6 +73,9 @@ class YoloAnnotatorNode(Node):
             Image, "/zed/zed_node/rgb/image_rect_color", self.on_image, 10)
         self.pub = self.create_publisher(
             Image, "/yolo/annotated_image", 10)
+
+        self.light_bbox_pub = self.create_publisher(
+    RegionOfInterest, "/yolo/traffic_light_bbox", 10)
         
         #need following publishers for integration
 
@@ -208,6 +211,15 @@ class YoloAnnotatorNode(Node):
                 light_location.v = float(y2)               # bottom of bounding box
                 self.light_loc_pub.publish(light_location)
                 self.light_confidence_pub.publish(Float32(data = float(confidence)))
+
+                # Publish bounding box for color segmentation cropping
+                bbox_msg = RegionOfInterest()
+                bbox_msg.x_offset = int(x1)
+                bbox_msg.y_offset = int(y1)
+                bbox_msg.width = int(x2 - x1)
+                bbox_msg.height = int(y2 - y1)
+                self.light_bbox_pub.publish(bbox_msg)
+
                 light_detect = 1
 
         if meter_detect == 1:
