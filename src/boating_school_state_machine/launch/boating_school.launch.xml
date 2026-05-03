@@ -1,7 +1,7 @@
 <launch>
 
   <arg name="params_file"
-     default="$(find-pkg-share boating_school_state_machine)/boating_school_state_machine/params.yaml"/>
+     default="$(find-pkg-share boating_school_state_machine)/params.yaml"/>
 
   <!-- Particle Filter -->
   <node pkg="localization"
