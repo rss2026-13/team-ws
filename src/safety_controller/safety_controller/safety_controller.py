@@ -7,6 +7,7 @@ from sensor_msgs.msg import LaserScan
 from std_msgs.msg import Float32
 from visualization_msgs.msg import Marker
 from std_msgs.msg import Bool
+from visualization_msgs.msg import MarkerArray
 
 
 class SafetyController(Node):
@@ -64,7 +65,9 @@ class SafetyController(Node):
         # self.distance_pub = self.create_publisher(Float32, "/sc_wall_dist", 10)
         self.front_threshold_pub = self.create_publisher(Float32, "/sc_front_threshold", 10)
 
-        # self.marker_pub = self.create_publisher(Marker, "/safety_marker", 1)
+        self.marker_pub = self.create_publisher(MarkerArray, "/safety_markers", 1)
+        self._last_delta = None
+        self._zone_marker_cache = None
         self.is_collision = False
         self.scan_data = None
         self.drive_command = None
@@ -175,6 +178,10 @@ class SafetyController(Node):
             )
 
 
+        if self.VISUALIZE:
+            self.publish_safety_marker(delta, front_threshold, in_path, px, py)
+        
+
         self.is_collision = np.sum(in_path) >= self.MIN_OBSTACLE_POINTS
  
         if self.is_collision:
@@ -194,6 +201,117 @@ class SafetyController(Node):
             self.get_logger().info("Frontal object detected! Stopping the robot.")
         else:
             self.safety_stop_pub.publish(Bool(data = False))
+
+
+    def publish_safety_marker(self, delta, front_threshold, in_path_mask, px, py):
+        """
+        Publishes two markers:
+        1. The collision zone boundary (rectangle or arc) - cached when delta/threshold unchanged
+        2. The obstacle points that triggered the stop
+        """
+        array = MarkerArray()
+        stamp = self.get_clock().now().to_msg()
+        frame = self.scan_data.header.frame_id
+
+        # ── Zone marker (cached unless inputs changed) ─────────────────────────
+        delta_changed = (self._last_delta is None or
+                        abs(delta - self._last_delta) > 0.01 or
+                        self._zone_marker_cache is None)
+
+        if delta_changed:
+            zone = Marker()
+            zone.header.frame_id = frame
+            zone.ns = "collision_zone"
+            zone.id = 0
+            zone.action = Marker.ADD
+            zone.pose.orientation.w = 1.0
+            zone.color.a = 0.3
+            zone.scale.x = 0.02  # line width
+
+            from geometry_msgs.msg import Point
+
+            if abs(delta) < 0.01:  # Straight — rectangle outline
+                zone.type = Marker.LINE_STRIP
+                zone.color.r = 1.0
+                zone.color.g = 0.5
+                half_w = self.CAR_WIDTH / 2
+                corners = [
+                    (self.collision_zone_start,  half_w),
+                    (self.collision_zone_end,    half_w),
+                    (self.collision_zone_end,   -half_w),
+                    (self.collision_zone_start, -half_w),
+                    (self.collision_zone_start,  half_w),  # close
+                ]
+                for x, y in corners:
+                    p = Point(); p.x = x; p.y = y; p.z = 0.0
+                    zone.points.append(p)
+
+            else:  # Curved — annular sector outline
+                zone.type = Marker.LINE_LIST
+                zone.color.b = 1.0
+                R = self.WHEELBASE / np.tan(delta)
+                bumper_to_cor_x = self.LIDAR_X + self.LIDAR_OFFSET
+                R_max = np.sqrt(bumper_to_cor_x**2 + (abs(R) + self.CAR_WIDTH / 2)**2)
+                R_min = np.sqrt(bumper_to_cor_x**2 + (abs(R) - self.CAR_WIDTH / 2)**2)
+
+                # Arc sweep angle — approximate from front_threshold arc length
+                max_angle = front_threshold / ((R_min + R_max) / 2) + 0.2
+                angles = np.linspace(0, max_angle, 30)
+
+                cor_y = R  # CoR in lidar frame
+
+                def arc_point(r, a):
+                    """Point on arc of radius r at angle a from CoR, in lidar frame"""
+                    p = Point()
+                    # Rotate around CoR: forward angle sweeps from bumper direction
+                    p.x = r * np.sin(a) * np.sign(R)
+                    p.y = cor_y - r * np.cos(a)
+                    p.z = 0.0
+                    return p
+
+                # Draw inner and outer arcs as line segments
+                for i in range(len(angles) - 1):
+                    zone.points.append(arc_point(R_min, angles[i]))
+                    zone.points.append(arc_point(R_min, angles[i+1]))
+                    zone.points.append(arc_point(R_max, angles[i]))
+                    zone.points.append(arc_point(R_max, angles[i+1]))
+
+                # Close with radial lines at start and end
+                zone.points.append(arc_point(R_min, 0)); zone.points.append(arc_point(R_max, 0))
+                zone.points.append(arc_point(R_min, max_angle)); zone.points.append(arc_point(R_max, max_angle))
+
+            self._zone_marker_cache = zone
+            self._last_delta = delta
+
+        zone_marker = self._zone_marker_cache
+        zone_marker.header.stamp = stamp
+        # Color red if stopping, orange otherwise
+        zone_marker.color.r = 1.0
+        zone_marker.color.g = 0.0 if self.is_collision else 0.5
+        array.markers.append(zone_marker)
+
+        # ── Obstacle points marker (recomputed every scan, cheap POINTS type) ──
+        hits = Marker()
+        hits.header.frame_id = frame
+        hits.header.stamp = stamp
+        hits.ns = "obstacle_hits"
+        hits.id = 1
+        hits.type = Marker.POINTS
+        hits.action = Marker.ADD
+        hits.scale.x = 0.05
+        hits.scale.y = 0.05
+        hits.color.a = 1.0
+        hits.color.g = 1.0  # green hits
+
+        from geometry_msgs.msg import Point
+        for x, y in zip(px[in_path_mask], py[in_path_mask]):
+            if not (np.isfinite(x) and np.isfinite(y)):
+                continue
+            p = Point(); p.x = float(x); p.y = float(y); p.z = 0.0
+            hits.points.append(p)
+
+        array.markers.append(hits)
+        self.marker_pub.publish(array)
 
 
 def main():
