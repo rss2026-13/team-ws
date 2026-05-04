@@ -106,7 +106,7 @@ class SafetyController(Node):
             return
 
         velocity = self.drive_command.drive.speed
-        if velocity < 0.001:
+        if velocity < 0.001 and not self.is_collision:
             return
 
         # Kinematic Threshold
