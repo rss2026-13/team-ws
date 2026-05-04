@@ -248,6 +248,9 @@ class PurePursuit(Node):
 
     def trajectory_callback(self, msg):
         #self.get_logger().info(f"Receiving new trajectory {len(msg.poses)} points")
+        if len(msg.poses) == 0:
+            self.get_logger().warn("Received empty trajectory, ignoring.")
+            return
 
         # 1. Convert all poses to a (N, 2) NumPy array immediately
         new_points = np.array([[p.position.x, p.position.y] for p in msg.poses])
@@ -278,6 +281,10 @@ class PurePursuit(Node):
 
         self.starting_points = np.array(self.trajectory.points[:-1]) # (N, 2) list of tuples
         self.ending_points = np.array(self.trajectory.points[1:]) # (N, 2) list of tuples
+
+        self.starting_points = np.array(self.trajectory.points[:-1]).reshape(-1, 2)
+        self.ending_points   = np.array(self.trajectory.points[1:]).reshape(-1, 2)
+
         self.segments = self.ending_points - self.starting_points
         self.segments_mag_sq = np.sum(self.segments**2, axis=1)
         self.inv_segments_mag_sq = 1.0 / np.where(self.segments_mag_sq > 0, self.segments_mag_sq, 1.0)
