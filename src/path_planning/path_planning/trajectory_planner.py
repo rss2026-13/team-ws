@@ -432,21 +432,21 @@ class PathPlan(Node):
     def plan_path(self):
         if self.pose is None or self.goal is None or self.map is None or ("NAVIGATING" not in self.robot_state):
             return
-        self.get_logger().info("Planning path...")
+        # self.get_logger().info("Planning path...")
         time_start = time.time()
         start_pixel = self.world_to_pixel(self.pose.position.x, self.pose.position.y)
         goal_pixel = self.world_to_pixel(self.goal.position.x, self.goal.position.y)
         path_pixels = self.A_star(start_pixel, goal_pixel)
-        self.get_logger().info(f"Path found with {len(path_pixels)} points")
+        # self.get_logger().info(f"Path found with {len(path_pixels)} points")
         path_pixels = self.smooth_path(path_pixels)
         path_world = self.pixel_to_world(
             [p[0] for p in path_pixels], [p[1] for p in path_pixels]
         )
         time_end = time.time()
-        self.get_logger().info(
-            f"Path planning took {time_end - time_start:.2f} seconds"
-        )
-        self.get_logger().info(f"Path planned with {len(path_world[0])} points")
+        # self.get_logger().info(
+        #    f"Path planning took {time_end - time_start:.2f} seconds"
+        #)
+        #self.get_logger().info(f"Path planned with {len(path_world[0])} points")
 
         self.trajectory.points = list(zip(path_world[0], path_world[1]))
         self.traj_pub.publish(self.trajectory.toPoseArray())

@@ -159,6 +159,10 @@ class PurePursuit(Node):
     def compute_lookahead_distance(self, start_idx, n_segments, decay):
         end_idx = min(start_idx + n_segments, len(self.segments) - 1)
 
+        if end_idx <= start_idx:
+            self.lookahead = self.base_lookahead
+            return
+
         cos_angles = np.sum(self.normalized_segments[start_idx:end_idx] * self.normalized_segments[start_idx + 1 : end_idx + 1], axis=1)
         angles = np.arccos(np.clip(cos_angles, -1.0, 1.0))
 
@@ -219,7 +223,7 @@ class PurePursuit(Node):
 
 
     def trajectory_callback(self, msg):
-        self.get_logger().info(f"Receiving new trajectory {len(msg.poses)} points")
+        #self.get_logger().info(f"Receiving new trajectory {len(msg.poses)} points")
 
         self.trajectory.clear()
         self.trajectory.fromPoseArray(msg)
