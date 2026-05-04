@@ -1,6 +1,6 @@
 particle_filter:
   ros__parameters:
-    particle_filter_frame: pf/base_link
+    particle_filter_frame: /pf/pose/odom
     odom_topic: /vesc/odom
     scan_topic: /scan
     map_topic: /map

@@ -5,7 +5,7 @@ import numpy as np
 import rclpy
 import torch
 
-from sensor_msgs.msg import Image
+from sensor_msgs.msg import Image, RegionOfInterest
 from cv_bridge import CvBridge
 from dataclasses import dataclass
 from rclpy.node import Node
@@ -14,7 +14,7 @@ from ultralytics import YOLO
 
 from vs_msgs.msg import ConeLocationPixel #added this so that we can use existing cone homog code for the traffic light
 
-from std_msgs.msg import Bool, Float32, RegionOfInterest #added RoI to return area where traffic light is
+from std_msgs.msg import Bool, Float32
 
 
 @dataclass(frozen=True)
