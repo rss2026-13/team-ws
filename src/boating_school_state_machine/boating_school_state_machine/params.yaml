@@ -60,7 +60,7 @@ safety_controller:
     output_topic: /vesc/low_level/input/safety
     scan_topic: /scan
     min_obstacle_points: 15
-    margin: 0.05
+    margin: 0.2
     max_deceleration: 2.0
     car_width: 0.25
     wheelbase: 0.325
