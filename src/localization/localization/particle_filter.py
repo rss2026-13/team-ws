@@ -70,6 +70,8 @@ class ParticleFilter(Node):
         self.tf_broadcaster = TransformBroadcaster(self)
         self.softening_factor = 60
 
+        self.scan_count = 0
+
         self.get_logger().info("=============+READY+=============")
 
     def pose_callback(self, msg):
@@ -170,6 +172,10 @@ class ParticleFilter(Node):
         # self.publish_particles()
 
     def laser_callback(self, msg):
+        self.scan_count += 1
+        if self.scan_count % 4 != 0:
+            return
+
         ranges = msg.ranges
         num_beams = self.sensor_model.num_beams_per_particle
         if not isinstance(self.sensor_model.laser_angles, np.ndarray):

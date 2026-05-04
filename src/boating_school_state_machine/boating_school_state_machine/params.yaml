@@ -4,7 +4,7 @@ particle_filter:
     odom_topic: /vesc/odom
     scan_topic: /scan
     map_topic: /map
-    num_particles: 200
+    num_particles: 500
     num_beams_per_particle: 150
     scan_field_of_view: 4.71 # radians
     scan_theta_discretization: 500.0
@@ -13,8 +13,8 @@ particle_filter:
     debug: false
     lidar_scale_to_map_scale: 1.0
     motion_model:
-      sigma_x: 0.08
-      sigma_y: 0.03
+      sigma_x: 0.15
+      sigma_y: 0.06
       sigma_theta: 0.04
 
 final_detector:
@@ -52,7 +52,7 @@ parking_controller:
     parking_distance: 0.75
     distance_threshold: 0.15
     angle_threshold: 0.15
-    visualize_parking: false
+    visualize_parking: true
 
 safety_controller:
   ros__parameters:
@@ -65,7 +65,7 @@ safety_controller:
     car_width: 0.25
     wheelbase: 0.325
     lidar_offset: 0.15
-    visualize: false
+    visualize: true
 
 boating_school_state_machine:
   ros__parameters:

@@ -222,7 +222,7 @@ class PurePursuit(Node):
     
 
     def pub_pure_pursuit_drive_msg(self, lookahead_point, speed, car_position, car_theta):
-        self.get_logger().info("Trajectory follower pubing drive")
+        # self.get_logger().info("Trajectory follower pubing drive")
         dx = lookahead_point[0] - car_position[0]
         dy = lookahead_point[1] - car_position[1]
 
@@ -247,9 +247,9 @@ class PurePursuit(Node):
 
 
     def trajectory_callback(self, msg):
-        #self.get_logger().info(f"Receiving new trajectory {len(msg.poses)} points")
+        self.get_logger().info(f"Receiving new trajectory {len(msg.poses)} points")
         if len(msg.poses) == 0:
-            self.get_logger().warn("Received empty trajectory, ignoring.")
+            #self.get_logger().warn("Received empty trajectory.")
             return
 
         # 1. Convert all poses to a (N, 2) NumPy array immediately
@@ -279,11 +279,11 @@ class PurePursuit(Node):
 
         self.trajectory.publish_viz(duration=0.0)
 
+        if len(self.trajectory.points) <= 1:
+            return
+
         self.starting_points = np.array(self.trajectory.points[:-1]) # (N, 2) list of tuples
         self.ending_points = np.array(self.trajectory.points[1:]) # (N, 2) list of tuples
-
-        self.starting_points = np.array(self.trajectory.points[:-1]).reshape(-1, 2)
-        self.ending_points   = np.array(self.trajectory.points[1:]).reshape(-1, 2)
 
         self.segments = self.ending_points - self.starting_points
         self.segments_mag_sq = np.sum(self.segments**2, axis=1)
