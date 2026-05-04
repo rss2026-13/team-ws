@@ -183,6 +183,7 @@ class SafetyController(Node):
             self.clear_scan_count += 1
  
         if self.is_collision or self.clear_scan_count < self.CLEAR_SCANS_REQUIRED:
+            self.get_logger().info("Safety controller pubbing drive")
             safe_command = AckermannDriveStamped()
             safe_command.header.stamp = self.get_clock().now().to_msg()
             safe_command.drive.speed = 0.0

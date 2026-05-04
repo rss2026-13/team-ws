@@ -222,6 +222,7 @@ class PurePursuit(Node):
     
 
     def pub_pure_pursuit_drive_msg(self, lookahead_point, speed, car_position, car_theta):
+        self.get_logger().info("Trajectory follower pubing drive")
         dx = lookahead_point[0] - car_position[0]
         dy = lookahead_point[1] - car_position[1]
 

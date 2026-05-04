@@ -239,8 +239,6 @@ class TrafficLightNode(Node):
                 f"dist={self._distance_to_light()}",
                 throttle_duration_sec=1.0,
             )
-        else:
-            self.drive_pub.publish(drive_msg)
 
     def stop_timer_callback(self):
         """Actively publish speed=0 at 20 Hz while stopped, and update state machine topic."""
@@ -248,6 +246,7 @@ class TrafficLightNode(Node):
         self.traffic_light_stop_pub.publish(Bool(data=should))
 
         if should:
+            #self.get_logger().info("traffic light pubbing drive")
             stop_cmd = AckermannDriveStamped()
             stop_cmd.header.stamp = self.get_clock().now().to_msg()
             stop_cmd.drive.speed = 0.0

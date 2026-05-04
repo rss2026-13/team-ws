@@ -20,7 +20,7 @@ particle_filter:
 final_detector:
   ros__parameters:
     model: yolo11n.pt
-    conf_threshold: 0.85
+    conf_threshold: 0.60
     iou_threshold: 0.7
 
 traffic_light_node:
@@ -59,7 +59,8 @@ safety_controller:
     drive_topic: /vesc/low_level/ackermann_cmd
     output_topic: /vesc/low_level/input/safety
     scan_topic: /scan
-    margin: 0.2
+    min_obstacle_points: 15
+    margin: 0.05
     max_deceleration: 2.0
     car_width: 0.25
     wheelbase: 0.325

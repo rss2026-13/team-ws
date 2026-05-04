@@ -279,6 +279,7 @@ class BoatingSchoolNode(Node):
                 self.robot_state = "SAFETY_STOP"
                 self.robot_state_pub.publish(String(data = self.robot_state))
         if not msg.data and self.robot_state == "SAFETY_STOP":
+            self.get_logger().info(f"previous state before safety {self.robot_state}")
             self.robot_state = self.previous_robot_state
             self.robot_state_pub.publish(String(data = self.robot_state))
             if "SEARCHING" in self.previous_robot_state:

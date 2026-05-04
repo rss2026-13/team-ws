@@ -217,6 +217,7 @@ class ParkingController(Node):
         """
         Publish the driving message to be sent to the car by the parking controller
         """
+        self.get_logger().info("Parking controlling pubbing drive")
         drive_cmd = AckermannDriveStamped()
         drive_cmd.drive.speed = speed
         drive_cmd.drive.steering_angle = steering_angle
