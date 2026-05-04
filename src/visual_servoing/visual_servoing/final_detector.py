@@ -40,12 +40,12 @@ class YoloAnnotatorNode(Node):
             .string_value
         )
         self.conf_threshold = (
-            self.declare_parameter("conf_threshold", 0.85)
+            self.declare_parameter("conf_threshold", 0.50) #lowered from .85
             .get_parameter_value()
             .double_value
         )
         self.iou_threshold = (
-            self.declare_parameter("iou_threshold", 0.7)
+            self.declare_parameter("iou_threshold", 0.7) 
             .get_parameter_value()
             .double_value
         )
@@ -70,7 +70,7 @@ class YoloAnnotatorNode(Node):
         # Create publisher and subscribers
         self.bridge = CvBridge()
         self.sub = self.create_subscription(
-            Image, "/zed/zed_node/rgb/image_rect_color", self.on_image, 10)
+            Image, "/zed/zed_node/rgb/image_rect_color", self.on_image, 1) #lowered queue size
         self.pub = self.create_publisher(
             Image, "/yolo/annotated_image", 10)
 
