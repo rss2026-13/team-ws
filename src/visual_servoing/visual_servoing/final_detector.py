@@ -206,9 +206,13 @@ class YoloAnnotatorNode(Node):
                 self.meter_confidence_pub.publish(Float32(data = float(confidence)))
                 meter_detect = 1
             elif class_name == "traffic light":
+                box_height = y2 - y1
+                stand_height_px = box_height * (45 / 55)
+                floor_v = y2 + stand_height_px  # y coordinate of base of stand on the ground
+                
                 light_location = ConeLocationPixel()
                 light_location.u = float((x1 + x2) / 2)   # horizontal center
-                light_location.v = float(y2)               # bottom of bounding box
+                light_location.v = float(floor_v)               # bottom of stand (floor pt)
                 self.light_loc_pub.publish(light_location)
                 self.light_confidence_pub.publish(Float32(data = float(confidence)))
 
