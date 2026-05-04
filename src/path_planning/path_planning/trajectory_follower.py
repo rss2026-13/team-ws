@@ -54,6 +54,7 @@ class PurePursuit(Node):
         self.initialized_traj = False
         self.trajectory = LineTrajectory(self, "/followed_trajectory")
         self.robot_state = "MCL_INITIALIZATION"
+        self.goal_already_reached = False
 
         self.pose_sub = self.create_subscription(Odometry,
                                                  self.odom_topic,
@@ -99,7 +100,15 @@ class PurePursuit(Node):
         )
  
     def robot_state_cb(self, msg: String):
-        self.robot_state = msg.data
+        new_state = msg.data
+        # If we just transitioned INTO a Navigating state, 
+        # we must allow goal_reached to be published again.
+        if "NAVIGATING" in new_state and self.robot_state != new_state:
+            self.goal_already_reached = False
+            self.goal_reached_pub.publish(Bool(data = False))
+            # self.get_logger().info(f"Navigating to new goal: Reseting goal_reached latch.")
+        
+        self.robot_state = new_state
 
     def pose_callback(self, odometry_msg):
         """
@@ -113,6 +122,17 @@ class PurePursuit(Node):
 
         car_position = np.array([odometry_msg.pose.pose.position.x, odometry_msg.pose.pose.position.y])
         car_theta = 2.0 * np.arctan2(odometry_msg.pose.pose.orientation.z, odometry_msg.pose.pose.orientation.w)
+
+        if len(self.trajectory.points) == 1:
+            lookahead_point = self.trajectory.points[0]
+            self.lookahead = np.linalg.norm(lookahead_point -  car_position)
+            if not self.goal_already_reached and (self.lookahead < self.goal_threshold):
+                self.pub_pure_pursuit_drive_msg(lookahead_point, 0.0, car_position, car_theta)
+                self.goal_reached_pub.publish(Bool(data = True))
+                self.goal_already_reached = True
+            else:
+                self.pub_pure_pursuit_drive_msg(lookahead_point, self.velocity, car_position, car_theta)
+            return
 
         # Compute index of line segment closest to car
         car_to_starting = self.starting_points - car_position
@@ -149,9 +169,10 @@ class PurePursuit(Node):
         lookahead_point = self.find_lookahead_point(car_to_starting, min_dist_idx, t[min_dist_idx])
 
         # Give pure pursuit drive command
-        if (np.allclose(lookahead_point, self.ending_points[-1])) and (np.linalg.norm(self.ending_points[-1] - car_position) < self.goal_threshold):
+        if not self.goal_already_reached and (np.allclose(lookahead_point, self.ending_points[-1])) and (np.linalg.norm(self.ending_points[-1] - car_position) < self.goal_threshold):
             self.pub_pure_pursuit_drive_msg(lookahead_point, 0.0, car_position, car_theta)
             self.goal_reached_pub.publish(Bool(data = True))
+            self.goal_already_reached = True
         else:
             self.pub_pure_pursuit_drive_msg(lookahead_point, self.velocity, car_position, car_theta)
 
@@ -208,7 +229,9 @@ class PurePursuit(Node):
         car_lpy = -np.sin(car_theta)*dx + np.cos(car_theta)*dy
 
         ref_angle = np.arctan2(car_lpy, car_lpx)
-        steering_angle = np.arctan2(2 * self.wheelbase_length * np.sin(ref_angle), self.lookahead)
+
+        lookahead = self.lookahead if self.lookahead > 0 else self.base_lookahead
+        steering_angle = np.arctan2(2 * self.wheelbase_length * np.sin(ref_angle), lookahead)
 
         # Publish steering angle
         steering_angle_float = Float32()
@@ -225,19 +248,39 @@ class PurePursuit(Node):
     def trajectory_callback(self, msg):
         #self.get_logger().info(f"Receiving new trajectory {len(msg.poses)} points")
 
+        # 1. Convert all poses to a (N, 2) NumPy array immediately
+        new_points = np.array([[p.position.x, p.position.y] for p in msg.poses])
+
+        if len(new_points) > 1:
+            # 2. Vectorized check: Find where the difference between consecutive points is non-zero
+            # np.diff computes out[i] = a[i+1] - a[i]
+            diffs = np.diff(new_points, axis=0)
+            
+            # A point is "kept" if the distance to the next point is greater than a tiny epsilon
+            # We always keep the first point, then check the diffs
+            mask = np.linalg.norm(diffs, axis=1) > 1e-5
+            
+            # Combine: always keep the first point + any point that isn't a duplicate of the previous
+            # We prepend 'True' because np.diff returns N-1 elements
+            keep_mask = np.concatenate(([True], mask))
+            filtered_points = new_points[keep_mask]
+        else:
+            filtered_points = new_points
+
+        # 3. Update the trajectory object with the cleaned data
         self.trajectory.clear()
-        self.trajectory.fromPoseArray(msg)
+        self.trajectory.points = [tuple(p) for p in filtered_points]
+        self.trajectory.update_distances() 
+        self.trajectory.mark_dirty()
+
         self.trajectory.publish_viz(duration=0.0)
 
-        if len(self.trajectory.points) == 1:
-            self.trajectory.points.append(self.trajectory.points[0])
- 
         self.starting_points = np.array(self.trajectory.points[:-1]) # (N, 2) list of tuples
         self.ending_points = np.array(self.trajectory.points[1:]) # (N, 2) list of tuples
         self.segments = self.ending_points - self.starting_points
         self.segments_mag_sq = np.sum(self.segments**2, axis=1)
         self.inv_segments_mag_sq = 1.0 / np.where(self.segments_mag_sq > 0, self.segments_mag_sq, 1.0)
-        self.normalized_segments = self.segments / np.sqrt(self.segments_mag_sq[:, np.newaxis])
+        self.normalized_segments = self.segments * np.sqrt(self.inv_segments_mag_sq[:, np.newaxis])
 
         self.initialized_traj = True
 
