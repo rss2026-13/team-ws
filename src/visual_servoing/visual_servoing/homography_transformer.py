@@ -23,10 +23,10 @@ from geometry_msgs.msg import Point # Add
 
 ######################################################
 # DUMMY POINTS -- ENTER YOUR MEASUREMENTS HERE
-PTS_IMAGE_PLANE = [[250, 254],
-                   [341, 271],
-                   [233, 323],
-                   [330, 310]]  # dummy points
+PTS_IMAGE_PLANE = [[299, 213],
+                   [562, 323],
+                   [206, 168],
+                   [571, 169]]  # dummy points
 ######################################################
 
 # PTS_GROUND_PLANE units are in inches
@@ -34,10 +34,10 @@ PTS_IMAGE_PLANE = [[250, 254],
 
 ######################################################
 # DUMMY POINTS -- ENTER YOUR MEASUREMENTS HERE
-PTS_GROUND_PLANE = [[31.89, 7.68],
-                    [29.33, 1.77],
-                    [24.015, 6.377],
-                    [25, 2.36]]  # dummy points
+PTS_GROUND_PLANE = [[42, 5],
+                    [23, -7],
+                    [82.5, 28],
+                    [77, -43]]  # dummy points
 ######################################################
 
 METERS_PER_INCH = 0.0254
@@ -68,8 +68,8 @@ class HomographyTransformer(Node):
 
         self.h, err = cv2.findHomography(np_pts_image, np_pts_ground)
 
-        # self.get_logger().info("Homography Transformer Initialized")
-        # self.get_logger().info(f"Homography Matrix:\n{self.h}")
+        #self.get_logger().info("Homography Transformer Initialized")
+        #self.get_logger().info(f"Homography Matrix:\n{self.h}")
 
 
     def cone_detection_callback(self, msg):

@@ -24,16 +24,16 @@ from vs_msgs.msg import ConeLocation, ConeLocationPixel
 ######################################################
 # COPY YOUR CALIBRATED POINTS FROM homography_transformer.py
 # PTS_IMAGE_PLANE units are in pixels
-PTS_IMAGE_PLANE = [[250, 254],
-                   [341, 271],
-                   [233, 323],
-                   [330, 310]]
+PTS_IMAGE_PLANE = [[299, 213],
+                   [562, 323],
+                   [206, 168],
+                   [571, 169]]
 
 # PTS_GROUND_PLANE units are in inches
-PTS_GROUND_PLANE = [[31.89, 7.68],
-                    [29.33, 1.77],
-                    [24.015, 6.377],
-                    [25, 2.36]]
+PTS_GROUND_PLANE = [[42, 5],
+                    [23, -7],
+                    [82.5, 28],
+                    [77, -43]]
 ######################################################
 
 METERS_PER_INCH = 0.0254
