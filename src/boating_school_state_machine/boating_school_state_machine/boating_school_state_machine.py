@@ -246,7 +246,7 @@ class BoatingSchoolNode(Node):
         self.sweep_count = 0
         if self.sweep_timer is not None:
             self.sweep_timer.cancel()
-        self.sweep_timer = self.create_timer(0.8, self.sweep_step)
+        self.sweep_timer = self.create_timer(0.3, self.sweep_step)
 
 
     def sweep_step(self):
@@ -260,11 +260,11 @@ class BoatingSchoolNode(Node):
         drive_cmd.header.stamp = self.get_clock().now().to_msg()
 
         if self.sweep_phase == 0:
-            drive_cmd.drive.speed = 0.15
+            drive_cmd.drive.speed = 0.25
             drive_cmd.drive.steering_angle = 0.34
             self.sweep_phase = 1
         else:
-            drive_cmd.drive.speed = -0.15
+            drive_cmd.drive.speed = -0.25
             drive_cmd.drive.steering_angle = -0.34  
             self.sweep_phase = 0
 

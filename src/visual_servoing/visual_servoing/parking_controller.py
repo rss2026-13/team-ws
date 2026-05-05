@@ -14,12 +14,14 @@ from rcl_interfaces.msg import SetParametersResult
 import math
 import os
 import cv2
+from nav_msgs.msg import Odometry
 from cv_bridge import CvBridge
 
 class ParkingState:
     CAPTURED = 0
     DOCKING = 1
     PARKED = 2
+    EXITING = 3
 
 
 class ParkingController(Node):
@@ -43,16 +45,11 @@ class ParkingController(Node):
         self.cone_angle_pub = self.create_publisher(Float32, "/cone_angle", 10)
         self.parking_meter_sub = self.create_subscription(ConeLocation, "/parking_meter_relative_location", self.relative_location_cb, 10)
         self.viz_pub = self.create_publisher(Marker, "/parking_visualization", 10)
+        self.meter_detected_sub = self.create_subscription(Bool, "/yolo/parking_meter_detected", self.meter_detected_cb, 10)
 
-        self.robot_state_sub = self.create_subscription(
-            String,
-            "/robot_state",
-            self.robot_state_cb,
-            10
-        )
+        self.robot_state_sub = self.create_subscription(String, "/robot_state", self.robot_state_cb, 10)
 
         self.parking_status_pub = self.create_publisher(Bool, "/parked", 10)
-        self.parking_timer_active = False
         self.park_count = 0
         self.bridge = CvBridge()
         self.latest_parking_image = None
@@ -63,6 +60,8 @@ class ParkingController(Node):
             lambda msg: setattr(self, "latest_parking_image", msg),
             10
         )
+
+        self.odom_sub = self.create_subscription(Odometry, "/pf/pose/odom", self.odom_cb, 10)
 
         self.robot_state = "MCL_INITIALIZATION"
 
@@ -92,8 +91,23 @@ class ParkingController(Node):
         self.ANGLE_THRESHOLD = self.get_parameter("angle_threshold").get_parameter_value().double_value
         self.parking_state = ParkingState.DOCKING
         self.escape_direction = 0
-        self.relative_x = 0
-        self.relative_y = 0
+        self.relative_x = None
+        self.relative_y = None
+
+        # Localization state
+        self.robot_x = None
+        self.robot_y = None
+        self.robot_theta = None
+
+        # Global meter estimate
+        self.global_meter_x = None
+        self.global_meter_y = None
+
+        self.parking_timer = None
+
+        self.exit_start_time = None
+        self.EXIT_TIMEOUT = 5.0 # Seconds to backup before giving up
+        self.EXIT_BUFFER = 0.5  # Additional distance (meters) to clear the meter
 
         self.add_on_set_parameters_callback(self.parameters_callback)
         self.get_logger().info("Parking Controller Initialized")
@@ -101,6 +115,29 @@ class ParkingController(Node):
 
     def robot_state_cb(self, msg: String):
         self.robot_state = msg.data
+    
+
+    def odom_cb(self, msg: Odometry):
+        if "PARKING" not in self.robot_state:
+            return
+
+        self.robot_x = msg.pose.pose.position.x
+        self.robot_y = msg.pose.pose.position.y
+        self.robot_theta = 2.0 * np.arctan2(msg.pose.pose.orientation.z, msg.pose.pose.orientation.w)
+
+
+    def meter_detected_cb(self, msg: Bool):
+        if "PARKING" not in self.robot_state:
+            return
+
+        if msg.data and self.relative_x is not None:
+            # Meter found
+            self.run_parking_control(self.relative_x, self.relative_y)
+        elif self.global_meter_x is not None:
+            # Lost the meter, use estimated global coordinates
+            est_x, est_y = self.global_to_relative(self.global_meter_x, self.global_meter_y)
+            self.run_parking_control(est_x, est_y)
+
 
     def relative_location_cb(self, msg):
         if "PARKING" not in self.robot_state:
@@ -109,8 +146,37 @@ class ParkingController(Node):
         self.relative_x = msg.x_pos
         self.relative_y = msg.y_pos
 
-        cone_dist = math.sqrt((self.relative_x * self.relative_x) + (self.relative_y * self.relative_y))
-        cone_angle = np.arctan2(self.relative_y, self.relative_x)
+        if self.robot_x is not None:
+            self.global_meter_x, self.global_meter_y = self.relative_to_global(self.relative_x, self.relative_y)
+
+    
+    def run_parking_control(self, meter_x, meter_y):
+        cone_dist = math.sqrt((meter_x * meter_x) + (meter_y * meter_y))
+        cone_angle = np.arctan2(meter_y, meter_x)
+
+        # --- HYBRID EXIT LOGIC ---
+        if self.parking_state == ParkingState.EXITING:
+            elapsed_time = (self.get_clock().now() - self.exit_start_time).nanoseconds / 1e9
+            
+            # Termination conditions: Target distance reached OR timeout hit
+            if cone_dist >= (self.PARKING_DISTANCE + self.EXIT_BUFFER) or elapsed_time > self.EXIT_TIMEOUT:
+                self.get_logger().info("Exit maneuver complete. Handing off to state machine.")
+                self.drive_publisher(0.0, 0.0, self.get_clock().now().to_msg())
+
+                self.parking_state = ParkingState.DOCKING
+                self.exit_start_time = None
+                self.escape_direction = 0
+                
+                self.relative_x = None
+                self.relative_y = None
+                self.global_meter_x = None
+                self.global_meter_y = None
+
+                self.parking_status_pub.publish(Bool(data=True))
+                return
+
+            self.drive_publisher(self.BACKUP_VELOCITY, 0.0, self.get_clock().now().to_msg())
+            return
 
         # Radius of "capture circle", the boundary after which the car has enough space to face the cone at the parking distance
         r_capture = self.PARKING_DISTANCE + (2 * self.TURN_RADIUS * (abs(cone_angle) / np.pi))
@@ -119,11 +185,11 @@ class ParkingController(Node):
         #################################
         if self.VISUALIZE:
             # Publish Capture Circle
-            blue_marker = self.make_circle_marker(r_capture, [0, 0, 1], 0, "base_link")
+            blue_marker = self.make_circle_marker(r_capture, meter_x, meter_y, [0, 0, 1], 0, "/pf/pose/odom")
             self.viz_pub.publish(blue_marker)
 
             # Publish Black Parking Circle
-            black_marker = self.make_circle_marker(self.PARKING_DISTANCE, [0, 0, 0], 1, "base_link")
+            black_marker = self.make_circle_marker(self.PARKING_DISTANCE, meter_x, meter_y, [0, 0, 0], 1, "/pf/pose/odom")
             self.viz_pub.publish(black_marker)
         #################################
 
@@ -137,11 +203,10 @@ class ParkingController(Node):
             self.parking_state_publisher()
             self.cone_angle_publisher(cone_angle)
 
-            if not self.parking_timer_active:
-                self.parking_timer_active = True
+            if self.parking_timer is None:
                 self.park_count += 1
                 self.get_logger().info(f"Parked at spot {self.park_count}. Capturing Image...")
-                self.create_timer(5.0, self.finish_parking)
+                self.parking_timer = self.create_timer(5.0, self.finish_parking)
             return
         
 
@@ -176,12 +241,12 @@ class ParkingController(Node):
             delta = np.clip(delta, -self.MAX_STEERING_ANGLE, self.MAX_STEERING_ANGLE) 
             self.drive_publisher(self.VELOCITY, delta, self.get_clock().now().to_msg()) 
 
-        self.error_publisher()
+        self.error_publisher(meter_x, meter_y)
         self.capture_radius_publisher(r_capture)
         self.parking_state_publisher()
         self.cone_angle_publisher(cone_angle)
     
-    
+
     def finish_parking(self):
         if self.latest_parking_image is not None:
             try:
@@ -196,20 +261,39 @@ class ParkingController(Node):
         else:
             self.get_logger().warn("No parking image found")
 
-        self.parking_status_pub.publish(Bool(data = True))
-        self.parking_timer_active = False
+        # Transition to EXITING
+        self.parking_state = ParkingState.EXITING
+        self.exit_start_time = self.get_clock().now()
+        
+        # Cleanup the stationary timer
+        if self.parking_timer is not None:
+            self.parking_timer.cancel()
+            self.parking_timer = None
 
 
+    def relative_to_global(self, rel_x, rel_y):
+        gx = self.robot_x + rel_x * np.cos(self.robot_theta) - rel_y * np.sin(self.robot_theta)
+        gy = self.robot_y + rel_x * np.sin(self.robot_theta) + rel_y * np.cos(self.robot_theta)
+        return (gx, gy)
 
-    def error_publisher(self):
+
+    def global_to_relative(self, gx, gy):
+        dx = gx - self.robot_x
+        dy = gy - self.robot_y
+        rel_x =  dx * np.cos(self.robot_theta) + dy * np.sin(self.robot_theta)
+        rel_y = -dx * np.sin(self.robot_theta) + dy * np.cos(self.robot_theta)
+        return (rel_x, rel_y)
+
+
+    def error_publisher(self, meter_x, meter_y):
         """
         Publish the error between the car and the cone. We will view this
         with rqt_plot to plot the success of the controller
         """
         error_msg = ParkingError()
-        error_msg.x_error = self.relative_x
-        error_msg.y_error = self.relative_y
-        error_msg.distance_error = math.sqrt((self.relative_x * self.relative_x) + (self.relative_y * self.relative_y))
+        error_msg.x_error = meter_x
+        error_msg.y_error = meter_y
+        error_msg.distance_error = math.sqrt((meter_x * meter_x) + (meter_y * meter_y))
         self.error_pub.publish(error_msg)
     
 
@@ -252,7 +336,7 @@ class ParkingController(Node):
         self.cone_angle_pub.publish(cone_msg)
 
 
-    def make_circle_marker(self, radius, color, marker_id, frame_id):
+    def make_circle_marker(self, radius, meter_x, meter_y, color, marker_id, frame_id):
         """Helper to create a LINE_STRIP circle marker centered at the cone."""
         marker = Marker()
         marker.header.frame_id = frame_id
@@ -263,8 +347,8 @@ class ParkingController(Node):
         marker.action = Marker.ADD
         
         # Position the circle's center at the cone
-        marker.pose.position.x = self.relative_x
-        marker.pose.position.y = self.relative_y
+        marker.pose.position.x = meter_x
+        marker.pose.position.y = meter_y
         marker.pose.orientation.w = 1.0
         
         # Line thickness
