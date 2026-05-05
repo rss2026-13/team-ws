@@ -6,6 +6,7 @@ from nav_msgs.msg import Odometry
 from geometry_msgs.msg import PoseStamped, PointStamped, PoseWithCovarianceStamped
 from std_msgs.msg import String, Bool
 from ackermann_msgs.msg import AckermannDriveStamped
+import numpy as np
 
 class BoatingSchoolNode(Node):
     """
@@ -33,6 +34,11 @@ class BoatingSchoolNode(Node):
         self.sweep_phase = 0
         self.sweep_count = 0
         self.sweep_timer = None
+
+        self.declare_parameter("parking_trigger_radius", 10.0)
+        self.parking_trigger_radius = (
+            self.get_parameter("parking_trigger_radius").get_parameter_value().double_value
+        )
 
         # ── Subscribers ───────────────────────────────────────────────────────
         self.pose_sub = self.create_subscription(
@@ -83,6 +89,13 @@ class BoatingSchoolNode(Node):
             self.safety_stop_cb,
             10
         )
+
+        self.pf_sub = self.create_subscription(
+            Odometry,
+            "/pf/pose/odom",
+            lambda odom_msg: setattr(self, 'latest_pf_estimate', odom_msg),
+            10
+        )
     
         # ── Publishers ────────────────────────────────────────────────────────
         self.robot_state_pub = self.create_publisher(String, '/robot_state', 10)
@@ -102,13 +115,6 @@ class BoatingSchoolNode(Node):
 
         self.get_logger().info(f"Initial pose received. Waiting {self.mcl_initialization_time}S for MCL to converge...")
 
-        self.pf_sub = self.create_subscription(
-            Odometry,
-            "/pf/pose/odom",
-            lambda odom_msg: setattr(self, 'latest_pf_estimate', odom_msg),
-            10
-        )
-
         def finalize_localization():
             if self.latest_pf_estimate is None:
                 self.get_logger().warn("PF estimate not yet available, retrying...")
@@ -117,10 +123,6 @@ class BoatingSchoolNode(Node):
             self.initial_pose = PoseStamped()
             self.initial_pose.header = self.latest_pf_estimate.header
             self.initial_pose.pose = self.latest_pf_estimate.pose.pose
-
-            if self.pf_sub is not None:
-                self.destroy_subscription(self.pf_sub)
-                self.pf_sub = None
 
             self.mcl_timer.cancel()
             self.mcl_timer = None
@@ -188,18 +190,44 @@ class BoatingSchoolNode(Node):
         if ("NAVIGATING" not in self.robot_state) and ("SEARCHING" not in self.robot_state):
             return
 
-        if msg.data:    #If parking meter detected
-            if self.sweep_timer is not None:
-                self.sweep_timer.cancel()
-                self.sweep_timer = None
-            
-            if "SPOT_1" in self.robot_state: 
-                self.robot_state = "PARKING_AT_SPOT_1"
-            elif "SPOT_2" in self.robot_state:
-                self.robot_state = "PARKING_AT_SPOT_2"
+        if not msg.data:
+            return
 
-            self.robot_state_pub.publish(String(data = self.robot_state))
-            self.get_logger().info(f"Parking Meter Detected: {self.robot_state}");
+        # distance check against target clicked point
+        if self.latest_pf_estimate is None:
+            self.get_logger().info("pf has no estimate")
+            return
+
+        if "SPOT_1" in self.robot_state:
+            target = self.parking_spots[0]
+        elif "SPOT_2" in self.robot_state:
+            target = self.parking_spots[1]
+        else:
+            self.get_logger().info("no spots in state")
+            return
+
+        car_x = self.latest_pf_estimate.pose.pose.position.x
+        car_y = self.latest_pf_estimate.pose.pose.position.y
+        dist = np.sqrt(
+            (car_x - target.pose.position.x) ** 2 +
+            (car_y - target.pose.position.y) ** 2
+        )
+
+        if dist > self.parking_trigger_radius:
+            self.get_logger().info(f"Meter detected, dist to target: {dist:.2f}m (threshold: {self.parking_trigger_radius}m)")
+            return
+
+        if self.sweep_timer is not None:
+            self.sweep_timer.cancel()
+            self.sweep_timer = None
+
+        if "SPOT_1" in self.robot_state:
+            self.robot_state = "PARKING_AT_SPOT_1"
+        elif "SPOT_2" in self.robot_state:
+            self.robot_state = "PARKING_AT_SPOT_2"
+
+        self.robot_state_pub.publish(String(data=self.robot_state))
+        self.get_logger().info(f"Parking Meter Detected within range: {self.robot_state}")
 
 
     def parking_status_cb(self, msg: Bool):
@@ -220,6 +248,7 @@ class BoatingSchoolNode(Node):
                 self.robot_state = "NAVIGATING_TO_START"
                 self.robot_state_pub.publish(String(data = self.robot_state))
 
+                self.initial_pose.header.stamp = self.get_clock().now().to_msg()
                 self.goal_pub.publish(self.initial_pose)
         
 
@@ -246,11 +275,14 @@ class BoatingSchoolNode(Node):
         self.sweep_count = 0
         if self.sweep_timer is not None:
             self.sweep_timer.cancel()
-        self.sweep_timer = self.create_timer(0.3, self.sweep_step)
+        self.sweep_timer = self.create_timer(0.8, self.sweep_step)
 
 
     def sweep_step(self):
-        if self.sweep_count > 16:
+        if "SEARCHING" not in self.robot_state:
+            return
+
+        if self.sweep_count > 32:
             self.get_logger().warn("Full sweep complete, parking meter not found.")
             self.sweep_timer.cancel()
             self.sweep_timer = None
@@ -260,11 +292,11 @@ class BoatingSchoolNode(Node):
         drive_cmd.header.stamp = self.get_clock().now().to_msg()
 
         if self.sweep_phase == 0:
-            drive_cmd.drive.speed = 0.25
+            drive_cmd.drive.speed = 0.50
             drive_cmd.drive.steering_angle = 0.34
             self.sweep_phase = 1
         else:
-            drive_cmd.drive.speed = -0.25
+            drive_cmd.drive.speed = -0.50
             drive_cmd.drive.steering_angle = -0.34  
             self.sweep_phase = 0
 
@@ -279,7 +311,6 @@ class BoatingSchoolNode(Node):
                 self.robot_state = "SAFETY_STOP"
                 self.robot_state_pub.publish(String(data = self.robot_state))
         if not msg.data and self.robot_state == "SAFETY_STOP":
-            self.get_logger().info(f"previous state before safety {self.robot_state}")
             self.robot_state = self.previous_robot_state
             self.robot_state_pub.publish(String(data = self.robot_state))
             if "SEARCHING" in self.previous_robot_state:
