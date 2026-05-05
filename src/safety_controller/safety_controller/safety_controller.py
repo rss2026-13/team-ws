@@ -86,6 +86,7 @@ class SafetyController(Node):
         )
 
         self.safety_stop_pub = self.create_publisher(Bool, "/safety_stop", 10)
+        self.last_command = None
 
     def drive_callback(self, msg):
         self.drive_command = msg
@@ -105,6 +106,8 @@ class SafetyController(Node):
         self.evaluate_safety()
 
     def evaluate_safety(self):
+        if self.drive_command is None:
+            self.get_logger().debug("No drive command")
         if self.scan_data is None or self.drive_command is None:
             return
 
@@ -112,13 +115,16 @@ class SafetyController(Node):
         if velocity < 0.001 and not self.is_collision:
             return
 
+        self.get_logger().info(f"vel={velocity:.3f}, scan={'ok' if self.scan_data else 'None'}, cmd={'ok' if self.drive_command else 'None'}")
+
+
         # Kinematic Threshold
         front_threshold = self.MARGIN + (velocity**2) / (2 * self.MAX_DECELERATION)
         self.front_threshold_pub.publish(Float32(data = front_threshold))
 
         delta = self.drive_command.drive.steering_angle
-        if self.VISUALIZE:
-            self.publish_safety_marker(delta, front_threshold)
+        #if self.VISUALIZE:
+            #self.publish_safety_marker(delta, front_threshold)
 
         # Get Cartesian points
         ranges = np.array(self.scan_data.ranges)[self.front_mask]
@@ -178,20 +184,23 @@ class SafetyController(Node):
             )
 
 
-        if self.VISUALIZE:
-            self.publish_safety_marker(delta, front_threshold, in_path, px, py)
+        #if self.VISUALIZE:
+            #self.publish_safety_marker(delta, front_threshold, in_path, px, py)
         
 
         self.is_collision = np.sum(in_path) >= self.MIN_OBSTACLE_POINTS
  
-        if self.is_collision:
-            self.clear_scan_count = 0
-        else:
-            self.clear_scan_count += 1
+        #if self.is_collision:
+            #self.clear_scan_count = 0
+        #else:
+            #self.clear_scan_count += 1
  
-        if self.is_collision or self.clear_scan_count < self.CLEAR_SCANS_REQUIRED:
+        #if self.is_collision or self.clear_scan_count < self.CLEAR_SCANS_REQUIRED:
+        if self.is_collision:
             self.get_logger().info("Safety controller pubbing drive")
-            self.get_logger().info(f"SC clear count: {self.clear_scan_count}")
+            #self.get_logger().info(f"SC clear count: {self.clear_scan_count}")
+            if self.drive_command.drive.speed != 0.0:
+                self.last_command = self.drive_command
             safe_command = AckermannDriveStamped()
             safe_command.header.stamp = self.get_clock().now().to_msg()
             safe_command.drive.speed = 0.0
@@ -200,6 +209,12 @@ class SafetyController(Node):
             self.safety_stop_pub.publish(Bool(data = True))
             self.get_logger().info("Frontal object detected! Stopping the robot.")
         else:
+            if self.drive_command.drive.speed == 0.0:
+                drive_again = AckermannDriveStamped()
+                drive_again.header.stamp = self.get_clock().now().to_msg()
+                drive_again.drive.speed = self.last_command.drive.speed
+                drive_again.drive.steering_angle = self.last_command.drive.steering_angle
+                self.drive_publisher.publish(drive_again)
             self.safety_stop_pub.publish(Bool(data = False))
 
 
