@@ -70,7 +70,7 @@ class ParkingController(Node):
         self.CAR_WIDTH = 0.25
         self.MAX_STEERING_ANGLE = 0.34
         self.TURN_RADIUS = self.WHEELBASE / np.tan(self.MAX_STEERING_ANGLE)
-        self.BACKUP_VELOCITY = -0.2
+        self.BACKUP_VELOCITY = -0.5
         
         # Physical Car Variables
         self.declare_parameter("velocity", 0.5)
@@ -198,7 +198,7 @@ class ParkingController(Node):
         if is_parked:
             self.parking_state = ParkingState.PARKED
             self.drive_publisher(0.0, 0.0, self.get_clock().now().to_msg()) # Tell car to stop
-            self.error_publisher()
+            self.error_publisher(meter_x, meter_y)
             self.capture_radius_publisher(r_capture)
             self.parking_state_publisher()
             self.cone_angle_publisher(cone_angle)
@@ -301,7 +301,7 @@ class ParkingController(Node):
         """
         Publish the driving message to be sent to the car by the parking controller
         """
-        self.get_logger().info("Parking controlling pubbing drive")
+        #self.get_logger().info("Parking controlling pubbing drive")
         drive_cmd = AckermannDriveStamped()
         drive_cmd.drive.speed = speed
         drive_cmd.drive.steering_angle = steering_angle

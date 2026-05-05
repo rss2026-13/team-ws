@@ -164,7 +164,14 @@ class PathPlan(Node):
         self.plan_path()
     
     def robot_state_cb(self, msg: String):
+        old_state = self.robot_state
         self.robot_state = msg.data
+
+        # Check if we just transitioned INTO a navigating state
+        if "NAVIGATING" in self.robot_state and "NAVIGATING" not in old_state:
+            if self.goal is not None:
+                self.get_logger().info("State changed to NAVIGATING with goal present. Planning path...")
+                self.plan_path()
 
     def heuristic(self, a, b):
         dx = a[0] - b[0]

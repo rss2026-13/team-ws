@@ -6,7 +6,7 @@ from rclpy.node import Node
 from sensor_msgs.msg import LaserScan
 from std_msgs.msg import Float32
 from visualization_msgs.msg import Marker
-from std_msgs.msg import Bool
+from std_msgs.msg import Bool, String
 from visualization_msgs.msg import MarkerArray
 
 
@@ -88,6 +88,13 @@ class SafetyController(Node):
         self.safety_stop_pub = self.create_publisher(Bool, "/safety_stop", 10)
         self.last_command = None
 
+        self.robot_state = "MCL_INITIALIZATION"
+        self.robot_state_sub = self.create_subscription(
+            String, "/robot_state",
+            lambda msg: setattr(self, "robot_state", msg.data),
+            10
+        )
+
     def drive_callback(self, msg):
         self.drive_command = msg
         self.get_logger().debug("Received new drive command")
@@ -111,11 +118,15 @@ class SafetyController(Node):
         if self.scan_data is None or self.drive_command is None:
             return
 
+        if "PARKING" in self.robot_state:
+            self.safety_stop_pub.publish(Bool(data=False))
+            return
+
         velocity = self.drive_command.drive.speed
         if velocity < 0.001 and not self.is_collision:
             return
 
-        self.get_logger().info(f"vel={velocity:.3f}, scan={'ok' if self.scan_data else 'None'}, cmd={'ok' if self.drive_command else 'None'}")
+        #self.get_logger().info(f"vel={velocity:.3f}, scan={'ok' if self.scan_data else 'None'}, cmd={'ok' if self.drive_command else 'None'}")
 
 
         # Kinematic Threshold
@@ -197,7 +208,7 @@ class SafetyController(Node):
  
         #if self.is_collision or self.clear_scan_count < self.CLEAR_SCANS_REQUIRED:
         if self.is_collision:
-            self.get_logger().info("Safety controller pubbing drive")
+            #self.get_logger().info("Safety controller pubbing drive")
             #self.get_logger().info(f"SC clear count: {self.clear_scan_count}")
             if self.drive_command.drive.speed != 0.0:
                 self.last_command = self.drive_command

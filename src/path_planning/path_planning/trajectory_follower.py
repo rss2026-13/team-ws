@@ -105,6 +105,7 @@ class PurePursuit(Node):
         # we must allow goal_reached to be published again.
         if "NAVIGATING" in new_state and self.robot_state != new_state:
             self.goal_already_reached = False
+            self.initialized_traj = False  # blocks pose_callback until new trajectory arrives
             self.goal_reached_pub.publish(Bool(data = False))
             # self.get_logger().info(f"Navigating to new goal: Reseting goal_reached latch.")
         
@@ -247,9 +248,9 @@ class PurePursuit(Node):
 
 
     def trajectory_callback(self, msg):
-        self.get_logger().info(f"Receiving new trajectory {len(msg.poses)} points")
+        #self.get_logger().info(f"Receiving new trajectory {len(msg.poses)} points")
         if len(msg.poses) == 0:
-            #self.get_logger().warn("Received empty trajectory.")
+            self.get_logger().warn("Received empty trajectory.")
             return
 
         # 1. Convert all poses to a (N, 2) NumPy array immediately

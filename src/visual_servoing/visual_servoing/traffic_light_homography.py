@@ -85,11 +85,11 @@ class TrafficLightHomography(Node):
         out.y_pos = y
         publisher.publish(out)
 
-        self.get_logger().info(
-            f"{object_label} pixel ({msg.u:.0f}, {msg.v:.0f}) → "
-            f"car frame ({x:.2f} m, {y:.2f} m)",
-            throttle_duration_sec=1.0,
-        )
+        #self.get_logger().info(
+            #f"{object_label} pixel ({msg.u:.0f}, {msg.v:.0f}) → "
+            #f"car frame ({x:.2f} m, {y:.2f} m)",
+            #throttle_duration_sec=1.0,
+        #)
 
     def transform_uv_to_xy(self, u, v):
         """Convert pixel (u,v) to car-frame (x,y) in metres using homography."""
