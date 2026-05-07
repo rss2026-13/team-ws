@@ -6,10 +6,11 @@ import numpy as np
 import rclpy
 from geometry_msgs.msg import PoseArray, PoseStamped
 from nav_msgs.msg import OccupancyGrid, Odometry
-from std_msgs.msg import String
 from rclpy.node import Node
+from scipy.ndimage import distance_transform_edt
 from scipy.signal import convolve2d
 from scipy.spatial.transform import Rotation as R
+from std_msgs.msg import String
 
 from path_planning.utils import *
 
@@ -46,10 +47,7 @@ class PathPlan(Node):
         )
 
         self.robot_state_sub = self.create_subscription(
-            String,
-            "/robot_state",
-            self.robot_state_cb,
-            10
+            String, "/robot_state", self.robot_state_cb, 10
         )
 
         self.robot_state = "MCL_INITIALIZATION"
@@ -72,33 +70,42 @@ class PathPlan(Node):
             (1, 1),
         ]
 
-        self.blur_radius = 10
+        self.blur_radius = 6
         self.downsample_factor = 3
         self.trajectory = LineTrajectory(node=self, viz_namespace="/planned_trajectory")
 
     def map_cb(self, msg):
         map_data = np.array(msg.data, np.double)
         width, height = msg.info.width, msg.info.height
-        # self.get_logger().info(f"Map received: width={width}, height={height}")
         map_data = map_data.reshape((height, width))
-        # self.get_logger().info(f"Map reshaped to: {map_data.shape}")
-        map_data[map_data != 0] = 1.0
-        radius = self.blur_radius
-        y, x = np.ogrid[-radius : radius + 1, -radius : radius + 1]
-        mask = x**2 + y**2 <= radius**2
-        map_data = convolve2d(
-            map_data, mask, mode="same", boundary="fill", fillvalue=1.0
-        )
-        # self.get_logger().info(f"Map convolved to: {map_data.shape}")
+
+        # # self.get_logger().info(f"Map reshaped to: {map_data.shape}")
+        # map_data[map_data != 0] = 1.0
+        # radius = self.blur_radius
+        # y, x = np.ogrid[-radius : radius + 1, -radius : radius + 1]
+        # mask = x**2 + y**2 <= radius**2
+        # map_data = convolve2d(
+        #     map_data, mask, mode="same", boundary="fill", fillvalue=1.0
+        # )
+        # # self.get_logger().info(f"Map convolved to: {map_data.shape}")
+        # self.map = map_data[:: self.downsample_factor, :: self.downsample_factor]
+        # self.map = self.map != 0
+        map_data = np.where(map_data != 0, 1, 0)
+        self.dist = distance_transform_edt(map_data == 0)
         self.map = map_data[:: self.downsample_factor, :: self.downsample_factor]
-        self.map = self.map != 0
+        self.dist = self.dist[:: self.downsample_factor, :: self.downsample_factor]
+
+        self.map = np.where(
+            self.dist <= self.blur_radius,
+            np.inf,
+            5.0 / (self.dist - self.blur_radius + 1) ** 1.5,
+        )
         self.height, self.width = self.map.shape
         self.map_info = msg.info
         origin_p = msg.info.origin.position
         origin_o = msg.info.origin.orientation
         quat = [origin_o.x, origin_o.y, origin_o.z, origin_o.w]
         yaw = R.from_quat(quat).as_euler("xyz")[2]
-
         self.origin = (origin_p.x, origin_p.y, yaw)
         self.rot_matrix = np.array(
             [
@@ -112,8 +119,9 @@ class PathPlan(Node):
                 ],
             ]
         )
-        self.get_logger().info(f"Map received: {self.map.shape}")
-        self.get_logger().info("Map received and processed")
+        self.get_logger().info(
+            f"Path planner map received and processed, shape: {self.map.shape}"
+        )
 
     def pixel_to_world(self, x_pixel, y_pixel):
         if self.map is None:
@@ -162,7 +170,7 @@ class PathPlan(Node):
     def goal_cb(self, msg):
         self.goal = msg.pose
         self.plan_path()
-    
+
     def robot_state_cb(self, msg: String):
         old_state = self.robot_state
         self.robot_state = msg.data
@@ -170,7 +178,9 @@ class PathPlan(Node):
         # Check if we just transitioned INTO a navigating state
         if "NAVIGATING" in self.robot_state and "NAVIGATING" not in old_state:
             if self.goal is not None:
-                self.get_logger().info("State changed to NAVIGATING with goal present. Planning path...")
+                self.get_logger().info(
+                    "State changed to NAVIGATING with goal present. Planning path..."
+                )
                 self.plan_path()
 
     def heuristic(self, a, b):
@@ -206,8 +216,8 @@ class PathPlan(Node):
             nx = x + dx
             ny = y + dy
             if 0 <= nx < self.width and 0 <= ny < self.height:
-                if not self.map[ny, nx]:
-                    yield nx, ny
+                # if not self.map[ny, nx]:
+                yield nx, ny
 
     def reconstruct_path(self, parent, current_idx):
         path = []
@@ -280,7 +290,9 @@ class PathPlan(Node):
 
                 dx = cx - nx
                 dy = cy - ny
-                tentative = gscore[current_idx] + (dx * dx + dy * dy) ** 0.5
+                tentative = gscore[current_idx] + (dx * dx + dy * dy) ** 0.5 * (
+                    1.0 + self.map[ny, nx]
+                )
 
                 if tentative < gscore[neighbor_idx]:
                     gscore[neighbor_idx] = tentative
@@ -290,170 +302,46 @@ class PathPlan(Node):
 
         return []
 
-    def Theta_star(self, start, goal):
-        sx, sy = int(start[0]), int(start[1])
-        gx, gy = int(goal[0]), int(goal[1])
-
-        start_idx = self.to_idx(sx, sy)
-        goal_idx = self.to_idx(gx, gy)
-
-        size = self.width * self.height
-
-        gscore = np.full(size, np.inf, dtype=np.float32)
-        parent = np.full(size, -1, dtype=np.int32)
-        closed = np.zeros(size, dtype=bool)
-
-        gscore[start_idx] = 0.0
-        parent[start_idx] = start_idx
-
-        open_set = []
-        heapq.heappush(open_set, (self.heuristic((sx, sy), (gx, gy)), start_idx))
-
-        while open_set:
-            _, current_idx = heapq.heappop(open_set)
-
-            if closed[current_idx]:
-                continue
-
-            if current_idx == goal_idx:
-                return self.reconstruct_path(parent, current_idx)
-
-            closed[current_idx] = True
-
-            cx, cy = self.from_idx(current_idx)
-            parent_idx = parent[current_idx]
-            px, py = self.from_idx(parent_idx)
-
-            for nx, ny in self.iter_neighbors(cx, cy):
-                neighbor_idx = self.to_idx(nx, ny)
-
-                if closed[neighbor_idx]:
-                    continue
-
-                if self.line_of_sight((px, py), (nx, ny)):
-                    dx = px - nx
-                    dy = py - ny
-                    tentative = gscore[parent_idx] + (dx * dx + dy * dy) ** 0.5
-
-                    if tentative < gscore[neighbor_idx]:
-                        gscore[neighbor_idx] = tentative
-                        parent[neighbor_idx] = parent_idx
-                        f = tentative + self.heuristic((nx, ny), (gx, gy))
-                        heapq.heappush(open_set, (f, neighbor_idx))
-
-                else:
-                    dx = cx - nx
-                    dy = cy - ny
-                    tentative = gscore[current_idx] + (dx * dx + dy * dy) ** 0.5
-
-                    if tentative < gscore[neighbor_idx]:
-                        gscore[neighbor_idx] = tentative
-                        parent[neighbor_idx] = current_idx
-                        f = tentative + self.heuristic((nx, ny), (gx, gy))
-                        heapq.heappush(open_set, (f, neighbor_idx))
-
-        return []
-
-    def Lazy_Theta_star(self, start, goal):
-        sx, sy = int(start[0]), int(start[1])
-        gx, gy = int(goal[0]), int(goal[1])
-
-        start_idx = self.to_idx(sx, sy)
-        goal_idx = self.to_idx(gx, gy)
-
-        size = self.width * self.height
-
-        gscore = np.full(size, np.inf, dtype=np.float32)
-        parent = np.full(size, -1, dtype=np.int32)
-        closed = np.zeros(size, dtype=bool)
-
-        gscore[start_idx] = 0.0
-        parent[start_idx] = start_idx
-
-        open_set = []
-        heapq.heappush(open_set, (self.heuristic((sx, sy), (gx, gy)), start_idx))
-
-        while open_set:
-            _, current_idx = heapq.heappop(open_set)
-
-            if closed[current_idx]:
-                continue
-
-            cx, cy = self.from_idx(current_idx)
-
-            # --- LAZY STEP: validate parent LOS only when expanding ---
-            parent_idx = parent[current_idx]
-            if parent_idx != current_idx:
-                px, py = self.from_idx(parent_idx)
-
-                if not self.line_of_sight((px, py), (cx, cy)):
-                    # Fix parent: choose best neighbor in CLOSED
-                    best_g = np.inf
-                    best_parent = -1
-
-                    for nx, ny in self.iter_neighbors(cx, cy):
-                        neighbor_idx = self.to_idx(nx, ny)
-                        if not closed[neighbor_idx]:
-                            continue
-
-                        dx = nx - cx
-                        dy = ny - cy
-                        cost = gscore[neighbor_idx] + (dx * dx + dy * dy) ** 0.5
-
-                        if cost < best_g:
-                            best_g = cost
-                            best_parent = neighbor_idx
-
-                    if best_parent != -1:
-                        parent[current_idx] = best_parent
-                        gscore[current_idx] = best_g
-
-            if current_idx == goal_idx:
-                return self.reconstruct_path(parent, current_idx)
-
-            closed[current_idx] = True
-
-            # --- STANDARD EXPANSION (NO LOS CHECK HERE) ---
-            for nx, ny in self.iter_neighbors(cx, cy):
-                neighbor_idx = self.to_idx(nx, ny)
-
-                if closed[neighbor_idx]:
-                    continue
-
-                # Always assume parent[current] is valid (lazy assumption)
-                parent_idx = parent[current_idx]
-                px, py = self.from_idx(parent_idx)
-
-                dx = px - nx
-                dy = py - ny
-                tentative = gscore[parent_idx] + (dx * dx + dy * dy) ** 0.5
-
-                if tentative < gscore[neighbor_idx]:
-                    gscore[neighbor_idx] = tentative
-                    parent[neighbor_idx] = parent_idx
-                    f = tentative + self.heuristic((nx, ny), (gx, gy))
-                    heapq.heappush(open_set, (f, neighbor_idx))
-
-        return []
+    def IEPF(self, points, D_t):
+        start = 0
+        end = len(points) - 1
+        line_vec = points[end] - points[start]
+        line_vec /= np.linalg.norm(line_vec)
+        point_vecs = points - points[start]
+        projections = point_vecs @ line_vec
+        closest_points = np.outer(projections, line_vec) + points[start]
+        distances = np.linalg.norm(points - closest_points, axis=1)
+        max_index = np.argmax(distances)
+        if distances[max_index] > D_t:
+            left_segments = self.IEPF(points[: max_index + 1], D_t)
+            right_segments = self.IEPF(points[max_index:], D_t)
+            return left_segments + right_segments[1:]
+        else:
+            return [points[0], points[-1]]
 
     def plan_path(self):
-        if self.pose is None or self.goal is None or self.map is None or ("NAVIGATING" not in self.robot_state):
+        if (
+            self.pose is None
+            or self.goal is None
+            or self.map is None
+            or ("NAVIGATING" not in self.robot_state)
+        ):
             return
         # self.get_logger().info("Planning path...")
-        time_start = time.time()
+        # time_start = time.time()
         start_pixel = self.world_to_pixel(self.pose.position.x, self.pose.position.y)
         goal_pixel = self.world_to_pixel(self.goal.position.x, self.goal.position.y)
         path_pixels = self.A_star(start_pixel, goal_pixel)
         # self.get_logger().info(f"Path found with {len(path_pixels)} points")
-        path_pixels = self.smooth_path(path_pixels)
+        path_pixels = self.IEPF(np.array(path_pixels, dtype=np.float32), D_t=1.0)
         path_world = self.pixel_to_world(
             [p[0] for p in path_pixels], [p[1] for p in path_pixels]
         )
-        time_end = time.time()
+        # time_end = time.time()
         # self.get_logger().info(
-        #    f"Path planning took {time_end - time_start:.2f} seconds"
-        #)
-        #self.get_logger().info(f"Path planned with {len(path_world[0])} points")
+        #     f"Path planning took {time_end - time_start:.2f} seconds"
+        # )
+        # self.get_logger().info(f"Path planned with {len(path_world[0])} points")
 
         self.trajectory.points = list(zip(path_world[0], path_world[1]))
         self.traj_pub.publish(self.trajectory.toPoseArray())
