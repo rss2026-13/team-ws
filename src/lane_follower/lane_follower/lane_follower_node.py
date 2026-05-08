@@ -45,7 +45,7 @@ class LaneFollowerNode(Node):
     def __init__(self):
         super().__init__("lane_follower_node")
 
-        self.declare_parameter("canny_low", 50)
+        self.declare_parameter("canny_low", 80)
         self.declare_parameter("canny_high", 150)
         self.declare_parameter("hough_threshold", 15)
         self.declare_parameter("hough_min_line_length", 20)
@@ -92,8 +92,8 @@ class LaneFollowerNode(Node):
 
     def detect_lanes(self, img, canny_low, canny_high, hough_thresh, min_len, max_gap):
         h, w = img.shape[:2]
-        y_top = int(h * 0.5)
-        y_bottom = int(h * 1)
+        y_top = int(h * 0.45)
+        y_bottom = int(h * 0.87)
 
         bgr = cv2.cvtColor(img, cv2.COLOR_BGRA2BGR)
         hsv = cv2.cvtColor(bgr, cv2.COLOR_BGR2HSV)
