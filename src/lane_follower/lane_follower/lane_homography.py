@@ -7,16 +7,16 @@ import cv2
 from std_msgs.msg import Float32MultiArray
 
 # PTS_IMAGE_PLANE units are in pixels; top-left origin, u right, v down
-PTS_IMAGE_PLANE = [[250, 254],
-                   [341, 271],
-                   [233, 323],
-                   [330, 310]]  # TODO: fill in measured pixel coords
+PTS_IMAGE_PLANE = [[299, 213],
+                   [562, 323],
+                   [206, 168],
+                   [571, 169]]
 
 # PTS_GROUND_PLANE units are in inches; x=forward, y=left from camera
-PTS_GROUND_PLANE = [[31.89, 7.68],
-                    [29.33, 1.77],
-                    [24.015, 6.377],
-                    [25.0, 2.36]]  # TODO: fill in measured ground coords
+PTS_GROUND_PLANE = [[42, 5],
+                    [23, -7],
+                    [82.5, 28],
+                    [77, -43]]
 
 METERS_PER_INCH = 0.0254
 
