@@ -193,7 +193,7 @@ class SimulationController(Node):
     def _publish(self, speed, steer):
         drive_msg = AckermannDriveStamped()
         drive_msg.drive.speed = speed
-        drive_msg.drive.steering_angle = steer
+        drive_msg.drive.steering_angle = 2*steer
         self.publisher.publish(drive_msg)
 
 
