@@ -65,6 +65,8 @@ class ParkingController(Node):
 
         self.robot_state = "MCL_INITIALIZATION"
 
+        self.meter_detected = False
+
         # Physical Car Constants
         self.WHEELBASE = 0.325
         self.CAR_WIDTH = 0.25
@@ -133,6 +135,8 @@ class ParkingController(Node):
         if "PARKING" not in self.robot_state:
             return
 
+        self.meter_detected = msg.data
+
         if msg.data and self.relative_x is not None:
             # Meter found
             self.run_parking_control(self.relative_x, self.relative_y)
@@ -197,7 +201,7 @@ class ParkingController(Node):
         #################################
 
         # Check if the car is in the proper parking state (within a threshold of distance and orientation angle)
-        is_parked = (abs(cone_dist - self.PARKING_DISTANCE) <= self.DISTANCE_THRESHOLD) and (abs(cone_angle) <= self.ANGLE_THRESHOLD) 
+        is_parked = (abs(cone_dist - self.PARKING_DISTANCE) <= self.DISTANCE_THRESHOLD) and (abs(cone_angle) <= self.ANGLE_THRESHOLD) and self.meter_detected 
         if is_parked:
             self.parking_state = ParkingState.PARKED
             self.drive_publisher(0.0, 0.0, self.get_clock().now().to_msg()) # Tell car to stop
@@ -207,8 +211,6 @@ class ParkingController(Node):
             self.cone_angle_publisher(cone_angle)
 
             if self.parking_timer is None:
-                self.park_count += 1
-                self.get_logger().info(f"Parked at spot {self.park_count}. Capturing Image...")
                 self.parking_timer = self.create_timer(5.0, self.finish_parking)
             return
         
@@ -257,6 +259,12 @@ class ParkingController(Node):
 
     def finish_parking(self):
         if self.latest_parking_image is not None:
+            self.get_logger().info(f"Parked at spot {self.park_count}. Capturing Image...")
+            self.park_count += 1
+            self.global_meter_x = None
+            self.global_meter_y = None
+            self.relative_meter_x = None
+            self.relative_meter_y = None
             try:
                 bgr = self.bridge.imgmsg_to_cv2(self.latest_parking_image, desired_encoding="bgr8")
                 save_dir = os.path.expanduser("~/racecar_ws/parking_images")

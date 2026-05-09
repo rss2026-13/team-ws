@@ -19,9 +19,9 @@ def cd_red_light_segmentation(img, debug=False):
 
     # Stricter HSV ranges but still allowing farther away lights
     # change saturation and value to do so
-    lower_red1 = np.array([0,   130,  220])
+    lower_red1 = np.array([0,   145,  170])
     upper_red1 = np.array([40,   255,  255]) #try allowing a little orange and even yellow but amp up the saturation and value needed
-    lower_red2 = np.array([175, 130,  220])
+    lower_red2 = np.array([175, 145,  170])
     upper_red2 = np.array([180, 255, 255])
 
     mask1 = cv2.inRange(img_hsv, lower_red1, upper_red1)

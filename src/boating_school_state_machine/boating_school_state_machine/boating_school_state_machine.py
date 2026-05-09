@@ -163,9 +163,9 @@ class BoatingSchoolNode(Node):
             for spot in self.parking_spots:
                 self.get_logger().info(f"Parking Spot at X: {spot.pose.position.x}, Y: {spot.pose.position.y}")
             
+            self.goal_pub.publish(self.parking_spots[0])
             self.robot_state = "NAVIGATING_TO_SPOT_1"
             self.robot_state_pub.publish(String(data = self.robot_state))
-            self.goal_pub.publish(self.parking_spots[0])
     
 
     def traffic_light_stop_cb(self, msg: Bool):
@@ -240,15 +240,12 @@ class BoatingSchoolNode(Node):
             if self.robot_state == "PARKING_AT_SPOT_1":
                 self.get_logger().info("Successfully Parked at Spot 1")
 
+                self.goal_pub.publish(self.parking_spots[1])
                 self.robot_state = "NAVIGATING_TO_SPOT_2"
                 self.robot_state_pub.publish(String(data = self.robot_state))
 
-                self.goal_pub.publish(self.parking_spots[1])
             elif self.robot_state == "PARKING_AT_SPOT_2":
                 self.get_logger().info("Successfully Parked at Spot 2")
-
-                self.robot_state = "NAVIGATING_TO_START_1"
-                self.robot_state_pub.publish(String(data = self.robot_state))
 
                 self.initial_pose.header.stamp = self.get_clock().now().to_msg()
                 # Set goal midway to start so robot goes long way around
@@ -265,6 +262,9 @@ class BoatingSchoolNode(Node):
                 midway_home.pose.orientation.z = 0.0
                 midway_home.pose.orientation.w = 1.0
                 self.goal_pub.publish(midway_home)
+
+                self.robot_state = "NAVIGATING_TO_START_1"
+                self.robot_state_pub.publish(String(data = self.robot_state))
         
 
     def goal_reached_cb(self, msg: Bool):
@@ -286,11 +286,11 @@ class BoatingSchoolNode(Node):
             self.get_logger().info("Starting sweep to find parking spot 2...")
             self.start_sweep()
         elif self.robot_state == "NAVIGATING_TO_START_1":
-            self.robot_state = "NAVIGATING_TO_START_2"
-            self.robot_state_pub.publish(String(data = self.robot_state))
-            
             self.initial_pose.header.stamp = self.get_clock().now().to_msg()
             self.goal_pub.publish(self.initial_pose)
+
+            self.robot_state = "NAVIGATING_TO_START_2"
+            self.robot_state_pub.publish(String(data = self.robot_state))
         elif self.robot_state == "NAVIGATING_TO_START_2":
             self.robot_state = "COMPLETE"
             self.robot_state_pub.publish(String(data = self.robot_state))

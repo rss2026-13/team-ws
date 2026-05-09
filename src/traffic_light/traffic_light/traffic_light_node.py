@@ -69,8 +69,8 @@ class TrafficLightNode(Node):
 
         # ── Parameters ────────────────────────────────────────────────────────
         self.declare_parameter("drive_topic", "/vesc/low_level/input/navigation_filtered")
-        self.declare_parameter("stop_distance", 1.5)      # metres — full stop inside this
-        self.declare_parameter("slowdown_distance", 1.6)  # metres — start slowing here
+        self.declare_parameter("stop_distance", 2.0)      # metres — full stop inside this
+        self.declare_parameter("slowdown_distance", 2.1)  # metres — start slowing here
         self.declare_parameter("min_approach_speed", 0.1) # m/s — slowest before full stop
 
         DRIVE_TOPIC = self.get_parameter("drive_topic").value
@@ -276,31 +276,12 @@ class TrafficLightNode(Node):
                 f"dist={self._distance_to_light()}",
                 throttle_duration_sec=1.0,
             )
-        elif self._is_slowing_down():
-            # Publish a scaled-down speed on nav_0 to override the trajectory
-            # follower's full speed on nav_2
-            scaled_speed = self._scaled_approach_speed(self._planner_speed)
-            slow_cmd = AckermannDriveStamped()
-            slow_cmd.header.stamp = self.get_clock().now().to_msg()
-            slow_cmd.drive.speed = scaled_speed
-            slow_cmd.drive.steering_angle = self._last_steering_angle
-            self.drive_pub.publish(slow_cmd)
-            self.get_logger().info(
-                f"Slowing — dist={self._distance_to_light():.2f}m, "
-                f"speed={scaled_speed:.2f}m/s",
-                throttle_duration_sec=1.0,
-            )
 
     # ── Helpers ───────────────────────────────────────────────────────────────
 
     def _should_stop(self) -> bool:
         """Full stop: red detected AND within stop_distance (or distance unknown)."""
-        if not (self.yolo_light_detected and self.red_light_detected):
-            return False
-        dist = self._distance_to_light()
-        if dist is None:
-            return True  # no homography yet — stop to be safe
-        return dist <= self.stop_distance
+        return self.yolo_light_detected and self.red_light_detected
 
     def _is_slowing_down(self) -> bool:
         """
