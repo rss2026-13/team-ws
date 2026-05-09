@@ -69,8 +69,8 @@ class TrafficLightNode(Node):
 
         # ── Parameters ────────────────────────────────────────────────────────
         self.declare_parameter("drive_topic", "/vesc/low_level/input/navigation_filtered")
-        self.declare_parameter("stop_distance", 1.5)      # metres — full stop inside this
-        self.declare_parameter("slowdown_distance", 1.6)  # metres — start slowing here
+        self.declare_parameter("stop_distance", 2.0)      # metres — full stop inside this (increased from 1.5m, should be accounting for lag and shifted homography)
+        self.declare_parameter("slowdown_distance", 2.1)  # metres — start slowing here (increased from 1.6m)
         self.declare_parameter("min_approach_speed", 0.1) # m/s — slowest before full stop
 
         DRIVE_TOPIC = self.get_parameter("drive_topic").value
