@@ -20,7 +20,7 @@ particle_filter:
 final_detector:
   ros__parameters:
     model: yolo11n.pt
-    conf_threshold: 0.60
+    conf_threshold: 0.40
     iou_threshold: 0.7
 
 traffic_light_node:
@@ -38,19 +38,19 @@ trajectory_follower:
   ros__parameters:
     odom_topic: /pf/pose/odom
     drive_topic: /vesc/high_level/input/nav_2 
-    base_lookahead: 0.75
+    base_lookahead: 1.50
     k_curve: 1.0
     velocity: 0.5
     goal_threshold: 0.5
-    n_segments_to_weight: 3
-    weight_decay: 0.5
+    n_segments_to_weight: 2
+    weight_decay: 0.8
 
 parking_controller:
   ros__parameters:
     drive_topic: /vesc/high_level/input/nav_1
     velocity: 0.5
-    parking_distance: 0.75
-    distance_threshold: 0.15
+    parking_distance: 1.0
+    distance_threshold: 0.20
     angle_threshold: 0.15
     visualize_parking: true
 

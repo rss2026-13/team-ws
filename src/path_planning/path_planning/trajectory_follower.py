@@ -27,8 +27,8 @@ class PurePursuit(Node):
         self.declare_parameter("base_lookahead", 0.75)
         self.base_lookahead = self.get_parameter("base_lookahead").get_parameter_value().double_value
         
-        self.declare_parameter("k_curv", 1.0)
-        self.k_curv = self.get_parameter("k_curv").get_parameter_value().double_value
+        self.declare_parameter("k_curve", 1.0)
+        self.k_curve = self.get_parameter("k_curve").get_parameter_value().double_value
 
         self.declare_parameter("velocity", 0.5)
         self.velocity = self.get_parameter("velocity").get_parameter_value().double_value
@@ -192,7 +192,7 @@ class PurePursuit(Node):
         total_weight = np.sum(weights)
         weighted_curvature = np.sum(angles * weights) / total_weight if total_weight > 0 else 0.0
 
-        self.lookahead = self.base_lookahead / (1 + self.k_curv * weighted_curvature)
+        self.lookahead = self.base_lookahead / (1 + self.k_curve * weighted_curvature)
     
 
     def find_lookahead_point(self, car_to_starting, min_dist_idx, t_on_closest):

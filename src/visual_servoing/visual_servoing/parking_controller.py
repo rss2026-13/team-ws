@@ -114,6 +114,9 @@ class ParkingController(Node):
 
 
     def robot_state_cb(self, msg: String):
+        if "PARKING" not in msg.data and self.parking_timer is not None:
+            self.parking_timer.cancel()
+            self.parking_timer = None
         self.robot_state = msg.data
     
 
@@ -211,6 +214,11 @@ class ParkingController(Node):
         
 
         self.parking_status_pub.publish(Bool(data = False))
+
+        # Cancel timer — car left parked state, must restart 5s from scratch
+        if self.parking_timer is not None:
+            self.parking_timer.cancel()
+            self.parking_timer = None
 
         # Determine whether the car is captured or ready to dock
         if cone_dist <= r_capture:

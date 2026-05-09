@@ -40,6 +40,8 @@ class BoatingSchoolNode(Node):
             self.get_parameter("parking_trigger_radius").get_parameter_value().double_value
         )
 
+        self.goal_active = False
+
         # ── Subscribers ───────────────────────────────────────────────────────
         self.pose_sub = self.create_subscription(
             PoseWithCovarianceStamped,
@@ -163,6 +165,7 @@ class BoatingSchoolNode(Node):
             
             self.robot_state = "NAVIGATING_TO_SPOT_1"
             self.robot_state_pub.publish(String(data = self.robot_state))
+            self.goal_active = True
             self.goal_pub.publish(self.parking_spots[0])
     
 
@@ -241,20 +244,36 @@ class BoatingSchoolNode(Node):
                 self.robot_state = "NAVIGATING_TO_SPOT_2"
                 self.robot_state_pub.publish(String(data = self.robot_state))
 
+                self.goal_active = True
                 self.goal_pub.publish(self.parking_spots[1])
             elif self.robot_state == "PARKING_AT_SPOT_2":
                 self.get_logger().info("Successfully Parked at Spot 2")
 
-                self.robot_state = "NAVIGATING_TO_START"
+                self.robot_state = "NAVIGATING_TO_START_1"
                 self.robot_state_pub.publish(String(data = self.robot_state))
 
                 self.initial_pose.header.stamp = self.get_clock().now().to_msg()
-                self.goal_pub.publish(self.initial_pose)
+                self.goal_active = True
+                # Set goal midway to start so robot goes long way around
+                midway_home = PoseStamped()
+                midway_home.header = self.initial_pose.header
+                midway_home.header.stamp = self.get_clock().now().to_msg()
+
+                midway_home.pose.position.x = -54.5
+                midway_home.pose.position.y = 29.4
+                midway_home.pose.position.z = 0.0235
+
+                midway_home.pose.orientation.x = 0.0
+                midway_home.pose.orientation.y = 0.0
+                midway_home.pose.orientation.z = 0.0
+                midway_home.pose.orientation.w = 1.0
+                self.goal_pub.publish(midway_home)
         
 
     def goal_reached_cb(self, msg: Bool):
-        if not msg.data:
+        if not msg.data or not self.goal_active:
             return
+        self.goal_active = False
         if self.robot_state == "NAVIGATING_TO_SPOT_1":
             self.robot_state = "SEARCHING_FOR_SPOT_1"
             self.robot_state_pub.publish(String(data = self.robot_state))
@@ -265,7 +284,14 @@ class BoatingSchoolNode(Node):
             self.robot_state_pub.publish(String(data = self.robot_state))
             self.get_logger().info("Starting sweep to find parking spot 2...")
             self.start_sweep()
-        elif self.robot_state == "NAVIGATING_TO_START":
+        elif self.robot_state == "NAVIGATING_TO_START_1":
+            self.robot_state = "NAVIGATING_TO_START_2"
+            self.robot_state_pub.publish(String(data = self.robot_state))
+            
+            self.initial_pose.header.stamp = self.get_clock().now().to_msg()
+            self.goal_active = True
+            self.goal_pub.publish(self.initial_pose)
+        elif self.robot_state == "NAVIGATING_TO_START_2":
             self.robot_state = "COMPLETE"
             self.robot_state_pub.publish(String(data = self.robot_state))
 
@@ -282,7 +308,7 @@ class BoatingSchoolNode(Node):
         if "SEARCHING" not in self.robot_state:
             return
 
-        if self.sweep_count > 32:
+        if self.sweep_count > 48:
             self.get_logger().warn("Full sweep complete, parking meter not found.")
             self.sweep_timer.cancel()
             self.sweep_timer = None
