@@ -164,6 +164,10 @@ class PathPlan(Node):
         )
 
     def pose_cb(self, pose):
+        #Trying out just automatically returning
+        if self.pose is None:
+            self.pose = pose.pose.pose
+        return
         self.pose = pose.pose.pose
         self.plan_path()
 

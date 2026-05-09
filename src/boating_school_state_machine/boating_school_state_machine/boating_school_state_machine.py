@@ -165,7 +165,6 @@ class BoatingSchoolNode(Node):
             
             self.robot_state = "NAVIGATING_TO_SPOT_1"
             self.robot_state_pub.publish(String(data = self.robot_state))
-            self.goal_active = True
             self.goal_pub.publish(self.parking_spots[0])
     
 
@@ -244,7 +243,6 @@ class BoatingSchoolNode(Node):
                 self.robot_state = "NAVIGATING_TO_SPOT_2"
                 self.robot_state_pub.publish(String(data = self.robot_state))
 
-                self.goal_active = True
                 self.goal_pub.publish(self.parking_spots[1])
             elif self.robot_state == "PARKING_AT_SPOT_2":
                 self.get_logger().info("Successfully Parked at Spot 2")
@@ -253,7 +251,6 @@ class BoatingSchoolNode(Node):
                 self.robot_state_pub.publish(String(data = self.robot_state))
 
                 self.initial_pose.header.stamp = self.get_clock().now().to_msg()
-                self.goal_active = True
                 # Set goal midway to start so robot goes long way around
                 midway_home = PoseStamped()
                 midway_home.header = self.initial_pose.header
@@ -271,8 +268,12 @@ class BoatingSchoolNode(Node):
         
 
     def goal_reached_cb(self, msg: Bool):
-        if not msg.data or not self.goal_active:
+        if not msg.data:
+            self.goal_active = True
             return
+        if not self.goal_active:
+            return
+
         self.goal_active = False
         if self.robot_state == "NAVIGATING_TO_SPOT_1":
             self.robot_state = "SEARCHING_FOR_SPOT_1"
@@ -289,7 +290,6 @@ class BoatingSchoolNode(Node):
             self.robot_state_pub.publish(String(data = self.robot_state))
             
             self.initial_pose.header.stamp = self.get_clock().now().to_msg()
-            self.goal_active = True
             self.goal_pub.publish(self.initial_pose)
         elif self.robot_state == "NAVIGATING_TO_START_2":
             self.robot_state = "COMPLETE"
