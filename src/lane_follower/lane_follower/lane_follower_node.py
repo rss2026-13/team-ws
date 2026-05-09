@@ -92,7 +92,7 @@ class LaneFollowerNode(Node):
 
     def detect_lanes(self, img, canny_low, canny_high, hough_thresh, min_len, max_gap):
         h, w = img.shape[:2]
-        y_top = int(h * 0.45)
+        y_top = int(h * 0.42)
         y_bottom = int(h * 0.8)
 
         bgr = cv2.cvtColor(img, cv2.COLOR_BGRA2BGR)
