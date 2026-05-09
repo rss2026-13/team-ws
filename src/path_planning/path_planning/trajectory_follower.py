@@ -70,6 +70,12 @@ class PurePursuit(Node):
             self.robot_state_cb,
             10
         )
+        self.halfway_home_sub = self.create_subscription(
+            Bool,
+            "/halfway_home",
+            self.half_way_home,
+            10
+        )
         self.drive_pub = self.create_publisher(AckermannDriveStamped,
                                                self.drive_topic,
                                                1)
@@ -123,7 +129,8 @@ class PurePursuit(Node):
 
         car_position = np.array([odometry_msg.pose.pose.position.x, odometry_msg.pose.pose.position.y])
         car_theta = 2.0 * np.arctan2(odometry_msg.pose.pose.orientation.z, odometry_msg.pose.pose.orientation.w)
-
+        self.half_way_home()
+        
         if len(self.trajectory.points) == 1:
             lookahead_point = self.trajectory.points[0]
             self.lookahead = np.linalg.norm(lookahead_point -  car_position)
@@ -292,6 +299,11 @@ class PurePursuit(Node):
         self.normalized_segments = self.segments * np.sqrt(self.inv_segments_mag_sq[:, np.newaxis])
 
         self.initialized_traj = True
+
+    def half_way_home(self):
+        if self.robot_state == "NAVIGATING_TO_START_2":
+            self.velocity = 1.0
+            self.get_logger().info("Halfway home signal received: Adjusting trajectory follower speed.")
 
 
 def main(args=None):
