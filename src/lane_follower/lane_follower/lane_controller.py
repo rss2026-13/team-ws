@@ -31,7 +31,7 @@ class SimulationController(Node):
         self.viz_pub = self.create_publisher(MarkerArray, '/lane_viz', 10)
         self.error_pub = self.create_publisher(Float32, '/lane_center_error', 10)
 
-        self.target_v = 4.0       # m/s
+        self.target_v = 3.0       # m/s
         self.lookahead = 1000      # metres — primary tuning knob
         self.wheelbase = 0.325    # metres (MIT RACECAR)
         self.lane_width = 0.9    # metres
