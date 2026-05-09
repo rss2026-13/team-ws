@@ -47,7 +47,7 @@ class LaneFollowerNode(Node):
 
         self.declare_parameter("canny_low", 80)
         self.declare_parameter("canny_high", 150)
-        self.declare_parameter("hough_threshold", 15)
+        self.declare_parameter("hough_threshold", 5)
         self.declare_parameter("hough_min_line_length", 20)
         self.declare_parameter("hough_max_line_gap", 80)
 
