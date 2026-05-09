@@ -130,9 +130,9 @@ class LaneFollowerNode(Node):
                 if x2 == x1:
                     continue
                 slope = (y2 - y1) / (x2 - x1)
-                if slope < -0.35:
+                if slope < -0.25:
                     left_segs.append((x1, y1, x2, y2))
-                elif slope > 0.35:
+                elif slope > 0.25:
                     right_segs.append((x1, y1, x2, y2))
 
         left_pts  = self._select_pts(left_segs,  y_bottom, self._left_coeffs)
